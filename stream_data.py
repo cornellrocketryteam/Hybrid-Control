@@ -3,6 +3,7 @@ File for reading in data from all sensors.
 
 3 September 2023
 """
+sensor_list = []
 
 class sensor():
     def __init__(volt_min, volt_max, val_min, val_max):
@@ -25,3 +26,8 @@ def read_data():
     Reads data from sensors connected to the LabJack.
     """
     pass
+
+def initialize_sensors():
+    """
+    Initialize all sensors with their attributes.
+    """
