@@ -15,23 +15,34 @@ FIRST_AIN_CHANNEL = 0  # 0 = AIN0
 NUMBER_OF_AINS = 8 # Streams channels FIRST_AIN_CHANNEL to NUMBER_OF_AINS-1
 
 class sensor():
-    def __init__(self, volt_min: float, volt_max: float, val_min: float, val_max: float) -> None:
+    def __init__(self, volt_min: float, volt_max: float, val_min: float, val_max: float, channels: list) -> None:
         """
         Initializes a sensor with volt_min and volt_max, which are the minimum and maximum voltage outputs
         of the sensor's analog signals, and val_min and val_max, which correspond to the minimum and 
         maximum data values that can be expected from that sensor.
+
+        TO DO: Add gain and offset.
         """
         self.volt_min = volt_min
         self.volt_max = volt_max
         self.val_min = val_min
         self.val_max = val_max
+        self.channels = channels
 
+
+def initialize_sensors():
+    """
+    Initialize all sensors with their attributes.
+    """
+    pass
 
 def linear_interpolation(s: sensor, volt_act: float) -> float:
     """
     Takes a voltage input range, volt_min to volt_max, and scales this to the expected sensor value
     output range, val_min to val_max. Returns the input voltage reading, volt_act, scaled to the
     sensor value output.
+
+    TO DO: Fill in the body of this. Could use numpy's linear regression.
     """
     pass
 
@@ -160,8 +171,3 @@ def read_data():
 
     # Close handle
     ljm.close(handle)
-
-def initialize_sensors():
-    """
-    Initialize all sensors with their attributes.
-    """
