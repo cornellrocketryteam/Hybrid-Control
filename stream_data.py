@@ -43,7 +43,14 @@ def linear_interpolation(s: sensor, volt_act: float) -> float:
     sensor value output.
 
     TO DO: Fill in the body of this. Could use numpy's linear regression.
+
+    Current method: applying linear scaling formula
+
     """
+    scaled_volt = ((volt_act-volt_min)*(val_max-val_min))/(volt_max-volt_min) + val_min
+    return scaled_volt
+
+
     pass
 
 def read_data():
