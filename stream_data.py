@@ -47,7 +47,7 @@ def linear_interpolation(s: sensor, volt_act: float) -> float:
     Current method: applying linear scaling formula
 
     """
-    scaled_volt = ((volt_act-volt_min)*(val_max-val_min))/(volt_max-volt_min) + val_min
+    scaled_volt = ((volt_act-s.volt_min)*(s.val_max-s.val_min))/(s.volt_max-s.volt_min) + s.val_min
     return scaled_volt
 
 
