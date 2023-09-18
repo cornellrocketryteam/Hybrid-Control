@@ -50,9 +50,6 @@ def linear_interpolation(s: sensor, volt_act: float) -> float:
     scaled_volt = ((volt_act-volt_min)*(val_max-val_min))/(volt_max-volt_min) + val_min
     return scaled_volt
 
-
-    pass
-
 def read_data():
     """
     Reads data from sensors connected to the LabJack. Uses code from the following script:
@@ -69,53 +66,27 @@ def read_data():
     deviceType = info[0]
 
     try:
-        # When streaming, negative channels and ranges can be configured for
-        # individual analog inputs, but the stream has only one settling time and
-        # resolution.
-        if deviceType == ljm.constants.dtT4:
-            # Configure the channels to analog input or digital I/O.
-            # Update all digital I/O channels. b1 = Ignored. b0 = Affected.
-            dioInhibit = 0x00000  # b00000000000000000000
-            # Set AIN0-AIN3 and AIN FIRST_AIN_CHANNEL to
-            # FIRST_AIN_CHANNEL+NUMBER_OF_AINS-1 as analog inputs (b1), the rest as
-            # digital I/O (b0).
-            dioAnalogEnable = (((2 ** NUMBER_OF_AINS) - 1) << FIRST_AIN_CHANNEL) | 0xF
-            ljm.eWriteNames(handle, 2,
-                            ["DIO_INHIBIT", "DIO_ANALOG_ENABLE"],
-                            [dioInhibit, dioAnalogEnable])
+        # Settings for channels 
 
-            # Configure the analog input ranges.
-            # CHECK THESE VALUES
-            rangeAINHV = 10.0  # HV channels range (AIN0-AIN3)
-            rangeAINLV = 2.5  # LV channels range (AIN4+)
-            aNames = ["AIN%i_RANGE" % i for i in range(FIRST_AIN_CHANNEL, FIRST_AIN_CHANNEL + NUMBER_OF_AINS)]
-            aValues = [rangeAINHV if i < 4 else rangeAINLV for i in range(FIRST_AIN_CHANNEL, FIRST_AIN_CHANNEL + NUMBER_OF_AINS)]
-            ljm.eWriteNames(handle, len(aNames), aNames, aValues)
+        # Ensure triggered stream is disabled.
+        ljm.eWriteName(handle, "STREAM_TRIGGER_INDEX", 0)
 
-            # Configure the stream settling times and stream resolution index.
-            aNames = ["STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"]
-            aValues = [0, 0]  # 0 (default), 0 (default)
-            ljm.eWriteNames(handle, len(aNames), aNames, aValues)
-        else:
-           # Ensure triggered stream is disabled.
-            ljm.eWriteName(handle, "STREAM_TRIGGER_INDEX", 0)
+        # Enabling internally-clocked stream.
+        ljm.eWriteName(handle, "STREAM_CLOCK_SOURCE", 0)
 
-            # Enabling internally-clocked stream.
-            ljm.eWriteName(handle, "STREAM_CLOCK_SOURCE", 0)
-
-            # Configure the analog input negative channels, ranges, stream settling
-            # times and stream resolution index.
-            aNames = ["AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US",
-                    "STREAM_RESOLUTION_INDEX"]
-            aValues = [ljm.constants.GND, 10.0, 0, 0]  # single-ended, +/-10V, 0 (default), 0 (default)
-            ljm.eWriteNames(handle, len(aNames), aNames, aValues)
+        # Configure the analog input negative channels, ranges, stream settling
+        # times and stream resolution index.
+        aNames = ["AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US",
+                "STREAM_RESOLUTION_INDEX"]
+        aValues = [ljm.constants.GND, 10.0, 0, 0]  # single-ended, +/-10V, 0 (default), 0 (default)
+        ljm.eWriteNames(handle, len(aNames), aNames, aValues)
 
         # Stream configuration
         aScanListNames = ["AIN%i" % i for i in range(FIRST_AIN_CHANNEL, FIRST_AIN_CHANNEL + NUMBER_OF_AINS)]  # Scan list names
         print("\nScan List = " + " ".join(aScanListNames))
         numAddresses = len(aScanListNames)
         aScanList = ljm.namesToAddresses(numAddresses, aScanListNames)[0]
-        scanRate = 1000
+        scanRate = 1000 # CHECK VAL
         scansPerRead = int(scanRate / 2)
 
         # Configure and start stream
@@ -128,7 +99,7 @@ def read_data():
         totSkip = 0  # Total skipped samples
 
         i = 1
-        while i <= MAX_REQUESTS:
+        while i <= MAX_REQUESTS: # CHANGE CONDIITOn
             ret = ljm.eStreamRead(handle)
 
             aData = ret[0]
