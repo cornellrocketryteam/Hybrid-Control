@@ -7,7 +7,8 @@ from datetime import datetime
 import sys
 from labjack import ljm
 
-sensor_list = []
+# TODO: Add sensors to this list with their volt min/max and val min/max
+sensor_list = [] 
 
 # CHECK ALL VALUES 
 MAX_REQUESTS = 25  # The number of eStreamRead calls that will be performed.
