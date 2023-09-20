@@ -55,9 +55,13 @@ def read_data():
     """
     Reads data from sensors connected to the LabJack. Uses code from the following script:
     https://github.com/labjack/labjack-ljm-python/blob/master/Examples/More/Stream/stream_sequential_ain.py
+
+    Returns something 
     """
+    print("attempting read")
     # Open first found LabJack
     handle = ljm.openS("ANY", "ANY", "ANY")  # Any device, Any connection, Any identifier
+    print("found labjack")
 
     info = ljm.getHandleInfo(handle)
     print("Opened a LabJack with Device type: %i, Connection type: %i,\n"
@@ -150,3 +154,5 @@ def read_data():
 
     # Close handle
     ljm.close(handle)
+
+
