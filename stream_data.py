@@ -51,7 +51,7 @@ def linear_interpolation(s: sensor, volt_act: float) -> float:
     scaled_volt = ((volt_act-s.volt_min)*(s.val_max-s.val_min))/(s.volt_max-s.volt_min) + s.val_min
     return scaled_volt
 
-def read_data():
+def analog_read_data():
     """
     Reads data from sensors connected to the LabJack. Uses code from the following script:
     https://github.com/labjack/labjack-ljm-python/blob/master/Examples/More/Stream/stream_sequential_ain.py
