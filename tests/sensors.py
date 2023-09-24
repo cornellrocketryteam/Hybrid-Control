@@ -49,7 +49,8 @@ def read_sensor():
 
 
 if __name__ == "__main__":
-	handle = ljm.openS("T7", "ANY", "ANY")
+    handle = ljm.openS("T7", "ANY", "ANY")
     read_sensor()
     ljm.close(handle)
+
     
