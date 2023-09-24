@@ -14,14 +14,9 @@ AIN_SETTLING_US = 0 #also dont know if id change this
 
 def read_sensor():
     """
-    Reads data from sensors connected to the LabJack. Uses code from the following script:
-    https://github.com/labjack/labjack-ljm-python/blob/master/Examples/More/Stream/stream_sequential_ain.py
-
-    Returns something 
+    Reads data from a single analog channel on the LabJack. Uses code from the following script:
+    https://github.com/labjack/labjack-ljm-python/blob/master/Examples/More/AIN/single_ain_with_config.py
     """
-
-    # Open first found LabJack
-    handle = ljm.openS("ANY", "ANY", "ANY")  # Any device, Any connection, Any identifier
 
     info = ljm.getHandleInfo(handle)
     print("Opened a LabJack with Device type: %i, Connection type: %i,\n"
@@ -52,6 +47,9 @@ def read_sensor():
 
     print("\n%s reading : %f V" % (name, result))
 
-    # Close handle
+
+if __name__ == "__main__":
+	handle = ljm.openS("T7", "ANY", "ANY")
+    read_sensor()
     ljm.close(handle)
     
