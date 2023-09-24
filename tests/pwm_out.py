@@ -5,18 +5,12 @@ pwm_out.py: Basic test for configuring PWM on a DIO pin
 import time
 from labjack import ljm
 
-# Frequency (Hz)
-frequency = 50
-
-# Duty cycle (%)
-dc = 25
-
 pwmDIO = 0
 
-def pwm_out():
-	global frequency, dc, pwmDIO
+def pwm_out(freq, dc):
+	global pwmDIO
 
-	roll_value = 80_000_000 / frequency
+	roll_value = 80_000_000 / freq
 	config_a = dc * roll_value / 100
 
 	aNames = [
@@ -41,5 +35,11 @@ def pwm_out():
 
 if __name__ == "__main__":
 	handle = ljm.openS("T7", "ANY", "ANY")
+
+    pwm_out(50, 25)
     time.sleep(5)
+    pwm_out(50, 75)
+    time.sleep(5)
+    
 	ljm.close(handle)
+
