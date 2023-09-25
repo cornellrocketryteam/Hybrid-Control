@@ -7,8 +7,7 @@ from datetime import datetime
 import sys
 from labjack import ljm
 
-# TODO: Add sensors to this list with their volt min/max and val min/max
-sensor_list = [] 
+sensor_dict = []#{"PT1": [0.0, 10.0, 0, 2000, ["AIN127", "AIN199"]]} 
 
 # CHECK ALL VALUES 
 MAX_REQUESTS = 25  # The number of eStreamRead calls that will be performed.
@@ -34,8 +33,11 @@ class sensor():
 def initialize_sensors():
     """
     Initialize all sensors with their attributes.
+    Sensors are initialized as follows:
+    s = sensor(voltage min, voltage max, value min, value max, [analog channel, negative analog channel])
     """
-    pass
+
+    
 
 def linear_interpolation(s: sensor, volt_act: float) -> float:
     """
@@ -156,3 +158,4 @@ def analog_read_data():
     ljm.close(handle)
 
 
+analog_read_data()
