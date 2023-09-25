@@ -5,11 +5,21 @@ sensors.py: Basic test for reading from a specific analog channel.
 
 from labjack import ljm
 
-AIN = "AIN127"
-AIN_NEGATIVE_CHANNEL = 199 #How to know this val?
-AIN_RANGE = 10 #voltage range
-AIN_RESOLUTION_INDEX = 0 #idk if i would ever change this
-AIN_SETTLING_US = 0 #also dont know if id change this
+pt1 = [0.0, 10.0, 0, 2000]
+# pt2 = [0.0, 10.0, 0, 2000, ["AIN127", 199]]
+# pt3 = [0.0, 10.0, 0, 3000, ["AIN127", 199]]
+# pt4 = [0.0, 10.0, 0, 3000, ["AIN127", 199]]
+# pt5 = [0.0, 10.0, 0, 1500, ["AIN127", 199]]
+# pt6 = [0.0, 10.0, 0, 2000, ["AIN127", 199]]
+# pt7 = [0.0, 10.0, 0, 1500, ["AIN127", 199]]
+# pt8 = [0.0, 10.0, 0, 2000, ["AIN127", 199]]
+
+ain = "AIN2"
+ain_negative_ch = 199 # 199 for GND
+ain_range = pt1[1] # voltage range
+
+AIN_RESOLUTION_INDEX = 0 # idk if i would ever change this
+AIN_SETTLING_US = 0 # also dont know if id change this
 
 
 def read_sensor():
@@ -33,7 +43,7 @@ def read_sensor():
     #   Resolution index = Default (0)
     #   Settling, in microseconds = Auto (0)
     names = ["AIN_NEGATIVE_CH", "AIN_RANGE", "AIN_RESOLUTION_INDEX", "AIN_SETTLING_US"]
-    aValues = [199, 10, 0, 0] # what does the 199 mean?
+    aValues = [ain_negative_ch, ain_range, AIN_RESOLUTION_INDEX, AIN_SETTLING_US]
     numFrames = len(names)
     ljm.eWriteNames(handle, numFrames, names, aValues)
 
@@ -42,7 +52,7 @@ def read_sensor():
         print("    %s : %f" % (names[i], aValues[i]))
 
     # Setup and call eReadName to read AIN0 from the LabJack.
-    name = AIN
+    name = ain
     result = ljm.eReadName(handle, name)
 
     print("\n%s reading : %f V" % (name, result))
