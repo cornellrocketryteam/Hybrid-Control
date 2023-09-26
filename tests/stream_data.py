@@ -7,7 +7,7 @@ from datetime import datetime
 import sys
 from labjack import ljm
 
-sensor_dict = []#{"PT1": [0.0, 10.0, 0, 2000, ["AIN127", "AIN199"]]} 
+sensor_dict = [0.0, 10.0, 0, 2000, "AIN0", "AIN199"]
 
 # CHECK ALL VALUES 
 MAX_REQUESTS = 25  # The number of eStreamRead calls that will be performed.
@@ -15,7 +15,7 @@ FIRST_AIN_CHANNEL = 0  # 0 = AIN0
 NUMBER_OF_AINS = 8 # Streams channels FIRST_AIN_CHANNEL to NUMBER_OF_AINS-1
 
 class sensor():
-    def __init__(self, volt_min: float, volt_max: float, val_min: float, val_max: float, channels: list) -> None:
+    def __init__(self, volt_min: float, volt_max: float, val_min: float, val_max: float, pos_channel: str, neg_channel: str) -> None:
         """
         Initializes a sensor with volt_min and volt_max, which are the minimum and maximum voltage outputs
         of the sensor's analog signals, and val_min and val_max, which correspond to the minimum and 
@@ -27,7 +27,8 @@ class sensor():
         self.volt_max = volt_max
         self.val_min = val_min
         self.val_max = val_max
-        self.channels = channels
+        self.pos_channel = pos_channel
+        self.neg_channel = neg_channel
 
 
 def initialize_sensors():
@@ -36,8 +37,7 @@ def initialize_sensors():
     Sensors are initialized as follows:
     s = sensor(voltage min, voltage max, value min, value max, [analog channel, negative analog channel])
     """
-
-    
+    pt1 = sensor(sensor_dict[0], sensor_dict[1], sensor_dict[2], sensor_dict[3], sensor_dict[4], sensor_dict[5])
 
 def linear_interpolation(s: sensor, volt_act: float) -> float:
     """
@@ -45,13 +45,12 @@ def linear_interpolation(s: sensor, volt_act: float) -> float:
     output range, val_min to val_max. Returns the input voltage reading, volt_act, scaled to the
     sensor value output.
 
-    TO DO: Fill in the body of this. Could use numpy's linear regression.
-
     Current method: applying linear scaling formula
 
     """
     scaled_volt = ((volt_act-s.volt_min)*(s.val_max-s.val_min))/(s.volt_max-s.volt_min) + s.val_min
     return scaled_volt
+
 
 def analog_read_data():
     """
