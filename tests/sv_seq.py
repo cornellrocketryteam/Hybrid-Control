@@ -38,7 +38,7 @@ def sv_pwm():
 	]
 	numFrames = len(aNames)
 	results = ljm.eWriteNames(handle, numFrames, aNames, aValues)
-	print("at the end of the thread ")
+	print("at the end of the thread")
 
 def sv_actuate(on):
 	global dio, pwmDIO

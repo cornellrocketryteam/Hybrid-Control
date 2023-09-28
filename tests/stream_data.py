@@ -156,3 +156,6 @@ def read_data():
     ljm.close(handle)
 
 
+
+
+read_data()
