@@ -7,7 +7,7 @@ from datetime import datetime
 import sys
 from labjack import ljm
 
-sensor_dict = [0.0, 10.0, 0, 2000, "AIN0", "AIN199"]
+#sensor_dict = [0.0, 10.0, 0, 2000, "AIN2", "AIN199"]
 
 # CHECK ALL VALUES 
 MAX_REQUESTS = 25  # The number of eStreamRead calls that will be performed.
@@ -96,6 +96,7 @@ def analog_read_data():
         scansPerRead = int(scanRate / 2)
 
         # Configure and start stream
+        print("i'9[fQ;GHIUWFR9E2I09-]W;hofruei30`e29ji;ohqfe;u90[ehi;ouwvwue90hido;bus;hiu9efijhio;sbjfjeiofhssjnvsfifehwljknNSC]")
         scanRate = ljm.eStreamStart(handle, scansPerRead, numAddresses, aScanList, scanRate)
         print("\nStream started with a scan rate of %0.0f Hz." % scanRate)
 
