@@ -1,5 +1,5 @@
 """
-sv.py: Unit test for actuating a solenoid valve
+sv_seq.py: Unit test for actuating a solenoid valve - blocking delay
 """
 
 import time, threading
@@ -13,40 +13,38 @@ dio = "FIO" + str(pwmDIO)
 freq = 1000
 dc = 60
 
-def sv_pwm():
-	global pwmDIO, freq, dc
-
-	roll_value = 80_000_000 / freq
-	config_a = dc * roll_value / 100
-
-	aNames = [
-		"DIO_EF_CLOCK0_ROLL_VALUE",
-		"DIO_EF_CLOCK0_ENABLE",
-
-		"DIO%i_EF_ENABLE" % pwmDIO,
-		"DIO%i_EF_CONFIG_A" % pwmDIO,
-		"DIO%i_EF_ENABLE" % pwmDIO,
-	]
-
-	aValues = [
-		roll_value,
-		1,
-
-		0,
-		config_a,
-		1
-	]
-	numFrames = len(aNames)
-	results = ljm.eWriteNames(handle, numFrames, aNames, aValues)
-
 def sv_actuate(on):
-	global dio, pwmDIO, timer
+	global dio, pwmDIO, freq, dc
 	state = int(on)
 	
 	if on:
 		print("Turning on")
 		ljm.eWriteName(handle, dio, state)
-		timer.start()
+		time.sleep(150 / 1000)
+
+		roll_value = 80_000_000 / freq
+		config_a = dc * roll_value / 100
+
+		aNames = [
+			"DIO_EF_CLOCK0_ROLL_VALUE",
+			"DIO_EF_CLOCK0_ENABLE",
+
+			"DIO%i_EF_ENABLE" % pwmDIO,
+			"DIO%i_EF_CONFIG_A" % pwmDIO,
+			"DIO%i_EF_ENABLE" % pwmDIO,
+		]
+
+		aValues = [
+			roll_value,
+			1,
+
+			0,
+			config_a,
+			1
+		]
+		numFrames = len(aNames)
+		results = ljm.eWriteNames(handle, numFrames, aNames, aValues)
+
 	else:
 		print("Turning off")
 		aNames = ["DIO_EF_CLOCK0_ENABLE", "DIO%i_EF_ENABLE" % pwmDIO]
@@ -56,8 +54,6 @@ def sv_actuate(on):
 
 if __name__ == "__main__":
 	handle = ljm.openS("T7", "ANY", "ANY")
-
-	timer = threading.Timer(150 / 1000, sv_pwm)
 
 	sv_actuate(True)
 	time.sleep(3)

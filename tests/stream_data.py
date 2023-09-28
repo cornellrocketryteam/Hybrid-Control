@@ -157,5 +157,5 @@ def analog_read_data():
     # Close handle
     ljm.close(handle)
 
-
 analog_read_data()
+
