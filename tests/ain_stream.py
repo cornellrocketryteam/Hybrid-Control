@@ -19,6 +19,9 @@ def ain_read(handle: int, ain_channels: list) -> str:
     Returns a dict with the AIN channel as a key and the voltage reading as a value.
     """
 
+    f = open('labjack_data.csv', 'w')
+    f.close()
+
     f = open('labjack_data.csv', 'a')
     
     info = ljm.getHandleInfo(handle)
@@ -81,7 +84,7 @@ def ain_read(handle: int, ain_channels: list) -> str:
             for j in range(0, numAddresses):
                 ainStr += "%s = %0.5f, " % (aScanListNames[j], aData[j])
             print(ainStr)
-            f.write(ainStr)
+            f.write(ainStr + "\n")
             stream = ainStr
             #print("  1st scan out of %i: %s" % (scans, ainStr))
             #print("  Scans Skipped = %0.0f, Scan Backlogs: Device = %i, LJM = "
