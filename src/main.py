@@ -3,17 +3,20 @@ main.py: The entry point for the hybrid control program
 """
 
 from labjack import ljm
-import time
+import sys
 
-
-from test_stand import TestStand
 from controller import Controller
 
 if __name__ == "__main__":
-    #handle = ljm.openS("T7", "ANY", "ANY")
-    handle = None
+    if len(sys.argv) == 2 and sys.argv[1] == "--no-labjack":
+        labjack = False
+        handle = None
+    else:
+        labjack = True
+        handle = ljm.openS("T7", "ANY", "ANY")
 
     controller = Controller(handle)
     controller.run()
 
-    #ljm.close(handle)
+    if labjack:
+        ljm.close(handle)

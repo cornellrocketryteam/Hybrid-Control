@@ -42,7 +42,7 @@ def sv_pwm():
 def sv_actuate(on):
 	global dio, pwmDIO, timer
 	state = int(on)
-	
+
 	if on:
 		print("Turning on")
 		ljm.eWriteName(handle, dio, state)
@@ -53,6 +53,7 @@ def sv_actuate(on):
 		aValues = [0, 0]
 		numFrames = len(aNames)
 		results = ljm.eWriteNames(handle, numFrames, aNames, aValues)
+		ljm.eWriteName(handle, dio, state)
 
 if __name__ == "__main__":
 	handle = ljm.openS("T7", "ANY", "ANY")
@@ -62,5 +63,10 @@ if __name__ == "__main__":
 	sv_actuate(True)
 	time.sleep(3)
 	sv_actuate(False)
+	
+	# time.sleep(3)
+	# sv_actuate(True)
+	# time.sleep(3)
+	# sv_actuate(False)
 
 	ljm.close(handle)

@@ -8,12 +8,12 @@ import curses
 
 stdscr = curses.initscr()
 curses.echo()
-curses.start_color()
+#curses.start_color()
 stdscr.clear()
 
 class Controller:
 
-    def __init__(self, handle) -> None:
+    def __init__(self, handle: int) -> None:
         self.test_stand = TestStand(handle)
         self.handle = handle
 
@@ -33,11 +33,12 @@ class Controller:
                     sv_str = "SV {num}: {state}".format(num = i+1, state = "ON" if self.test_stand.sv_states[i] else "OFF")
                     stdscr.addstr(i+4, 0, sv_str)
 
-                mav_str = "MAV:  {state}".format(state = "ON" if self.test_stand.mav_state else "OFF")
-                stdscr.addstr(10, 0, mav_str)
+                mav_str_1 = "MAV 1: {state}".format(state = "ON" if self.test_stand.mav_states[0] else "OFF")
+                mav_str_2 = "MAV 2: {state}".format(state = "ON" if self.test_stand.mav_states[1] else "OFF")
+                stdscr.addstr(10, 0, mav_str_1)
+                stdscr.addstr(11, 0, mav_str_2)
 
                 stdscr.addstr(4, 50, "Default")
-
 
                 stdscr.addstr(6, 50, "Prefire purge tanks")
                 stdscr.addstr(7, 50, "Prefire purge engine")
@@ -45,8 +46,6 @@ class Controller:
                 stdscr.addstr(9, 50, "Supercharge")
                 stdscr.addstr(10, 50, "Ignition")
                 stdscr.addstr(11, 50, "Fire")
-
-               
 
                 stdscr.addstr(curses.LINES - 1, 0, input_str)
 
@@ -66,30 +65,16 @@ class Controller:
                     words = input_str.split(" ")
 
                     if words[0] == "sv":
-                        if len(words) == 3:
-                            if words[2] == "on":
-                                self.test_stand.sv_states[int(words[1]) - 1] = True
-                            else:
-                                self.test_stand.sv_states[int(words[1]) - 1] = False
-                        elif len(words) == 2:
-                            if words[1] == "on":
-                                for i in range(0, len(self.test_stand.sv_states)):
-                                    self.test_stand.sv_states[i] = True
-                            else:
-                                for i in range(0, len(self.test_stand.sv_states)):
-                                    self.test_stand.sv_states[i] = False
+                        if words[2] == "on":
+                            self.test_stand.sv_on(int(words[1]))
+                        else:
+                            self.test_stand.sv_off(int(words[1]))
 
                     if words[0] == "mav":
-                        if words[1] == "on":
-                            self.test_stand.mav_on()
-                            self.test_stand.mav_state = True
+                        if words[2] == "on":
+                            self.test_stand.mav_on(int(words[1]))
                         else:
-                            self.test_stand.mav_off()
-                            self.test_stand.mav_state = False
-
-                    if words[0] == "srbv":
-                        if words[1] == "off":
-                            self.test_stand.srbv_state = False
+                            self.test_stand.mav_off(int(words[1]))
 
                     input_str = "> "
                     stdscr.clear()
