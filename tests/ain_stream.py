@@ -3,11 +3,8 @@ Streams from multiple AIN channels.
 """
 from datetime import datetime
 import sys
-
 from labjack import ljm
 
-# Open first found LabJack
-handle = ljm.openS("T7", "ANY", "ANY")  # T7 device, Any connection, Any identifier
 
 # AIN 127-120 for PT 1-8, AIN 0-3 for TC 1-4, AIN 60 for FM1, AIN 48-49 for Load Cell 1-2
 ain_channels = ["AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
@@ -19,11 +16,10 @@ def ain_read(handle: int, ain_channels: list) -> str:
     Returns a dict with the AIN channel as a key and the voltage reading as a value.
     """
 
+    # Deletes the contents currently in the csv file
     f = open('labjack_data.csv', 'w')
     f.close()
 
-    f = open('labjack_data.csv', 'a')
-    
     info = ljm.getHandleInfo(handle)
     deviceType = info[0]
 
@@ -43,9 +39,36 @@ def ain_read(handle: int, ain_channels: list) -> str:
 
         # Configure the analog input negative channels, ranges, stream settling
         # times and stream resolution index.
-        aNames = ["AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US",
-                    "STREAM_RESOLUTION_INDEX"]
-        aValues = [ljm.constants.GND, 10.0, 0, 0]  # single-ended, +/-10V, 0 (default), 0 (default)
+        aNames = ["AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"]
+        aValues = [ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 2.4, 0, 0,
+                   "AIN56", 10.0, 0, 0,
+                   "AIN57", 10.0, 0, 0,]  # single-ended, +/-10V, 0 (default), 0 (default) #FIGURE OUT HOW TO CHANGE NEGATIVE CH FOR LOAD CELLS
         ljm.eWriteNames(handle, len(aNames), aNames, aValues)
 
         # Stream configuration
@@ -57,53 +80,37 @@ def ain_read(handle: int, ain_channels: list) -> str:
         scansPerRead = int(scanRate / 2)
 
         # Configure and start stream
-        print("Stream Start")
+        #print("Stream Start")
         scanRate = ljm.eStreamStart(handle, scansPerRead, numAddresses, aScanList, scanRate)
-
         #print("\nPerforming %i stream reads." % MAX_REQUESTS)
         start = datetime.now()
         totScans = 0
         totSkip = 0  # Total skipped samples [what does this mean]
 
-        stream = True
-        while stream:
+        stream = 0
+        while stream < 25:
+            
             ret = ljm.eStreamRead(handle)
-
             aData = ret[0]
             scans = len(aData) / numAddresses
             totScans += scans
 
-            # Count the skipped samples which are indicated by -9999 values. Missed
-            # samples occur after a device's stream buffer overflows and are
-            # reported after auto-recover mode ends.
-            curSkip = aData.count(-9999.0)
-            totSkip += curSkip
-
             # print("\neStreamRead %i" % i) # Prints each stream instance from stream 1 to MAX_REQUESTS
-            ainStr = ""
+            ainDict = {}
             for j in range(0, numAddresses):
-                ainStr += "%s = %0.5f, " % (aScanListNames[j], aData[j])
-            print(ainStr)
-            f.write(ainStr + "\n")
-            stream = ainStr
+                ainDict[aScanListNames[j]] = round(aData[j], 3)
+            f = open('labjack_data.csv', 'a')
+            f.write(str(ainDict) + "\n")
+            f.close()
             #print("  1st scan out of %i: %s" % (scans, ainStr))
             #print("  Scans Skipped = %0.0f, Scan Backlogs: Device = %i, LJM = "
             #      "%i" % (curSkip / numAddresses, ret[1], ret[2]))
             
-            # INCLUDE stream = False CONDITION
+            stream += 1
 
+        f.close()
         end = datetime.now()
 
-        """
-        print("\nTotal scans = %i" % (totScans))
-        tt = (end - start).seconds + float((end - start).microseconds) / 1000000
-        print("Time taken = %f seconds" % (tt))
-        print("LJM Scan Rate = %f scans/second" % (scanRate))
-        print("Timed Scan Rate = %f scans/second" % (totScans / tt))
-        print("Timed Sample Rate = %f samples/second" % (totScans * numAddresses / tt))
-        print("Skipped scans = %0.0f" % (totSkip / numAddresses))
-        """
-        return stream
     except ljm.LJMError:
         ljme = sys.exc_info()[1]
         print(ljme)
@@ -112,7 +119,7 @@ def ain_read(handle: int, ain_channels: list) -> str:
         print(e)
 
     try:
-        print("\nStop Stream")
+        #print("\nStop Stream")
         ljm.eStreamStop(handle)
     except ljm.LJMError:
         ljme = sys.exc_info()[1]
@@ -122,6 +129,8 @@ def ain_read(handle: int, ain_channels: list) -> str:
         print(e)
 
 
-ain_read(handle, ain_channels)
-# Close handle
-ljm.close(handle)
+
+if __name__ == "__main__":
+    handle = ljm.openS("T7", "ANY", "ANY")  # T7 device, Any connection, Any identifier
+    ain_read(handle, ain_channels)
+    ljm.close(handle)
