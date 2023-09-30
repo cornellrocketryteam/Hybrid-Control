@@ -39,9 +39,36 @@ def ain_read(handle: int, ain_channels: list) -> str:
 
         # Configure the analog input negative channels, ranges, stream settling
         # times and stream resolution index.
-        aNames = ["AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US",
-                    "STREAM_RESOLUTION_INDEX"]
-        aValues = [ljm.constants.GND, 10.0, 0, 0]  # single-ended, +/-10V, 0 (default), 0 (default) #FIGURE OUT HOW TO CHANGE NEGATIVE CH FOR LOAD CELLS
+        aNames = ["AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"
+                  "AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"]
+        aValues = [ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 10.0, 0, 0,
+                   ljm.constants.GND, 2.4, 0, 0,
+                   "AIN56", 10.0, 0, 0,
+                   "AIN57", 10.0, 0, 0,]  # single-ended, +/-10V, 0 (default), 0 (default) #FIGURE OUT HOW TO CHANGE NEGATIVE CH FOR LOAD CELLS
         ljm.eWriteNames(handle, len(aNames), aNames, aValues)
 
         # Stream configuration
