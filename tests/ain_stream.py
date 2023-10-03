@@ -67,8 +67,8 @@ def ain_read(handle: int, ain_channels: list) -> str:
                    ljm.constants.GND, 10.0, 0, 0,
                    ljm.constants.GND, 10.0, 0, 0,
                    ljm.constants.GND, 2.4, 0, 0,
-                   "AIN56", 10.0, 0, 0,
-                   "AIN57", 10.0, 0, 0,]  # single-ended, +/-10V, 0 (default), 0 (default) #FIGURE OUT HOW TO CHANGE NEGATIVE CH FOR LOAD CELLS
+                   56, 10.0, 0, 0,
+                   57, 10.0, 0, 0,]  # single-ended, +/-10V, 0 (default), 0 (default) #FIGURE OUT HOW TO CHANGE NEGATIVE CH FOR LOAD CELLS
         ljm.eWriteNames(handle, len(aNames), aNames, aValues)
 
         # Stream configuration
