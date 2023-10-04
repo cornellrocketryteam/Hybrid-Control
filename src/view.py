@@ -19,7 +19,6 @@ class TUI:
     def update_screen(self) -> None:
         self.stdscr.refresh()
 
-        # Can move to init?
         self.stdscr.addstr(0, 0, "=" * curses.COLS)
         self.stdscr.addstr(1, 0, "Hybrid Test Stand Control")
         self.stdscr.addstr(2, 0, "=" * curses.COLS)

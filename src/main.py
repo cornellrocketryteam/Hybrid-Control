@@ -15,6 +15,11 @@ if __name__ == "__main__":
         labjack = True
         handle = ljm.openS("T7", "ANY", "ANY")
 
+    ljm.eWriteName(handle, "FIO0", 0)
+    ljm.eWriteName(handle, "FIO1", 0)
+
+    hold = input("Press any key to continue: ")
+
     controller = Controller(handle)
     controller.run()
 

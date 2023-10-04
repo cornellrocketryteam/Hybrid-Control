@@ -12,9 +12,10 @@ class TestStand:
         self.sv_states = [False, False, False, False, False]
         self.sv_dio = [1, 0, 2, 3, 4]
         self.sv_freq = 1000
-        self.sv_dc = 60
+        self.sv_dc = 10
         self.sv_timers = []
 
+        self.temp_timer = threading.Timer(150 / 1000, self._sv_pwm, [2])
         for i in range(5):
             self.sv_timers.append(threading.Timer(150 / 1000, self._sv_pwm, [i]))
 
@@ -58,7 +59,9 @@ class TestStand:
         results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
 
     def _sv_pwm(self, num: int) -> None:
-        pwmDIO = self.sv_states[num - 1]
+        # TODO: Needs some fixing for indices
+        pwmDIO = self.sv_dio[num - 1]
+        #pwmDIO = 2
         roll_value = 80_000_000 / self.sv_freq
         config_a = self.sv_dc * roll_value / 100
 
@@ -88,13 +91,45 @@ class TestStand:
 
         ljm.eWriteName(self.handle, dio, 1)
         self.sv_timers[num - 1].start()
+        #self.temp_timer.start()
         
     def sv_off(self, num: int) -> None:
         self.sv_states[num - 1] = False
         dio = "FIO" + str(self.sv_dio[num - 1])
-
         aNames = ["DIO_EF_CLOCK0_ENABLE", "DIO%i_EF_ENABLE" % self.sv_dio[num - 1]]
         aValues = [0, 0]
         numFrames = len(aNames)
         results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
         ljm.eWriteName(self.handle, dio, 0)
+
+    # States
+    
+    def prefire_purge_tanks(self, on: bool) -> None:
+        if on:
+            self.sv_on(2)
+            self.sv_on(5)
+        else:
+            self.sv_off(2)
+            self.sv_off(5)
+
+    def prefire_purge_engine(self, on: bool) -> None:
+        if on:
+            self.sv_on(1)
+        else:
+            self.sv_off(1)
+
+    def fill(self, on: bool) -> None:
+        if on:
+            self.sv_on(3)
+        else:
+            self.sv_off(3)
+
+    def supercharge(self) -> None:
+        self.sv_on(4)
+
+    def ignition(self) -> None:
+        # TODO: Test on-on-on
+        self.sv_on(4)
+    
+    def firing(self) -> None:
+        pass
