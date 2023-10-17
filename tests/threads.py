@@ -39,6 +39,9 @@ if __name__ == "__main__":
 	read.start()
 	write.start()
 
+	read.join()
+	write.join()
+	
 	ljm.close(handle)
 
 

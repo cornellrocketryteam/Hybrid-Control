@@ -76,7 +76,7 @@ def ain_read(handle: int, ain_channels: list) -> str:
         #print("\nScan List = " + " ".join(aScanListNames))
         numAddresses = len(aScanListNames)
         aScanList = ljm.namesToAddresses(numAddresses, aScanListNames)[0]
-        scanRate = 100 # Hz frequency of reading
+        scanRate = 100 # Hz frequency of reading -> TO DO: figureo out if it is actually getting all these reads
         scansPerRead = int(scanRate / 2)
 
         # Configure and start stream
@@ -98,6 +98,7 @@ def ain_read(handle: int, ain_channels: list) -> str:
             # print("\neStreamRead %i" % i) # Prints each stream instance from stream 1 to MAX_REQUESTS
             ainDict = {}
             for j in range(0, numAddresses):
+                # TO DO: Convert voltage readings to actual sensor readings
                 ainDict[aScanListNames[j]] = round(aData[j], 3)
             f = open('labjack_data.csv', 'a')
             f.write(str(ainDict) + "\n")
