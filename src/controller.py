@@ -14,6 +14,8 @@ class Controller:
         self.tui = TUI(self.test_stand)
         self.handle = handle
 
+        self.awaiting_mode = -1
+
     def run(self) -> None:
         try:
             while True:
@@ -21,20 +23,48 @@ class Controller:
                 c = self.tui.get_input()
 
                 input_str = self.tui.input_str
+                input_str = input_str[2:]
 
+                if input_str == "" and ((c >= 52 and c <= 61) or c == 43):
+                    if c == 52:
+                        self.tui.await_mode(Mode.DEFAULT)
+                        self.awaiting_mode = 0
+                    if c == 53:
+                        self.tui.await_mode(Mode.PREFIRE_PURGE_TANKS)
+                        self.awaiting_mode = 1
+                    if c == 54:
+                        self.tui.await_mode(Mode.PREFIRE_PURGE_ENGINE)
+                        self.awaiting_mode = 2
+                    if c == 43:
+                        self.tui.await_mode(Mode.FILL)
+                        self.awaiting_mode = 3
+                    if c == 55:
+                        self.tui.await_mode(Mode.SUPERCHARGE)
+                        self.awaiting_mode = 4
+                    if c == 56:
+                        self.tui.await_mode(Mode.IGNITION)
+                        self.awaiting_mode = 5
+                    if c == 57:
+                        self.tui.await_mode(Mode.FIRE)
+                        self.awaiting_mode = 6
+
+                    self.tui.clear()
+                    continue
+
+                if input_str == "" and (c == curses.KEY_ENTER or c == 10 or c == 13):
+                    if self.awaiting_mode != -1:
+                        self.test_stand.confirm_mode(Mode(self.awaiting_mode))
+                        self.tui.to_mode(Mode(self.awaiting_mode))
+
+                        self.tui.clear()
+                        continue
+                    
                 if c == 27:
                     break
                 elif c == curses.KEY_ENTER or c == 10 or c == 13:
 
-                    input_str = input_str[2:]
-
                     if input_str == "quit":
                         break
-
-
-                    if input_str == "5":
-                        self.test_stand.prefire_purge_tanks(True)
-                        self.tui.to_mode(Mode.PREFIRE_PURGE_TANKS)
 
                     words = input_str.split(" ")
 

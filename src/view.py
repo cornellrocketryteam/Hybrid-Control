@@ -16,6 +16,8 @@ class TUI:
 
         self.test_stand = test_stand
 
+        self.awaited_mode = -1
+
         self.modes = [
             "Default", 
             "Prefire purge tanks", 
@@ -62,13 +64,20 @@ class TUI:
                 else:
                     self.stdscr.addstr(i+5, 50, self.modes[i])
 
+        if self.awaited_mode != -1:
+            self.stdscr.addstr(curses.LINES - 3, 0, "Confirm")
+            self.stdscr.addstr(curses.LINES - 3, 8, self.modes[self.awaited_mode], curses.A_BOLD)
         self.stdscr.addstr(curses.LINES - 1, 0, self.input_str)
 
     def get_input(self) -> int:
         c = self.stdscr.getch()
         return c
     
+    def await_mode(self, mode: Mode) -> None:
+        self.awaited_mode = mode.value
+
     def to_mode(self, mode: Mode) -> None:
+        self.awaited_mode = -1
         self.mode = mode.value
     
     def clear(self) -> None:

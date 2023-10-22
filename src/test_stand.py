@@ -37,6 +37,12 @@ class TestStand:
 
         self.handle = handle
 
+        self.awaited_mode = -1
+
+        self.tanks_purging = False
+        self.engine_purging = False
+        self.filling = False
+
     def mav_on(self, num: int) -> None:
         if not self.mav_states[num - 1]:
             if num == 1:
@@ -139,28 +145,44 @@ class TestStand:
             results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
             ljm.eWriteName(self.handle, dio, 0)
 
-    # States
+    # Modes
+
+    def confirm_mode(self, mode: Mode) -> None:
+        if mode == Mode.DEFAULT:
+            self.default()
+        elif mode == Mode.PREFIRE_PURGE_TANKS:
+            self.prefire_purge_tanks()
+        elif mode == Mode.PREFIRE_PURGE_ENGINE:
+            self.prefire_purge_engine()
+        elif mode == Mode.FILL:
+            self.fill()
+        elif mode == Mode.SUPERCHARGE:
+            self.supercharge()
+        elif mode == Mode.IGNITION:
+            self.ignition()
+        elif mode == Mode.FIRE:
+            self.fire()
 
     def default(self) -> None:
         self.mav_off(1)
         self.mav_off(2)
     
-    def prefire_purge_tanks(self, on: bool) -> None:
-        if on:
+    def prefire_purge_tanks(self) -> None:
+        if not self.tanks_purging:
             self.sv_on(2)
             self.sv_on(5)
         else:
             self.sv_off(2)
             self.sv_off(5)
 
-    def prefire_purge_engine(self, on: bool) -> None:
-        if on:
+    def prefire_purge_engine(self) -> None:
+        if not self.engine_purging:
             self.sv_on(1)
         else:
             self.sv_off(1)
 
-    def fill(self, on: bool) -> None:
-        if on:
+    def fill(self) -> None:
+        if not self.filling:
             self.sv_on(3)
         else:
             self.sv_off(3)
@@ -171,7 +193,7 @@ class TestStand:
     def ignition(self) -> None:
         self.sv_on(4)
     
-    def firing(self) -> None:
+    def fire(self) -> None:
         self.sv_on(4)
 
         self.mav_on(1)
