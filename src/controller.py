@@ -5,6 +5,7 @@ controller.py: Manages user commands and actions
 from test_stand import TestStand
 from view import TUI
 import curses
+from util import Mode
 
 class Controller:
 
@@ -30,6 +31,11 @@ class Controller:
                     if input_str == "quit":
                         break
 
+
+                    if input_str == "5":
+                        self.test_stand.prefire_purge_tanks(True)
+                        self.tui.to_mode(Mode.PREFIRE_PURGE_TANKS)
+
                     words = input_str.split(" ")
 
                     if words[0] == "sv":
@@ -49,11 +55,10 @@ class Controller:
 
                 elif c == curses.KEY_BACKSPACE or c == 127:
                     if len(input_str) > 2:
-                        input_str = input_str[:-1]
+                        self.tui.input_str = self.tui.input_str[:-1]
                         self.tui.clear()
                 else:
                     self.tui.input_str += chr(c)
 
         except KeyboardInterrupt:
             pass
-        

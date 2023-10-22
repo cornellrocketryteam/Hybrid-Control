@@ -4,6 +4,7 @@ test_stand.py: The model for the Test Stand
 
 from labjack import ljm
 import threading
+from util import Mode
 
 class TestStand:
 
@@ -22,15 +23,37 @@ class TestStand:
         self.mav_states = [False, False]
         self.mav_dio = [5, 6]
 
+        # pressure (PSI) - 8x
+        self.pt_pressures = []
+
+        # Thermocouplers (Temp Kelvin) - 4x
+        self.tc_temps = []
+
+        # Flowmeter (Gallons per min) - 1x
+        self.flowmeter_gpm = -1
+
+        # Load cell (Kilograms) - 2x
+        self.load_cell_weights = []
+
         self.handle = handle
 
     def mav_on(self, num: int) -> None:
-        self.mav_states[num - 1] = True
-        self._mav_actuate(num, 26.4)
+        if not self.mav_states[num - 1]:
+            if num == 1:
+                self.mav_states[num - 1] = True
+                self._mav_actuate(num, 26.4)
+            else:
+                self.mav_states[num - 1] = True
+                self._mav_actuate(num, 72.6)
 
     def mav_off(self, num: int) -> None:
-        self.mav_states[num - 1] = False
-        self._mav_actuate(num, 72.6)
+        if self.mav_states[num - 1]:
+            if num == 1:
+                self.mav_states[num - 1] = False
+                self._mav_actuate(num, 72.6)
+            else:
+                self.mav_states[num - 1] = False
+                self._mav_actuate(num, 26.4)
 
     def _mav_actuate(self, num: int, dc: float) -> None:
         pwmDIO = self.mav_dio[num - 1]
@@ -86,31 +109,39 @@ class TestStand:
         results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
 
     def sv_on(self, num: int) -> None:
-        self.sv_states[num - 1] = True
-        dio = "FIO" + str(self.sv_dio[num - 1])
+        if not self.sv_states[num - 1]:
+            self.sv_states[num - 1] = True
+            dio = "FIO" + str(self.sv_dio[num - 1])
 
-        ljm.eWriteName(self.handle, dio, 1)
-        self.sv_timers[num - 1].start()
-        #self.temp_timer.start()
+            ljm.eWriteName(self.handle, dio, 1)
+            self.sv_timers[num - 1].start()
+            # Create new timer?
+            #self.temp_timer.start()
         
     def sv_off(self, num: int) -> None:
-        self.sv_states[num - 1] = False
-        dio = "FIO" + str(self.sv_dio[num - 1])
-        aNames = ["DIO_EF_CLOCK0_ENABLE", "DIO%i_EF_ENABLE" % self.sv_dio[num - 1]]
-        aValues = [0, 0]
-        numFrames = len(aNames)
-        results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
-        ljm.eWriteName(self.handle, dio, 0)
+        if self.sv_states[num - 1]:
+            self.sv_states[num - 1] = False
+            dio = "FIO" + str(self.sv_dio[num - 1])
+            aNames = ["DIO_EF_CLOCK0_ENABLE", "DIO%i_EF_ENABLE" % self.sv_dio[num - 1]]
+            aValues = [0, 0]
+            numFrames = len(aNames)
+            results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
+            ljm.eWriteName(self.handle, dio, 0)
 
     # States
+
+    def default(self) -> None:
+        self.mav_off(1)
+        self.mav_off(2)
     
     def prefire_purge_tanks(self, on: bool) -> None:
-        if on:
-            self.sv_on(2)
-            self.sv_on(5)
-        else:
-            self.sv_off(2)
-            self.sv_off(5)
+        # if on:
+        #     self.sv_on(2)
+        #     self.sv_on(5)
+        # else:
+        #     self.sv_off(2)
+        #     self.sv_off(5)
+        pass
 
     def prefire_purge_engine(self, on: bool) -> None:
         if on:
@@ -128,8 +159,12 @@ class TestStand:
         self.sv_on(4)
 
     def ignition(self) -> None:
-        # TODO: Test on-on-on
         self.sv_on(4)
     
     def firing(self) -> None:
-        pass
+        self.sv_on(4)
+
+        self.mav_on(1)
+        self.mav_on(2)
+        timer_1 = threading.Timer(150 / 1000, self.mav_off, [1])
+        timer_2 = threading.Timer(150 / 1000, self.mav_off, [2])
