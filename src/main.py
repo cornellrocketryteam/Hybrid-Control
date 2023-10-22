@@ -6,15 +6,15 @@ import threading
 from labjack import ljm
 import sys
 
+from util import use_labjack
+
 from controller import Controller
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2 and sys.argv[1] == "--no-labjack":
-        labjack = False
-        handle = None
-    else:
-        labjack = True
+    if use_labjack:
         handle = ljm.openS("T7", "ANY", "ANY")
+    else:
+        handle = None
 
     #ljm.eWriteName(handle, "FIO0", 0)
     #ljm.eWriteName(handle, "FIO1", 0)
@@ -29,6 +29,6 @@ if __name__ == "__main__":
 
     # updates.run()
     # updates.join()
-    
-    if labjack:
+
+    if use_labjack:
         ljm.close(handle)

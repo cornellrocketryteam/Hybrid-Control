@@ -11,3 +11,5 @@ class Mode(Enum):
     SUPERCHARGE = 4
     IGNITION = 5
     FIRE = 6
+
+use_labjack = False

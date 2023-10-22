@@ -4,7 +4,7 @@ test_stand.py: The model for the Test Stand
 
 from labjack import ljm
 import threading
-from util import Mode
+from util import Mode, use_labjack
 
 class TestStand:
 
@@ -56,6 +56,9 @@ class TestStand:
                 self._mav_actuate(num, 26.4)
 
     def _mav_actuate(self, num: int, dc: float) -> None:
+        if not use_labjack:
+            return
+        
         pwmDIO = self.mav_dio[num - 1]
         roll_value = 242424.24242424243
 
@@ -111,6 +114,10 @@ class TestStand:
     def sv_on(self, num: int) -> None:
         if not self.sv_states[num - 1]:
             self.sv_states[num - 1] = True
+
+            if not use_labjack:
+                return
+            
             dio = "FIO" + str(self.sv_dio[num - 1])
 
             ljm.eWriteName(self.handle, dio, 1)
@@ -121,6 +128,10 @@ class TestStand:
     def sv_off(self, num: int) -> None:
         if self.sv_states[num - 1]:
             self.sv_states[num - 1] = False
+
+            if not use_labjack:
+                return
+            
             dio = "FIO" + str(self.sv_dio[num - 1])
             aNames = ["DIO_EF_CLOCK0_ENABLE", "DIO%i_EF_ENABLE" % self.sv_dio[num - 1]]
             aValues = [0, 0]
@@ -135,13 +146,12 @@ class TestStand:
         self.mav_off(2)
     
     def prefire_purge_tanks(self, on: bool) -> None:
-        # if on:
-        #     self.sv_on(2)
-        #     self.sv_on(5)
-        # else:
-        #     self.sv_off(2)
-        #     self.sv_off(5)
-        pass
+        if on:
+            self.sv_on(2)
+            self.sv_on(5)
+        else:
+            self.sv_off(2)
+            self.sv_off(5)
 
     def prefire_purge_engine(self, on: bool) -> None:
         if on:
