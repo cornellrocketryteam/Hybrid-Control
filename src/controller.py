@@ -16,6 +16,8 @@ class Controller:
 
         self.awaiting_mode = -1
 
+        self.awaiting_mappings = [52, 53, 54, 43, 55, 56, 57]
+
     def run(self) -> None:
         try:
             while True:
@@ -26,27 +28,15 @@ class Controller:
                 input_str = input_str[2:]
 
                 if input_str == "" and ((c >= 52 and c <= 61) or c == 43):
-                    if c == 52:
-                        self.tui.await_mode(Mode.DEFAULT)
-                        self.awaiting_mode = 0
-                    if c == 53:
-                        self.tui.await_mode(Mode.PREFIRE_PURGE_TANKS)
-                        self.awaiting_mode = 1
-                    if c == 54:
-                        self.tui.await_mode(Mode.PREFIRE_PURGE_ENGINE)
-                        self.awaiting_mode = 2
-                    if c == 43:
-                        self.tui.await_mode(Mode.FILL)
-                        self.awaiting_mode = 3
-                    if c == 55:
-                        self.tui.await_mode(Mode.SUPERCHARGE)
-                        self.awaiting_mode = 4
-                    if c == 56:
-                        self.tui.await_mode(Mode.IGNITION)
-                        self.awaiting_mode = 5
-                    if c == 57:
-                        self.tui.await_mode(Mode.FIRE)
-                        self.awaiting_mode = 6
+                    index = self.awaiting_mappings.index(c)
+
+                    if self.awaiting_mode == index:
+                        self.tui.end_await()
+                        self.awaiting_mode = -1
+
+                    else:
+                        self.tui.await_mode(Mode(index))
+                        self.awaiting_mode = index
 
                     self.tui.clear()
                     continue

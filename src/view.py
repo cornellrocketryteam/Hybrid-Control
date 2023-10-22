@@ -67,6 +67,8 @@ class TUI:
         if self.awaited_mode != -1:
             self.stdscr.addstr(curses.LINES - 3, 0, "Confirm")
             self.stdscr.addstr(curses.LINES - 3, 8, self.modes[self.awaited_mode], curses.A_BOLD)
+        else:
+            self.stdscr.addstr(curses.LINES - 3, 0, "")
         self.stdscr.addstr(curses.LINES - 1, 0, self.input_str)
 
     def get_input(self) -> int:
@@ -75,6 +77,9 @@ class TUI:
     
     def await_mode(self, mode: Mode) -> None:
         self.awaited_mode = mode.value
+
+    def end_await(self) -> None:
+        self.awaited_mode = -1
 
     def to_mode(self, mode: Mode) -> None:
         self.awaited_mode = -1
