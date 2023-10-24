@@ -1,137 +1,116 @@
 """
 Streams from multiple AIN channels.
 """
-from datetime import datetime
-import sys
+import time
 from labjack import ljm
 
 
 # AIN 127-120 for PT 1-8, AIN 0-3 for TC 1-4, AIN 60 for FM1, AIN 48-49 for Load Cell 1-2
 ain_channels = ["AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
-"AIN0", "AIN1", "AIN2", "AIN3", "AIN60", "AIN48", "AIN49"]
+                "AIN0", "AIN1", "AIN2", "AIN3",
+                "AIN60",
+                "AIN48", "AIN49"]
 
-def ain_read(handle: int, ain_channels: list) -> str:
+def ain_read(handle: int, ain_channels: list):
     """
     Streams data from the analog input channels on the LabJack handle as defined in ain_channels.
-    Returns a dict with the AIN channel as a key and the voltage reading as a value.
     """
 
-    # Deletes the contents currently in the csv file
-    f = open('labjack_data.csv', 'w')
-    f.close()
-
-    info = ljm.getHandleInfo(handle)
-    deviceType = info[0]
-
-
     try:
-        # When streaming, negative channels and ranges can be configured for
-        # individual analog inputs, but the stream has only one settling time and
-        # resolution.
-        
-        # T7 and other devices configuration
+        # Open and overwrite log file
+        with open("labjack_data.csv", 'w') as file:
 
-        # Ensure triggered stream is disabled.
-        ljm.eWriteName(handle, "STREAM_TRIGGER_INDEX", 0)
+            # Add csv header
+            file.write(", ".join(ain_channels) + "\n")
 
-        # Enabling internally-clocked stream.
-        ljm.eWriteName(handle, "STREAM_CLOCK_SOURCE", 0)
+            info = ljm.getHandleInfo(handle)
+            print("Device Info: {}".format(info))
 
-        # Configure the analog input negative channels, ranges, stream settling
-        # times and stream resolution index.
-        aNames = ["AIN127_NEGATIVE_CH", "AIN127_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN126_NEGATIVE_CH", "AIN126_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN125_NEGATIVE_CH", "AIN125_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN124_NEGATIVE_CH", "AIN124_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN123_NEGATIVE_CH", "AIN123_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN122_NEGATIVE_CH", "AIN122_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN121_NEGATIVE_CH", "AIN121_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN120_NEGATIVE_CH", "AIN120_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN0_NEGATIVE_CH", "AIN0_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN1_NEGATIVE_CH", "AIN1_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN2_NEGATIVE_CH", "AIN2_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN3_NEGATIVE_CH", "AIN3_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN60_NEGATIVE_CH", "AIN60_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN48_NEGATIVE_CH", "AIN48_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX",
-                  "AIN49_NEGATIVE_CH", "AIN49_RANGE", "STREAM_SETTLING_US", "STREAM_RESOLUTION_INDEX"]
-        aValues = [ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 10.0, 0, 0,
-                   ljm.constants.GND, 2.4, 0, 0,
-                   56, 10.0, 0, 0,
-                   57, 10.0, 0, 0,]  # single-ended, +/-10V, 0 (default), 0 (default) #FIGURE OUT HOW TO CHANGE NEGATIVE CH FOR LOAD CELLS
-        ljm.eWriteNames(handle, len(aNames), aNames, aValues)
+            # When streaming, negative channels and ranges can be configured for individual analog inputs,
+            # but the stream has only one settling time and resolution.
 
-        # Stream configuration
-        aScanListNames = ain_channels
-        #print("\nScan List = " + " ".join(aScanListNames))
-        numAddresses = len(aScanListNames)
-        aScanList = ljm.namesToAddresses(numAddresses, aScanListNames)[0]
-        scanRate = 100 # Hz frequency of reading -> TO DO: figureo out if it is actually getting all these reads
-        scansPerRead = int(scanRate / 2)
+            # Ensure triggered stream is disabled.
+            ljm.eWriteName(handle, "STREAM_TRIGGER_INDEX", 0)
 
-        # Configure and start stream
-        #print("Stream Start")
-        scanRate = ljm.eStreamStart(handle, scansPerRead, numAddresses, aScanList, scanRate)
-        #print("\nPerforming %i stream reads." % MAX_REQUESTS)
-        start = datetime.now()
-        totScans = 0
-        totSkip = 0  # Total skipped samples [what does this mean]
+            # Enabling internally-clocked stream.
+            ljm.eWriteName(handle, "STREAM_CLOCK_SOURCE", 0)
 
-        stream = 0
-        while stream < 10:
-            
-            ret = ljm.eStreamRead(handle)
-            aData = ret[0]
-            scans = len(aData) / numAddresses
-            totScans += scans
+            # Configure Stream settling time
+            ljm.eWriteName(handle, "STREAM_SETTLING_US", 0)
 
-            # print("\neStreamRead %i" % i) # Prints each stream instance from stream 1 to MAX_REQUESTS
-            ainDict = {}
-            for j in range(0, numAddresses):
-                # TO DO: Convert voltage readings to actual sensor readings
-                ainDict[aScanListNames[j]] = round(aData[j], 3)
-            f = open('labjack_data.csv', 'a')
-            f.write(str(ainDict) + "\n")
-            f.close()
-            #print("  1st scan out of %i: %s" % (scans, ainStr))
-            #print("  Scans Skipped = %0.0f, Scan Backlogs: Device = %i, LJM = "
-            #      "%i" % (curSkip / numAddresses, ret[1], ret[2]))
-            
-            stream += 1
+            # Configure Stream resolution index
+            ljm.eWriteName(handle, "STREAM_RESOLUTION_INDEX", 0)
 
-        f.close()
-        end = datetime.now()
+            # Configure most of the negative channels to single-ended (refrencing GND)
+            ljm.eWriteName(handle, "AIN_ALL_NEGATIVE_CH", 199)
 
-    except ljm.LJMError:
-        ljme = sys.exc_info()[1]
-        print(ljme)
-    except Exception:
-        e = sys.exc_info()[1]
+            # Configure most of the AIN's ranges
+            ljm.eWriteName(handle, "AIN_ALL_RANGE", 10.0)
+
+            # Configure the analog input negative channels and ranges for unique channels
+            # Default Configuration: single-ended, +/-10V, 0 Settling US, 0 Resolution Index
+            aNames = ["AIN60_NEGATIVE_CH", "AIN60_RANGE",
+                    "AIN48_NEGATIVE_CH", "AIN48_RANGE",
+                    "AIN49_NEGATIVE_CH", "AIN49_RANGE",]
+            aValues = [ljm.constants.GND, 2.4,
+                       56, 10.0,
+                       57, 10.0,]
+            # FIGURE OUT HOW TO CHANGE NEGATIVE CH FOR LOAD CELLS
+            # https://labjack.com/pages/support?doc=%2Fapp-notes%2Fsensor-types-app-note%2Fbridge-circuits-app-note%2F
+            ljm.eWriteNames(handle, len(aNames), aNames, aValues)
+
+            # Stream configuration
+            aScanListNames = ain_channels
+            print("Scan List = " + " ".join(aScanListNames))
+            numAddresses = len(aScanListNames)
+            aScanList = ljm.namesToAddresses(numAddresses, aScanListNames)[0]
+            scanRate = 100 # Hz frequency of reading -> TO DO: figure out if it is actually getting all these reads
+            scansPerRead = int(scanRate / 2)
+            #scansPerRead = 1
+
+            # Stream start
+            scanRate = ljm.eStreamStart(handle, scansPerRead, numAddresses, aScanList, scanRate)
+            print("Stream started with scan rate: {}".format(scanRate))
+
+            start = time.time()
+            totalScans = 0
+            totalSamples = 0
+            totalSkip = 0  # Total skipped samples [what does this mean]
+                           # https://labjack.com/pages/support?doc=%2Fsoftware-driver%2Fljm-users-guide%2Fstreaming-ljm_estreamread-gives-error-1301-ljme_ljm_buffer_full-or-many-9999-values-in-adata-what-can-i-try%2F
+            for i in range(0, 10):
+
+                ret = ljm.eStreamRead(handle)
+                print("StreamRead\tSamples: {}\tDevice Log: {}\tLJM Log: {}".format(len(ret[0]), ret[1], ret[2]))
+
+                aData = ret[0]
+                #DEBUG: This is unecsarry since LJM should return a full scan list at least per read, but a nice scanity check
+                if len(aData) % scansPerRead != 0 or len(aData) % numAddresses != 0:
+                    raise Exception("Stream Read has an incorrect number of samples: {} {} {}".format(len(aData), scansPerRead, numAddresses))
+                totalScans += len(aData) / numAddresses
+                totalSamples += len(aData)
+
+                # For each scan list from Stream Read
+                for j in range(0, len(aData), numAddresses):
+                    # For each sample in the scan list
+                    for k in range(j, j+numAddresses):
+                        # Check for a skipped sample
+                        if aData[k] == -9999.0:
+                            totalSkip += 1
+                        # Add to file
+                        file.write(str(round(aData[k], 3)) + ", ")
+                    file.write('\n')
+
+            end = time.time()
+
+            ljm.eStreamStop(handle)
+            print("Stream stopped after {} seconds".format(end-start))
+            print("Total Scans: {}\tTotal Samples: {}\tTotal Skipped: {}".format(totalScans, totalSamples, totalSkip))
+
+    except Exception as e:
         print(e)
-
-    try:
-        #print("\nStop Stream")
-        ljm.eStreamStop(handle)
-    except ljm.LJMError:
-        ljme = sys.exc_info()[1]
-        print(ljme)
-    except Exception:
-        e = sys.exc_info()[1]
-        print(e)
-
 
 
 if __name__ == "__main__":
-    handle = ljm.openS("T7", "ANY", "ANY")  # T7 device, Any connection, Any identifier
+    handle = ljm.openS("T7", "USB", "ANY")  # T7 device, Any connection, Any identifier
     ain_read(handle, ain_channels)
     ljm.close(handle)
