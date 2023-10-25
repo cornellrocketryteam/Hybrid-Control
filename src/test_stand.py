@@ -5,6 +5,7 @@ test_stand.py: The model for the Test Stand
 from labjack import ljm
 import threading
 from util import Mode, use_labjack
+from typing import List
 
 class TestStand:
 
@@ -145,6 +146,13 @@ class TestStand:
             results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
             ljm.eWriteName(self.handle, dio, 0)
 
+    def set_sv_states(self, states: List[bool]) -> None:
+        for i in range(5):
+            if states[i]:
+                self.sv_on(i+1)
+            else:
+                self.sv_off(i+1)
+
     # Modes
 
     def confirm_mode(self, mode: Mode) -> None:
@@ -164,37 +172,38 @@ class TestStand:
             self.fire()
 
     def default(self) -> None:
+        self.set_sv_states([False] * 5)
+
         self.mav_off(1)
         self.mav_off(2)
     
     def prefire_purge_tanks(self) -> None:
         if not self.tanks_purging:
-            self.sv_on(2)
-            self.sv_on(5)
+            self.set_sv_states([False, True, False, False, True])
         else:
-            self.sv_off(2)
-            self.sv_off(5)
+            self.set_sv_states([False] * 5)
 
     def prefire_purge_engine(self) -> None:
         if not self.engine_purging:
-            self.sv_on(1)
+            self.set_sv_states([True, False, False, False, False])
         else:
-            self.sv_off(1)
+            self.set_sv_states([False] * 5)
 
     def fill(self) -> None:
         if not self.filling:
-            self.sv_on(3)
+            self.set_sv_states([False, False, True, False, False])
         else:
-            self.sv_off(3)
+            self.set_sv_states([False] * 5)
 
     def supercharge(self) -> None:
-        self.sv_on(4)
+        self.set_sv_states([False, False, False, True, False])
 
     def ignition(self) -> None:
-        self.sv_on(4)
+        self.set_sv_states([False, False, False, True, False])
+        # Igniter
     
     def fire(self) -> None:
-        self.sv_on(4)
+        self.set_sv_states([False, False, False, True, False])
 
         self.mav_on(1)
         self.mav_on(2)

@@ -9,7 +9,8 @@ class TUI:
     def __init__(self, test_stand) -> None:
         self.stdscr = curses.initscr()
         curses.echo()
-        #curses.start_color()
+        curses.start_color()
+        curses.use_default_colors()
         self.stdscr.clear()
 
         self.input_str = "> "
