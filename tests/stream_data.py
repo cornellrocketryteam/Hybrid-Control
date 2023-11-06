@@ -43,11 +43,13 @@ class Sensor():
         pass
 
 
-def initialize_sensors():
+def initialize_sensors() -> list:
     """
     Initialize all sensors with their attributes.
     Sensors are initialized as follows:
     s = Sensor(voltage min, voltage max, value min, value max)
+
+    Returns a list of initialized sensors.
 
     TO DO: Add details for reading (positive and negative channels, etc), gain, offset
     """
@@ -56,6 +58,8 @@ def initialize_sensors():
     pt_5 = Sensor(0.0, 10.0, 0.0, 1500.0)
     # initialize tcs, fm1, lcs
 
+    return [pt_1268, pt_347, pt_5]
+
 
 # AIN 127-120 for PT 1-8, AIN 0-3 for TC 1-4, AIN 60 for FM1, AIN 48-49 for Load Cell 1-2
 ain_channels = ["AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
@@ -63,7 +67,7 @@ ain_channels = ["AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN
                 "AIN60",
                 "AIN48", "AIN49"]
 
-def ain_read(handle: int, ain_channels: list):
+def ain_read(handle: int, ain_channels: list) -> None:
     """
     Streams data from the analog input channels on the LabJack handle as defined in ain_channels.
     """
@@ -140,10 +144,14 @@ def ain_read(handle: int, ain_channels: list):
                 totalScans += len(aData) / numAddresses
                 totalSamples += len(aData)
 
+                # j is a list, k is a float
+
                 # For each scan list from Stream Read
                 for j in range(0, len(aData), numAddresses):
+                    print(str(j) + ": " + str(type(j)))
                     # For each sample in the scan list
                     for k in range(j, j+numAddresses):
+                        print(str(j) + ": " + str(type(j)))
                         # Check for a skipped sample
                         if aData[k] == -9999.0:
                             totalSkip += 1
@@ -163,5 +171,6 @@ def ain_read(handle: int, ain_channels: list):
 
 if __name__ == "__main__":
     handle = ljm.openS("T7", "USB", "ANY")  # T7 device, Any connection, Any identifier
+    sensor_list = initialize_sensors()
     ain_read(handle, ain_channels)
     ljm.close(handle)
