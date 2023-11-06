@@ -66,7 +66,6 @@ def ain_read(handle: int, ain_channels: list):
             aScanList = ljm.namesToAddresses(numAddresses, aScanListNames)[0]
             scanRate = 100 # Hz frequency of reading -> TO DO: figure out if it is actually getting all these reads
             scansPerRead = int(scanRate / 2)
-            #scansPerRead = 1
 
             # Stream start
             scanRate = ljm.eStreamStart(handle, scansPerRead, numAddresses, aScanList, scanRate)

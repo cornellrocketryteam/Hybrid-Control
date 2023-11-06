@@ -1,161 +1,167 @@
 """
-File for reading in data from all sensors.
+stream_data.py: File for full sensor implementation. 
 
-3 September 2023
+Reads and logs sensor data, and scales analog readings to values.
+
+3 November 2023
 """
-from datetime import datetime
-import sys
+import time
 from labjack import ljm
 
-#sensor_dict = [0.0, 10.0, 0, 2000, "AIN2", "AIN199"]
+class Sensor():
 
-# CHECK ALL VALUES 
-MAX_REQUESTS = 25  # The number of eStreamRead calls that will be performed.
-FIRST_AIN_CHANNEL = 0  # 0 = AIN0
-NUMBER_OF_AINS = 8 # Streams channels FIRST_AIN_CHANNEL to NUMBER_OF_AINS-1
-
-class sensor():
-    def __init__(self, volt_min: float, volt_max: float, val_min: float, val_max: float, pos_channel: str, neg_channel: str) -> None:
+    def __init__(self, volt_min: float, volt_max: float, val_min: float, val_max: float) -> None:
         """
         Initializes a sensor with volt_min and volt_max, which are the minimum and maximum voltage outputs
         of the sensor's analog signals, and val_min and val_max, which correspond to the minimum and 
         maximum data values that can be expected from that sensor.
-
-        TO DO: Add gain and offset.
         """
         self.volt_min = volt_min
         self.volt_max = volt_max
         self.val_min = val_min
         self.val_max = val_max
-        self.pos_channel = pos_channel
-        self.neg_channel = neg_channel
+    
+    def linear_interpolation(self, volt_act: float) -> float:
+        """
+        Takes a voltage reading and scales it to the expected sensor value
+        output range of the Sensor object using linear interpolation. 
+        
+        Returns the input voltage reading, volt_act, scaled to the sensor value
+        output.
+        """
+        scaled_volt = ((volt_act - self.volt_min) * (self.val_max - self.val_min)) / (self.volt_max - self.volt_min) + self.val_min
+        return scaled_volt
+    
+    def tc_scale(self, volt_act: float) -> float:
+        """
+        Takes a voltage reading and scales it to the expected sensor value
+        output range of the Sensor object using [INSERT FORMULAS USED].
+
+        Returns the input voltage reading, volt_act, scaled to the sensor value
+        output for an RTD.
+        """
+        pass
 
 
 def initialize_sensors():
     """
     Initialize all sensors with their attributes.
     Sensors are initialized as follows:
-    s = sensor(voltage min, voltage max, value min, value max, [analog channel, negative analog channel])
+    s = Sensor(voltage min, voltage max, value min, value max)
+
+    TO DO: Add details for reading (positive and negative channels, etc), gain, offset
     """
-    pt1 = sensor(sensor_dict[0], sensor_dict[1], sensor_dict[2], sensor_dict[3], sensor_dict[4], sensor_dict[5])
+    pt_1268 = Sensor(0.0, 10.0, 0.0, 2000.0)
+    pt_347 = Sensor(0.0, 10.0, 0.0, 3000.0)
+    pt_5 = Sensor(0.0, 10.0, 0.0, 1500.0)
+    # initialize tcs, fm1, lcs
 
-def linear_interpolation(s: sensor, volt_act: float) -> float:
+
+# AIN 127-120 for PT 1-8, AIN 0-3 for TC 1-4, AIN 60 for FM1, AIN 48-49 for Load Cell 1-2
+ain_channels = ["AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
+                "AIN0", "AIN1", "AIN2", "AIN3",
+                "AIN60",
+                "AIN48", "AIN49"]
+
+def ain_read(handle: int, ain_channels: list):
     """
-    Takes a voltage input range, volt_min to volt_max, and scales this to the expected sensor value
-    output range, val_min to val_max. Returns the input voltage reading, volt_act, scaled to the
-    sensor value output.
-
-    Current method: applying linear scaling formula
-
+    Streams data from the analog input channels on the LabJack handle as defined in ain_channels.
     """
-    scaled_volt = ((volt_act-s.volt_min)*(s.val_max-s.val_min))/(s.volt_max-s.volt_min) + s.val_min
-    return scaled_volt
-
-
-def analog_read_data():
-    """
-    Reads data from sensors connected to the LabJack. Uses code from the following script:
-    https://github.com/labjack/labjack-ljm-python/blob/master/Examples/More/Stream/stream_sequential_ain.py
-
-    Returns something 
-    """
-    print("attempting read")
-    # Open first found LabJack
-    handle = ljm.openS("ANY", "ANY", "ANY")  # Any device, Any connection, Any identifier
-    print("found labjack")
-
-    info = ljm.getHandleInfo(handle)
-    print("Opened a LabJack with Device type: %i, Connection type: %i,\n"
-        "Serial number: %i, IP address: %s, Port: %i,\nMax bytes per MB: %i" %
-        (info[0], info[1], info[2], ljm.numberToIP(info[3]), info[4], info[5]))
-
-    deviceType = info[0]
 
     try:
-        # Settings for channels 
+        # Open and overwrite log file
+        with open("labjack_data.csv", 'w') as file:
 
-        # Ensure triggered stream is disabled.
-        ljm.eWriteName(handle, "STREAM_TRIGGER_INDEX", 0)
+            # Add csv header
+            file.write(", ".join(ain_channels) + "\n")
 
-        # Enabling internally-clocked stream.
-        ljm.eWriteName(handle, "STREAM_CLOCK_SOURCE", 0)
+            info = ljm.getHandleInfo(handle)
+            print("Device Info: {}".format(info))
 
-        # Configure the analog input negative channels, ranges, stream settling
-        # times and stream resolution index.
-        aNames = ["AIN_ALL_NEGATIVE_CH", "AIN_ALL_RANGE", "STREAM_SETTLING_US",
-                "STREAM_RESOLUTION_INDEX"]
-        aValues = [ljm.constants.GND, 10.0, 0, 0]  # single-ended, +/-10V, 0 (default), 0 (default)
-        ljm.eWriteNames(handle, len(aNames), aNames, aValues)
+            # When streaming, negative channels and ranges can be configured for individual analog inputs,
+            # but the stream has only one settling time and resolution.
 
-        # Stream configuration
-        aScanListNames = ["AIN%i" % i for i in range(FIRST_AIN_CHANNEL, FIRST_AIN_CHANNEL + NUMBER_OF_AINS)]  # Scan list names
-        print("\nScan List = " + " ".join(aScanListNames))
-        numAddresses = len(aScanListNames)
-        aScanList = ljm.namesToAddresses(numAddresses, aScanListNames)[0]
-        scanRate = 1000 # CHECK VAL
-        scansPerRead = int(scanRate / 2)
+            # Ensure triggered stream is disabled.
+            ljm.eWriteName(handle, "STREAM_TRIGGER_INDEX", 0)
 
-        # Configure and start stream
-        print("i'9[fQ;GHIUWFR9E2I09-]W;hofruei30`e29ji;ohqfe;u90[ehi;ouwvwue90hido;bus;hiu9efijhio;sbjfjeiofhssjnvsfifehwljknNSC]")
-        scanRate = ljm.eStreamStart(handle, scansPerRead, numAddresses, aScanList, scanRate)
-        print("\nStream started with a scan rate of %0.0f Hz." % scanRate)
+            # Enabling internally-clocked stream.
+            ljm.eWriteName(handle, "STREAM_CLOCK_SOURCE", 0)
 
-        print("\nPerforming %i stream reads." % MAX_REQUESTS)
-        start = datetime.now()
-        totScans = 0
-        totSkip = 0  # Total skipped samples
+            # Configure Stream settling time
+            ljm.eWriteName(handle, "STREAM_SETTLING_US", 0)
 
-        i = 1
-        while i <= MAX_REQUESTS: # CHANGE CONDIITOn
-            ret = ljm.eStreamRead(handle)
+            # Configure Stream resolution index
+            ljm.eWriteName(handle, "STREAM_RESOLUTION_INDEX", 0)
 
-            aData = ret[0]
-            scans = len(aData) / numAddresses
-            totScans += scans
+            # Configure most of the negative channels to single-ended (refrencing GND)
+            ljm.eWriteName(handle, "AIN_ALL_NEGATIVE_CH", 199)
 
-            # Count the skipped samples which are indicated by -9999 values. Missed
-            # samples occur after a device's stream buffer overflows and are
-            # reported after auto-recover mode ends.
-            curSkip = aData.count(-9999.0)
-            totSkip += curSkip
+            # Configure most of the AIN's ranges
+            ljm.eWriteName(handle, "AIN_ALL_RANGE", 10.0)
 
-            print("\neStreamRead %i" % i)
-            ainStr = ""
-            for j in range(0, numAddresses):
-                ainStr += "%s = %0.5f, " % (aScanListNames[j], aData[j])
-            print("  1st scan out of %i: %s" % (scans, ainStr))
-            print("  Scans Skipped = %0.0f, Scan Backlogs: Device = %i, LJM = "
-                "%i" % (curSkip / numAddresses, ret[1], ret[2]))
-            i += 1
+            # Configure the analog input negative channels and ranges for unique channels
+            # Default Configuration: single-ended, +/-10V, 0 Settling US, 0 Resolution Index
+            aNames = ["AIN60_NEGATIVE_CH", "AIN60_RANGE",
+                    "AIN48_NEGATIVE_CH", "AIN48_RANGE",
+                    "AIN49_NEGATIVE_CH", "AIN49_RANGE",]
+            aValues = [ljm.constants.GND, 2.4,
+                       56, 10.0,
+                       57, 10.0,]
+            # FIGURE OUT HOW TO CHANGE NEGATIVE CH FOR LOAD CELLS
+            # https://labjack.com/pages/support?doc=%2Fapp-notes%2Fsensor-types-app-note%2Fbridge-circuits-app-note%2F
+            ljm.eWriteNames(handle, len(aNames), aNames, aValues)
 
-        end = datetime.now()
+            # Stream configuration
+            aScanListNames = ain_channels
+            print("Scan List = " + " ".join(aScanListNames))
+            numAddresses = len(aScanListNames)
+            aScanList = ljm.namesToAddresses(numAddresses, aScanListNames)[0]
+            scanRate = 100 # Hz frequency of reading -> TO DO: figure out if it is actually getting all these reads
+            scansPerRead = int(scanRate / 2)
 
-        print("\nTotal scans = %i" % (totScans))
-        tt = (end - start).seconds + float((end - start).microseconds) / 1000000
-        print("Time taken = %f seconds" % (tt))
-        print("LJM Scan Rate = %f scans/second" % (scanRate))
-        print("Timed Scan Rate = %f scans/second" % (totScans / tt))
-        print("Timed Sample Rate = %f samples/second" % (totScans * numAddresses / tt))
-        print("Skipped scans = %0.0f" % (totSkip / numAddresses))
-    except ljm.LJMError:
-        ljme = sys.exc_info()[1]
-        print(ljme)
-    except Exception:
-        e = sys.exc_info()[1]
+            # Stream start
+            scanRate = ljm.eStreamStart(handle, scansPerRead, numAddresses, aScanList, scanRate)
+            print("Stream started with scan rate: {}".format(scanRate))
+
+            start = time.time()
+            totalScans = 0
+            totalSamples = 0
+            totalSkip = 0  # Total skipped samples [what does this mean]
+                           # https://labjack.com/pages/support?doc=%2Fsoftware-driver%2Fljm-users-guide%2Fstreaming-ljm_estreamread-gives-error-1301-ljme_ljm_buffer_full-or-many-9999-values-in-adata-what-can-i-try%2F
+            for i in range(0, 10):
+
+                ret = ljm.eStreamRead(handle)
+                print("StreamRead\tSamples: {}\tDevice Log: {}\tLJM Log: {}".format(len(ret[0]), ret[1], ret[2]))
+
+                aData = ret[0]
+                #DEBUG: This is unecsarry since LJM should return a full scan list at least per read, but a nice scanity check
+                if len(aData) % scansPerRead != 0 or len(aData) % numAddresses != 0:
+                    raise Exception("Stream Read has an incorrect number of samples: {} {} {}".format(len(aData), scansPerRead, numAddresses))
+                totalScans += len(aData) / numAddresses
+                totalSamples += len(aData)
+
+                # For each scan list from Stream Read
+                for j in range(0, len(aData), numAddresses):
+                    # For each sample in the scan list
+                    for k in range(j, j+numAddresses):
+                        # Check for a skipped sample
+                        if aData[k] == -9999.0:
+                            totalSkip += 1
+                        # Add to file
+                        file.write(str(round(aData[k], 3)) + ", ")
+                    file.write('\n')
+
+            end = time.time()
+
+            ljm.eStreamStop(handle)
+            print("Stream stopped after {} seconds".format(end-start))
+            print("Total Scans: {}\tTotal Samples: {}\tTotal Skipped: {}".format(totalScans, totalSamples, totalSkip))
+
+    except Exception as e:
         print(e)
 
-    try:
-        print("\nStop Stream")
-        ljm.eStreamStop(handle)
-    except ljm.LJMError:
-        ljme = sys.exc_info()[1]
-        print(ljme)
-    except Exception:
-        e = sys.exc_info()[1]
-        print(e)
 
-    # Close handle
+if __name__ == "__main__":
+    handle = ljm.openS("T7", "USB", "ANY")  # T7 device, Any connection, Any identifier
+    ain_read(handle, ain_channels)
     ljm.close(handle)
-
-analog_read_data()
-
