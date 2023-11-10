@@ -43,29 +43,36 @@ class Sensor():
         pass
 
 
-def initialize_sensors() -> list:
+def initialize_sensors() -> dict:
     """
     Initialize all sensors with their attributes.
     Sensors are initialized as follows:
     s = Sensor(voltage min, voltage max, value min, value max)
 
-    Returns a list of initialized sensors.
+    Returns a dictionary of initialized sensors with indices as keys.
 
     TO DO: Add details for reading (positive and negative channels, etc), gain, offset
     """
-    pt_1268 = Sensor(0.0, 10.0, 0.0, 2000.0)
-    pt_347 = Sensor(0.0, 10.0, 0.0, 3000.0)
-    pt_5 = Sensor(0.0, 10.0, 0.0, 1500.0)
+    pt2000 = Sensor(0.0, 10.0, 0.0, 2000.0)
+    pt3000 = Sensor(0.0, 10.0, 0.0, 3000.0)
+    pt1500 = Sensor(0.0, 10.0, 0.0, 1500.0)
     # initialize tcs, fm1, lcs
 
-    return [pt_1268, pt_347, pt_5]
+
+    return {0: pt2000, 1: pt2000, 2: pt3000, 3: pt3000, 4: pt1500, 5: pt2000, 6: pt3000, 7: pt2000,
+            }
 
 
-# AIN 127-120 for PT 1-8, AIN 0-3 for TC 1-4, AIN 60 for FM1, AIN 48-49 for Load Cell 1-2
+# AIN 127-120 for PT 1-8, AIN 0-2 for TC 1-3, AIN 60 for FM1, AIN 48-49 for Load Cell 1-2
 ain_channels = ["AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
-                "AIN0", "AIN1", "AIN2", "AIN3",
+                "AIN0", "AIN1", "AIN2",
                 "AIN60",
                 "AIN48", "AIN49"]
+
+sensorKeys = ["PT1", "PT2", "PT3", "PT4", "PT5", "PT6", "PT7", "PT8",
+              "TC1", "TC2", "TC3",
+              "FM1",
+              "LC1", "LC2"]
 
 def ain_read(handle: int, ain_channels: list) -> None:
     """
@@ -144,15 +151,17 @@ def ain_read(handle: int, ain_channels: list) -> None:
                 totalScans += len(aData) / numAddresses
                 totalSamples += len(aData)
 
-                # j is a list, k is a float
+                # j and k are integer indices
+                
 
                 # For each scan list from Stream Read
                 for j in range(0, len(aData), numAddresses):
-                    print(str(j) + ": " + str(type(j)))
+                    dataList = aData
                     # For each sample in the scan list
                     for k in range(j, j+numAddresses):
-                        print(str(j) + ": " + str(type(j)))
                         # Check for a skipped sample
+
+                        # aData is a list
                         if aData[k] == -9999.0:
                             totalSkip += 1
                         # Add to file
