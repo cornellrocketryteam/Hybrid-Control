@@ -5,9 +5,10 @@ threads.py: A simple test to write to and read from a labjack simultaneously.
 from labjack import ljm
 import threading
 import time
+import csv
 
 
-def read_fn(handle):
+def read_fn(handle, val):
 	print("tryig to read: ", handle)
 	names = ["AIN0_NEGATIVE_CH", "AIN0_RANGE", "AIN0_RESOLUTION_INDEX", "AIN0_SETTLING_US"]
 	aValues = [199, 10.0, 0, 0]
@@ -19,18 +20,24 @@ def read_fn(handle):
 	while True:
 		print("reading")
 		result = ljm.eReadName(handle, name)
+		print(val)
 		print("after read")
 
 
-def write_fn(handle):
+def write_fn(handle, val):
 	print("tryign to write: ", handle)
 	state = True
 	while True:
 		print("writng")
-		result = ljm.eWriteName(handle, "FIO2", int(state))
-		state = not state
-		time.sleep(1)
+		with open("labjack_data.csv", 'w') as file:
+			result = ljm.eWriteName(handle, "FIO2", int(state))
+			state = not state
+			file.write(val)
+			file.write('\n')
+			val += 1
+			time.sleep(1)
 		print("after write")
+
 
 
 if __name__ == "__main__":
@@ -38,8 +45,12 @@ if __name__ == "__main__":
 	print("found handle: ", handle)
 	ljm.eWriteName(handle, "FIO2", 1)
 
-	read = threading.Thread(target=read_fn, kwargs={'handle' : handle})
-	write = threading.Thread(target=write_fn, kwargs={'handle' : handle})
+	v = 0
+
+	read = threading.Thread(target=read_fn, kwargs={'handle' : handle, 'val' : v}) #, args=(v))
+	write = threading.Thread(target=write_fn, kwargs={'handle' : handle, 'val' : v}) #, args=(v))
+
+	#potentially might have to print v out here??
 
 	read.start()
 	write.start()
