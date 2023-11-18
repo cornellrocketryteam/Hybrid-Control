@@ -4,7 +4,7 @@ test_stand.py: The model for the Test Stand
 
 from labjack import ljm
 import threading
-from util import Mode, Sensor, use_labjack, ain_channels
+from util import Mode, PT_FM, TC, LC, use_labjack, ain_channels
 from typing import List
 import time
 
@@ -225,13 +225,13 @@ class TestStand:
 
         TO DO: Add details for reading (positive and negative channels, etc), gain, offset
         """
-        pt2000 = Sensor(0.0, 10.0, 0.0, 2000.0)
-        pt3000 = Sensor(0.0, 10.0, 0.0, 3000.0)
-        pt1500 = Sensor(0.0, 10.0, 0.0, 1500.0)
-        tc = Sensor(0.0, 10.0, 1.0, 200.0)
-        fm = Sensor(1.72, 10.32, 2.5, 29.0)
-        lc1000 = Sensor(0.0, 0.0036, 31.27993035, -0.2654580671)
-        lc2000 = Sensor(0.0, 0.0036, 60.25906654, -0.02513497142)
+        pt2000 = PT_FM(0.0, 10.0, 0.0, 2000.0)
+        pt3000 = PT_FM(0.0, 10.0, 0.0, 3000.0)
+        pt1500 = PT_FM(0.0, 10.0, 0.0, 1500.0)
+        tc = TC(0.0, 10.0, 1.0, 200.0)
+        fm = PT_FM(1.72, 10.32, 2.5, 29.0)
+        lc1000 = LC(0.0, 0.0036, 31.27993035, -0.2654580671)
+        lc2000 = LC(0.0, 0.0036, 60.25906654, -0.02513497142)
 
 
         return {0: pt2000, 1: pt2000, 2: pt3000, 3: pt3000, 4: pt1500, 5: pt2000, 6: pt3000, 7: pt2000,

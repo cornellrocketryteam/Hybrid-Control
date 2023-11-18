@@ -21,8 +21,13 @@ class Sensor():
         self.volt_max = volt_max
         self.val_1 = val_1
         self.val_2 = val_2
+
+class PT_FM(Sensor):
+
+    def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
+        super().__init__(self, volt_min, volt_max, val_1, val_2)
     
-    def linear_scale(self, volt_act: float) -> float:
+    def scale(self, volt_act: float) -> float:
         """
         Takes a voltage reading and scales it to the expected sensor value
         output range of a pressure transducer using linear interpolation. 
@@ -34,8 +39,13 @@ class Sensor():
         scaled_volt = ((volt_act - self.volt_min) * (self.val_2 - self.val_1)) / (self.volt_max - self.volt_min) + self.val_1
         
         return scaled_volt
+
+class TC(Sensor):
+
+    def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
+        super().__init__(self, volt_min, volt_max, val_1, val_2)
     
-    def tc_scale(self, volt_act: float) -> float:
+    def scale(self, volt_act: float) -> float:
         """
         Takes a voltage reading and scales it to the expected RTD value
         output range of the Sensor object using [INSERT FORMULAS USED].
@@ -58,7 +68,12 @@ class Sensor():
 
         return temp
 
-    def lc_scale(self, volt_act: float) -> float:
+class LC(Sensor):
+
+    def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
+        super().__init__(self, volt_min, volt_max, val_1, val_2)
+
+    def scale(self, volt_act: float) -> float:
         """
         Takes a volatge reading and scales it to the expected load cell output range.
         """
@@ -79,13 +94,13 @@ def initialize_sensors() -> dict:
 
     TO DO: Add details for reading (positive and negative channels, etc), gain, offset
     """
-    pt2000 = Sensor(0.0, 10.0, 0.0, 2000.0)
-    pt3000 = Sensor(0.0, 10.0, 0.0, 3000.0)
-    pt1500 = Sensor(0.0, 10.0, 0.0, 1500.0)
-    tc = Sensor(0.0, 10.0, 1.0, 200.0)
-    fm = Sensor(1.72, 10.32, 2.5, 29.0)
-    lc1000 = Sensor(0.0, 0.0036, 31.27993035, -0.2654580671)
-    lc2000 = Sensor(0.0, 0.0036, 60.25906654, -0.02513497142)
+    pt2000 = PT_FM(0.0, 10.0, 0.0, 2000.0)
+    pt3000 = PT_FM(0.0, 10.0, 0.0, 3000.0)
+    pt1500 = PT_FM(0.0, 10.0, 0.0, 1500.0)
+    tc = TC(0.0, 10.0, 1.0, 200.0)
+    fm = PT_FM(1.72, 10.32, 2.5, 29.0)
+    lc1000 = LC(0.0, 0.0036, 31.27993035, -0.2654580671)
+    lc2000 = LC(0.0, 0.0036, 60.25906654, -0.02513497142)
 
 
     return {0: pt2000, 1: pt2000, 2: pt3000, 3: pt3000, 4: pt1500, 5: pt2000, 6: pt3000, 7: pt2000,

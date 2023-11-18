@@ -25,8 +25,13 @@ class Sensor():
         self.volt_max = volt_max
         self.val_1 = val_1
         self.val_2 = val_2
+
+class PT_FM(Sensor):
+
+    def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
+        super().__init__(self, volt_min, volt_max, val_1, val_2)
     
-    def linear_scale(self, volt_act: float) -> float:
+    def scale(self, volt_act: float) -> float:
         """
         Takes a voltage reading and scales it to the expected sensor value
         output range of a pressure transducer using linear interpolation. 
@@ -38,8 +43,13 @@ class Sensor():
         scaled_volt = ((volt_act - self.volt_min) * (self.val_2 - self.val_1)) / (self.volt_max - self.volt_min) + self.val_1
         
         return scaled_volt
+
+class TC(Sensor):
+
+    def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
+        super().__init__(self, volt_min, volt_max, val_1, val_2)
     
-    def tc_scale(self, volt_act: float) -> float:
+    def scale(self, volt_act: float) -> float:
         """
         Takes a voltage reading and scales it to the expected RTD value
         output range of the Sensor object using [INSERT FORMULAS USED].
@@ -62,7 +72,12 @@ class Sensor():
 
         return temp
 
-    def lc_scale(self, volt_act: float) -> float:
+class LC(Sensor):
+
+    def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
+        super().__init__(self, volt_min, volt_max, val_1, val_2)
+
+    def scale(self, volt_act: float) -> float:
         """
         Takes a volatge reading and scales it to the expected load cell output range.
         """
