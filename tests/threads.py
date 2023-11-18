@@ -15,28 +15,39 @@ def read_fn(handle, val):
 	numFrames = len(names)
 	ljm.eWriteNames(handle, numFrames, names, aValues)
 
+	e = threading.Event()
+
 	# Setup and call eReadName to read AIN0 from the LabJack.
 	name = "AIN0"
 	while True:
-		print("reading")
-		result = ljm.eReadName(handle, name)
-		print(val)
-		print("after read")
+		try:
+			print("reading")
+			result = ljm.eReadName(handle, name)
+			print(val)
+			print("after read")
+		except KeyboardInterrupt:
+			e.set()
+			break
 
 
 def write_fn(handle, val):
 	print("tryign to write: ", handle)
 	state = True
+	e = threading.Event()
 	while True:
-		print("writng")
-		with open("labjack_data.csv", 'w') as file:
-			result = ljm.eWriteName(handle, "FIO2", int(state))
-			state = not state
-			file.write(val)
-			file.write('\n')
-			val += 1
-			time.sleep(1)
-		print("after write")
+		try:
+			print("writng")
+			with open("thread_test.csv", 'w') as file:
+				result = ljm.eWriteName(handle, "FIO2", int(state))
+				state = not state
+				file.write(val)
+				file.write('\n')
+				val += 1
+				time.sleep(1)
+			print("after write")
+		except:
+			e.set()
+			break
 
 
 
@@ -45,10 +56,10 @@ if __name__ == "__main__":
 	print("found handle: ", handle)
 	ljm.eWriteName(handle, "FIO2", 1)
 
-	v = 0
+	val = 0
 
-	read = threading.Thread(target=read_fn, kwargs={'handle' : handle, 'val' : v}) #, args=(v))
-	write = threading.Thread(target=write_fn, kwargs={'handle' : handle, 'val' : v}) #, args=(v))
+	read = threading.Thread(target=read_fn, kwargs={'handle' : handle, 'val' : val}) #, args=(v))
+	write = threading.Thread(target=write_fn, kwargs={'handle' : handle, 'val' : val}) #, args=(v))
 
 	#potentially might have to print v out here??
 
