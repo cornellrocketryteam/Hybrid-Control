@@ -10,44 +10,70 @@ from labjack import ljm
 
 class Sensor():
 
-    def __init__(self, volt_min: float, volt_max: float, val_min: float, val_max: float) -> None:
+    def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
         """
         Initializes a sensor with volt_min and volt_max, which are the minimum and maximum voltage outputs
-        of the sensor's analog signals, and val_min and val_max, which correspond to the minimum and 
-        maximum data values that can be expected from that sensor.
+        of the sensor's analog signals, and val_1 and val_2, which correspond to the minimum and 
+        maximum data values that can be expected from that sensor for pressure transducers and
+        RTDs or a slope and y-intercept for load cells.
         """
         self.volt_min = volt_min
         self.volt_max = volt_max
-        self.val_min = val_min
-        self.val_max = val_max
+        self.val_1 = val_1
+        self.val_2 = val_2
     
-    def linear_interpolation(self, volt_act: float) -> float:
+    def linear_scale(self, volt_act: float) -> float:
         """
         Takes a voltage reading and scales it to the expected sensor value
-        output range of the Sensor object using linear interpolation. 
+        output range of a pressure transducer using linear interpolation. 
+        Used for pressure transducers and flowmeter.
         
         Returns the input voltage reading, volt_act, scaled to the sensor value
         output.
         """
-        scaled_volt = ((volt_act - self.volt_min) * (self.val_max - self.val_min)) / (self.volt_max - self.volt_min) + self.val_min
+        scaled_volt = ((volt_act - self.volt_min) * (self.val_2 - self.val_1)) / (self.volt_max - self.volt_min) + self.val_1
+        
         return scaled_volt
     
     def tc_scale(self, volt_act: float) -> float:
         """
-        Takes a voltage reading and scales it to the expected sensor value
+        Takes a voltage reading and scales it to the expected RTD value
         output range of the Sensor object using [INSERT FORMULAS USED].
+        Resistance constants set in this function are all in Ohms;
+        voltage constants are all in Volts.
 
         Returns the input voltage reading, volt_act, scaled to the sensor value
         output for an RTD.
         """
-        pass
+        # constants
+        r_ref = 15000
+        v_c = 5
+        r_s = 50
+        alpha = 0.00392 # Ohms/Ohms/ºC
+
+        # calculate resistance of RTD using [insert formula]
+        r_rtd = r_ref * ((v_c/volt_act) - 1) - r_s
+        # calculate temperature using [insert formula]
+        temp = (1/alpha) * ((r_rtd/r_ref) - 1)
+
+        return temp
+
+    def lc_scale(self, volt_act: float) -> float:
+        """
+        Takes a volatge reading and scales it to the expected load cell output range.
+        """
+        x = volt_act
+        m = self.val_1
+        b = self.val_2
+
+        return 1000 * ((m * x) + b)
 
 
 def initialize_sensors() -> dict:
     """
     Initialize all sensors with their attributes.
     Sensors are initialized as follows:
-    s = Sensor(voltage min, voltage max, value min, value max)
+    s = Sensor(voltage min, voltage max, value 1, value 2)
 
     Returns a dictionary of initialized sensors with indices as keys.
 
@@ -56,11 +82,16 @@ def initialize_sensors() -> dict:
     pt2000 = Sensor(0.0, 10.0, 0.0, 2000.0)
     pt3000 = Sensor(0.0, 10.0, 0.0, 3000.0)
     pt1500 = Sensor(0.0, 10.0, 0.0, 1500.0)
-    # initialize tcs, fm1, lcs
+    tc = Sensor(0.0, 10.0, 1.0, 200.0)
+    fm = Sensor(1.72, 10.32, 2.5, 29.0)
+    lc1000 = Sensor(0.0, 0.0036, 31.27993035, -0.2654580671)
+    lc2000 = Sensor(0.0, 0.0036, 60.25906654, -0.02513497142)
 
 
     return {0: pt2000, 1: pt2000, 2: pt3000, 3: pt3000, 4: pt1500, 5: pt2000, 6: pt3000, 7: pt2000,
-            }
+            8: tc, 9: tc, 10: tc,
+            11: fm,
+            12: lc1000, 13: lc2000}
 
 
 # AIN 127-120 for PT 1-8, AIN 0-2 for TC 1-3, AIN 60 for FM1, AIN 48-49 for Load Cell 1-2
@@ -149,10 +180,7 @@ def ain_read(handle: int, ain_channels: list) -> None:
                 if len(aData) % scansPerRead != 0 or len(aData) % numAddresses != 0:
                     raise Exception("Stream Read has an incorrect number of samples: {} {} {}".format(len(aData), scansPerRead, numAddresses))
                 totalScans += len(aData) / numAddresses
-                totalSamples += len(aData)
-
-                # j and k are integer indices
-                
+                totalSamples += len(aData)                
 
                 # For each scan list from Stream Read
                 for j in range(0, len(aData), numAddresses):
