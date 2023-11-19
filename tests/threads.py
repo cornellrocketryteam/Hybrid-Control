@@ -25,7 +25,7 @@ def read_fn(handle):
 			print("reading")
 			result = ljm.eReadName(handle, name)
 			print(v)
-			time.sleep(1)
+			time.sleep(2)
 			print("after read")
 		except KeyboardInterrupt:
 			e.set()
@@ -48,7 +48,6 @@ def write_fn(handle):
 				file.write(str(v))
 				file.write('\n')
 			v += 1
-			print("val changeed")
 			time.sleep(1)
 			print("after write")
 		except KeyboardInterrupt:
