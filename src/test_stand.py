@@ -239,7 +239,7 @@ class TestStand:
                 11: fm,
                 12: lc1000, 13: lc2000}
     
-    def ain_read(handle: int) -> None:
+    def read(handle: int) -> None:
         """
         Streams data from the analog input channels on the LabJack handle as defined in ain_channels.
         """

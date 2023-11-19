@@ -3,7 +3,7 @@ view.py: Manages the text-based user interface
 """
 
 import curses
-from util import Mode
+from util import Mode, sensor_keys
 
 class TUI:
     def __init__(self, test_stand) -> None:
@@ -88,3 +88,14 @@ class TUI:
     
     def clear(self) -> None:
         self.stdscr.clear()
+    
+    def get_data(data_list: list, sensor_dict: dict) -> dict:
+        """
+        Takes a list of data values and returns a dictionary
+        with the sensor name as a key and its corresponding
+        scaled data as a value.
+        """
+        data_dict = {}
+        for i in range(len(data_list)):
+            s = sensor_dict[i]
+            data_dict[sensor_keys[i]] = s.scale(data_list[i])
