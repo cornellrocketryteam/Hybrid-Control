@@ -35,7 +35,7 @@ class ThreadTest():
 		while True:
 			try:
 				#print("reading")
-				res = ljm.eReadName(self.handle, name) #self.v
+				self.v = ljm.eReadName(self.handle, name) #self.v
 				#print(self.v)
 				with open("thread_read_test.csv", 'a') as file:
 					file.write(str(self.v))
@@ -59,7 +59,6 @@ class ThreadTest():
 					ljm.eWriteName(self.handle, "FIO2", int(state))
 					state = not state
 					dict = {"w": self.v}
-					self.v += 1
 					file.write(str(dict))
 					file.write('\n')
 
