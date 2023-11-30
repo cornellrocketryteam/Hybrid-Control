@@ -8,6 +8,7 @@ from util import Mode, sensor_keys
 class TUI:
     def __init__(self, test_stand) -> None:
         self.stdscr = curses.initscr()
+        self.stdscr.nodelay(True)
         curses.echo()
         curses.start_color()
         curses.use_default_colors()
@@ -32,7 +33,10 @@ class TUI:
         self.mode = 0
         self.supercharged = False
     
-    def update_screen(self) -> None:
+    def update_screen(self): #, data_list: list) -> None:
+        # TODO: add sensor data to tui. call on self.convert_data(data_list, sensor_keys) 
+
+        
         self.stdscr.refresh()
 
         self.stdscr.addstr(0, 0, "=" * curses.COLS)
@@ -89,7 +93,7 @@ class TUI:
     def clear(self) -> None:
         self.stdscr.clear()
     
-    def get_data(data_list: list, sensor_dict: dict) -> dict:
+    def convert_data(self, data_list: list, sensor_dict: dict) -> dict:
         """
         Takes a list of data values and returns a dictionary
         with the sensor name as a key and its corresponding
@@ -99,3 +103,4 @@ class TUI:
         for i in range(len(data_list)):
             s = sensor_dict[i]
             data_dict[sensor_keys[i]] = s.scale(data_list[i])
+        return data_dict

@@ -29,7 +29,7 @@ class Sensor():
 class PT_FM(Sensor):
 
     def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
-        super().__init__(self, volt_min, volt_max, val_1, val_2)
+        super().__init__(volt_min, volt_max, val_1, val_2)
     
     def scale(self, volt_act: float) -> float:
         """
@@ -47,7 +47,7 @@ class PT_FM(Sensor):
 class TC(Sensor):
 
     def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
-        super().__init__(self, volt_min, volt_max, val_1, val_2)
+        super().__init__(volt_min, volt_max, val_1, val_2)
     
     def scale(self, volt_act: float) -> float:
         """
@@ -65,9 +65,7 @@ class TC(Sensor):
         r_s = 50
         alpha = 0.00392 # Ohms/Ohms/ºC
 
-        # calculate resistance of RTD using [insert formula]
         r_rtd = r_ref * ((v_c/volt_act) - 1) - r_s
-        # calculate temperature using [insert formula]
         temp = (1/alpha) * ((r_rtd/r_ref) - 1)
 
         return temp
@@ -75,7 +73,7 @@ class TC(Sensor):
 class LC(Sensor):
 
     def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
-        super().__init__(self, volt_min, volt_max, val_1, val_2)
+        super().__init__(volt_min, volt_max, val_1, val_2)
 
     def scale(self, volt_act: float) -> float:
         """
@@ -87,7 +85,7 @@ class LC(Sensor):
 
         return 1000 * ((m * x) + b)
 
-use_labjack = False
+use_labjack = True
 
 # AIN 127-120 for PT 1-8, AIN 0-2 for TC 1-3, AIN 60 for FM1, AIN 48-49 for Load Cell 1-2
 ain_channels = ["AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
@@ -99,3 +97,5 @@ sensor_keys = ["PT1", "PT2", "PT3", "PT4", "PT5", "PT6", "PT7", "PT8",
               "TC1", "TC2", "TC3",
               "FM1",
               "LC1", "LC2"]
+
+#ain_data = []

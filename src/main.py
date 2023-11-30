@@ -22,7 +22,18 @@ if __name__ == "__main__":
     #hold = input("Press any key to continue: ")
 
     controller = Controller(handle)
-    controller.run()
+
+    run = threading.Thread(target= controller.run) #, 'val' : v}) #, args=(v))
+    read = threading.Thread(target=controller.read, daemon= True) #, 'val' : v}) #, args=(v))
+
+    run.start()
+    read.start()
+
+    
+    run.join()
+    read.join()
+
+    # TODO: make data file available to close here
 
     #reads = threading.Thread(target=sensors_read, kwargs={'handle' : handle})
     #updates = threading.Thread(target=controller.run)
