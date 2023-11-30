@@ -51,6 +51,10 @@ class TUI:
         self.stdscr.addstr(11, 0, mav_str_2)
 
         data_dict = self.convert_data(ain_data, self.test_stand.sensor_dict)
+
+        with open("converted_data.csv", 'a') as file:
+            file.write(str(data_dict))
+            file.write('\n')
         
         i = 0
         for s in sensor_keys:
