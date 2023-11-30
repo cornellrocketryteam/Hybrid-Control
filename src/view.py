@@ -33,8 +33,12 @@ class TUI:
         self.mode = 0
         self.supercharged = False
     
-    def update_screen(self): #, data_list: list) -> None:
-        # TODO: add sensor data to tui. call on self.convert_data(data_list, sensor_keys) 
+    def update_screen(self, ain_data): #, data_list: list) -> None:
+
+        with open("test_shared.csv", 'a') as file:
+            data_dict = self.convert_data(ain_data, self.test_stand.sensor_dict)
+            file.write(str(data_dict))
+            file.write("\n") 
 
         
         self.stdscr.refresh()
@@ -102,5 +106,5 @@ class TUI:
         data_dict = {}
         for i in range(len(data_list)):
             s = sensor_dict[i]
-            data_dict[sensor_keys[i]] = s.scale(data_list[i])
+            data_dict[sensor_keys[i]] = (-1) * s.scale(data_list[i])
         return data_dict
