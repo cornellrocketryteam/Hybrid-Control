@@ -58,7 +58,7 @@ class TUI:
         
         i = 0
         for s in sensor_keys:
-            s_str = s + ": {value}".format(value = str(data_dict[s]) if s in data_dict else "0")
+            s_str = s + ": {value}".format(value = str(round(data_dict[s], 3)) if s in data_dict else "0")
             self.stdscr.addstr(15+i, 0, s_str)
             i += 1
 

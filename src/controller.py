@@ -103,11 +103,9 @@ class Controller:
                 else:
                     if c != -1:
                         self.tui.input_str += chr(c)
-        #print("after run")
 
             except KeyboardInterrupt:
                 print("run fail")
-            #pass
     
     def read(self) -> None:
         """

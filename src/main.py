@@ -16,15 +16,10 @@ if __name__ == "__main__":
     else:
         handle = None
 
-    #ljm.eWriteName(handle, "FIO0", 0)
-    #ljm.eWriteName(handle, "FIO1", 0)
-
-    #hold = input("Press any key to continue: ")
-
     controller = Controller(handle)
 
-    run = threading.Thread(target= controller.run) #, 'val' : v}) #, args=(v))
-    read = threading.Thread(target=controller.read, daemon= True) #, 'val' : v}) #, args=(v))
+    run = threading.Thread(target= controller.run)
+    read = threading.Thread(target=controller.read, daemon= True)
 
     run.start()
     read.start()
@@ -33,13 +28,7 @@ if __name__ == "__main__":
     run.join()
     read.join()
 
-    # TODO: make data file available to close here
-
-    #reads = threading.Thread(target=sensors_read, kwargs={'handle' : handle})
-    #updates = threading.Thread(target=controller.run)
-
-    # updates.run()
-    # updates.join()
+    # make data file available to close here ?
 
     if use_labjack:
         ljm.close(handle)
