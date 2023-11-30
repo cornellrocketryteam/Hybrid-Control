@@ -44,7 +44,6 @@ class Controller:
                     
         while True:
             try:
-
                 self.tui.update_screen(self.ain_data)
                 c = self.tui.get_input()
 

@@ -33,14 +33,8 @@ class TUI:
         self.mode = 0
         self.supercharged = False
     
-    def update_screen(self, ain_data): #, data_list: list) -> None:
-
-        with open("test_shared.csv", 'a') as file:
-            data_dict = self.convert_data(ain_data, self.test_stand.sensor_dict)
-            file.write(str(data_dict))
-            file.write("\n") 
-
-        
+    def update_screen(self, ain_data) -> None:
+     
         self.stdscr.refresh()
 
         self.stdscr.addstr(0, 0, "=" * curses.COLS)
@@ -55,6 +49,14 @@ class TUI:
         mav_str_2 = "MAV 2: {state}".format(state = "ON" if self.test_stand.mav_states[1] else "OFF")
         self.stdscr.addstr(10, 0, mav_str_1)
         self.stdscr.addstr(11, 0, mav_str_2)
+
+        data_dict = self.convert_data(ain_data, self.test_stand.sensor_dict)
+        
+        i = 0
+        for s in sensor_keys:
+            s_str = s + ": {value}".format(value = str(data_dict[s]) if s in data_dict else "0")
+            self.stdscr.addstr(15+i, 0, s_str)
+            i += 1
 
         if self.mode == 0:
             self.stdscr.addstr(4, 48, "* " + self.modes[0], curses.A_BOLD)

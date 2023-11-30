@@ -97,5 +97,3 @@ sensor_keys = ["PT1", "PT2", "PT3", "PT4", "PT5", "PT6", "PT7", "PT8",
               "TC1", "TC2", "TC3",
               "FM1",
               "LC1", "LC2"]
-
-#ain_data = []
