@@ -122,14 +122,13 @@ class TestStand:
         results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
 
     def sv_on(self, num: int) -> None:
-        # if not self.sv_states[num - 1]:
-        #     self.sv_states[num - 1] = True
+        if not self.sv_states[num - 1]:
+            self.sv_states[num - 1] = True
 
-        #     if not use_labjack:
-        #         return
+            if not use_labjack:
+                return
             
-        #     dio = "FIO" + str(self.sv_dio[num - 1])
-
+            dio = "FIO" + str(self.sv_dio[num - 1])
 
             ljm.eWriteName(self.handle, dio, 1)
             
@@ -137,13 +136,12 @@ class TestStand:
             temp_timer.start()
         
     def sv_off(self, num: int) -> None:
-        # if self.sv_states[num - 1]:
-        #     self.sv_states[num - 1] = False
+        if self.sv_states[num - 1]:
+            self.sv_states[num - 1] = False
 
-        #     if not use_labjack:
-        #         return
+            if not use_labjack:
+                return
             
-
             dio = "FIO" + str(self.sv_dio[num - 1])
             aNames = ["DIO%i_EF_ENABLE" % self.sv_dio[num - 1]]
             aValues = [0]
