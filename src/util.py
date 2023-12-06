@@ -12,4 +12,4 @@ class Mode(Enum):
     IGNITION = 5
     FIRE = 6
 
-use_labjack = False
+use_labjack = True
