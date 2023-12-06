@@ -15,12 +15,12 @@ class TestStand:
         self.sv_states = [False, False, False, False, False]
         self.sv_dio = [1, 0, 2, 3, 4]
         self.sv_freq = 1000
-        self.sv_dc = 10
+        self.sv_dc = 60
         self.sv_timers = []
 
-        self.temp_timer = threading.Timer(150 / 1000, self._sv_pwm, [2])
-        for i in range(5):
-            self.sv_timers.append(threading.Timer(150 / 1000, self._sv_pwm, [i]))
+        # self.temp_timer = threading.Timer(150 / 1000, self._sv_pwm, [2])
+        # for i in range(5):
+        #     self.sv_timers.append(threading.Timer(150 / 1000, self._sv_pwm, [i]))
 
         self.mav_states = [False, False]
         self.mav_dio = [5, 6]
@@ -96,12 +96,11 @@ class TestStand:
         results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
 
     def _sv_pwm(self, num: int) -> None:
-        # TODO: Needs some fixing for indices
-        pwmDIO = self.sv_dio[num - 1]
-        #pwmDIO = 2
+        pwmDIO = self.sv_dio[num]
+
         roll_value = 80_000_000 / self.sv_freq
         config_a = self.sv_dc * roll_value / 100
-
+        
         aNames = [
             "DIO_EF_CLOCK0_ROLL_VALUE",
             "DIO_EF_CLOCK0_ENABLE",
@@ -131,11 +130,11 @@ class TestStand:
             
         #     dio = "FIO" + str(self.sv_dio[num - 1])
 
-        #     ljm.eWriteName(self.handle, dio, 1)
-        #     self.sv_timers[num - 1].start()
-        #     # Create new timer?
-        #     #self.temp_timer.start()
-        pass
+
+            ljm.eWriteName(self.handle, dio, 1)
+            
+            temp_timer = threading.Timer(150 / 1000, self._sv_pwm, [num - 1])
+            temp_timer.start()
         
     def sv_off(self, num: int) -> None:
         # if self.sv_states[num - 1]:
@@ -144,13 +143,13 @@ class TestStand:
         #     if not use_labjack:
         #         return
             
-        #     dio = "FIO" + str(self.sv_dio[num - 1])
-        #     aNames = ["DIO_EF_CLOCK0_ENABLE", "DIO%i_EF_ENABLE" % self.sv_dio[num - 1]]
-        #     aValues = [0, 0]
-        #     numFrames = len(aNames)
-        #     results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
-        #     ljm.eWriteName(self.handle, dio, 0)
-        pass
+
+            dio = "FIO" + str(self.sv_dio[num - 1])
+            aNames = ["DIO%i_EF_ENABLE" % self.sv_dio[num - 1]]
+            aValues = [0]
+            numFrames = len(aNames)
+            results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
+            ljm.eWriteName(self.handle, dio, 0)
 
     def set_sv_states(self, states: List[bool]) -> None:
         for i in range(5):

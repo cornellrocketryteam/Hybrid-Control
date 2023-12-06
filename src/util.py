@@ -12,6 +12,7 @@ class Mode(Enum):
     IGNITION = 5
     FIRE = 6
 
+
 class Sensor():
 
     def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
