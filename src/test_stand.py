@@ -96,10 +96,9 @@ class TestStand:
 
         roll_value = 80_000_000 / self.sv_freq
         config_a = self.sv_dc * roll_value / 100
-
+        
         aNames = [
             "DIO_EF_CLOCK0_ROLL_VALUE",
-            "DIO_EF_CLOCK0_ENABLE",
 
             "DIO%i_EF_ENABLE" % pwmDIO,
             "DIO%i_EF_CONFIG_A" % pwmDIO,
@@ -108,7 +107,6 @@ class TestStand:
 
         aValues = [
             roll_value,
-            1,
 
             0,
             config_a,
@@ -139,8 +137,8 @@ class TestStand:
                 return
             
             dio = "FIO" + str(self.sv_dio[num - 1])
-            aNames = ["DIO_EF_CLOCK0_ENABLE", "DIO%i_EF_ENABLE" % self.sv_dio[num - 1]]
-            aValues = [1, 0]
+            aNames = ["DIO%i_EF_ENABLE" % self.sv_dio[num - 1]]
+            aValues = [0]
             numFrames = len(aNames)
             results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
             ljm.eWriteName(self.handle, dio, 0)
