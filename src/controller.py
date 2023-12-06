@@ -128,7 +128,7 @@ class Controller:
                 totalSamples = 0
                 totalSkip = 0  # Total skipped samples [what does this mean]
 
-                for i in range(0, 10):
+                while True:
 
                     ret = ljm.eStreamRead(self.handle)
 
