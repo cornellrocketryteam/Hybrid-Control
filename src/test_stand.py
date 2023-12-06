@@ -99,6 +99,7 @@ class TestStand:
         
         aNames = [
             "DIO_EF_CLOCK0_ROLL_VALUE",
+            "DIO_EF_CLOCK0_ENABLE",
 
             "DIO%i_EF_ENABLE" % pwmDIO,
             "DIO%i_EF_CONFIG_A" % pwmDIO,
@@ -107,6 +108,7 @@ class TestStand:
 
         aValues = [
             roll_value,
+            1,
 
             0,
             config_a,
