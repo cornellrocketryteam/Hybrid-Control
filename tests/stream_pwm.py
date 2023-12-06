@@ -5,7 +5,7 @@ import sys
 from time import sleep
 
 from labjack import ljm
-import ljm_stream_util
+#import ljm_stream_util
 
 
 
@@ -36,21 +36,21 @@ def main():
     handle = ljm.openS("T7", "ANY", "ANY")
 
 
-    try :
-        print("\nInitializing stream out... \n")
-        ljm.periodicStreamOut(handle, streamOutIndex, targetAddr, scanRate, len(writeData), writeData)
-        actualScanRate = ljm.eStreamStart(handle, scansPerRead, len(scanList), scanList, scanRate)
-        print("Stream started with scan rate of %f Hz\n Running for %d seconds\n" % (scanRate, runTime))
-        sleep(runTime)
+    # try :
+    print("\nInitializing stream out... \n")
+    ljm.periodicStreamOut(handle, streamOutIndex, targetAddr, scanRate, len(writeData), writeData)
+    actualScanRate = ljm.eStreamStart(handle, scansPerRead, len(scanList), scanList, scanRate)
+    print("Stream started with scan rate of %f Hz\n Running for %d seconds\n" % (scanRate, runTime))
+    sleep(runTime)
 
-    except ljm.LJMError:
-        ljm_stream_util.prepareForExit(handle)
-        raise
-    except Exception:
-        ljm_stream_util.prepareForExit(handle)
-        raise
+    # except ljm.LJMError:
+    #     ljm_stream_util.prepareForExit(handle)
+    #     raise
+    # except Exception:
+    #     ljm_stream_util.prepareForExit(handle)
+    #     raise
 
-    ljm_stream_util.prepareForExit(handle)
+    # ljm_stream_util.prepareForExit(handle)
 
 
 if __name__ == "__main__":
