@@ -3,11 +3,12 @@ view.py: Manages the text-based user interface
 """
 
 import curses
-from util import Mode
+from util import Mode, sensor_keys
 
 class TUI:
     def __init__(self, test_stand) -> None:
         self.stdscr = curses.initscr()
+        self.stdscr.nodelay(True)
         curses.echo()
         curses.start_color()
         curses.use_default_colors()
@@ -32,7 +33,8 @@ class TUI:
         self.mode = 0
         self.supercharged = False
     
-    def update_screen(self) -> None:
+    def update_screen(self, ain_data) -> None:
+     
         self.stdscr.refresh()
 
         self.stdscr.addstr(0, 0, "=" * curses.COLS)
@@ -47,6 +49,18 @@ class TUI:
         mav_str_2 = "MAV 2: {state}".format(state = "ON" if self.test_stand.mav_states[1] else "OFF")
         self.stdscr.addstr(10, 0, mav_str_1)
         self.stdscr.addstr(11, 0, mav_str_2)
+
+        data_dict = self.convert_data(ain_data, self.test_stand.sensor_dict)
+
+        with open("converted_data.csv", 'a') as file:
+            file.write(str(data_dict))
+            file.write('\n')
+        
+        i = 0
+        for s in sensor_keys:
+            s_str = s + ": {value}".format(value = str(round(data_dict[s], 3)) if s in data_dict else "0")
+            self.stdscr.addstr(15+i, 0, s_str)
+            i += 1
 
         if self.mode == 0:
             self.stdscr.addstr(4, 48, "* " + self.modes[0], curses.A_BOLD)
@@ -88,3 +102,15 @@ class TUI:
     
     def clear(self) -> None:
         self.stdscr.clear()
+    
+    def convert_data(self, data_list: list, sensor_dict: dict) -> dict:
+        """
+        Takes a list of data values and returns a dictionary
+        with the sensor name as a key and its corresponding
+        scaled data as a value.
+        """
+        data_dict = {}
+        for i in range(len(data_list)):
+            s = sensor_dict[i]
+            data_dict[sensor_keys[i]] = (-1) * s.scale(data_list[i])
+        return data_dict

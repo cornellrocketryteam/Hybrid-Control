@@ -4,8 +4,9 @@ test_stand.py: The model for the Test Stand
 
 from labjack import ljm
 import threading
-from util import Mode, use_labjack
+from util import Mode, PT_FM, TC, LC, use_labjack, ain_channels
 from typing import List
+import time
 
 class TestStand:
 
@@ -23,6 +24,9 @@ class TestStand:
 
         self.mav_states = [False, False]
         self.mav_dio = [5, 6]
+
+        # sensor dict
+        self.sensor_dict = self.initialize_sensors()
 
         # pressure (PSI) - 8x
         self.pt_pressures = []
@@ -118,13 +122,14 @@ class TestStand:
         results = ljm.eWriteNames(self.handle, numFrames, aNames, aValues)
 
     def sv_on(self, num: int) -> None:
-        if not self.sv_states[num - 1]:
-            self.sv_states[num - 1] = True
+        # if not self.sv_states[num - 1]:
+        #     self.sv_states[num - 1] = True
 
-            if not use_labjack:
-                return
+        #     if not use_labjack:
+        #         return
             
-            dio = "FIO" + str(self.sv_dio[num - 1])
+        #     dio = "FIO" + str(self.sv_dio[num - 1])
+
 
             ljm.eWriteName(self.handle, dio, 1)
             
@@ -132,12 +137,13 @@ class TestStand:
             temp_timer.start()
         
     def sv_off(self, num: int) -> None:
-        if self.sv_states[num - 1]:
-            self.sv_states[num - 1] = False
+        # if self.sv_states[num - 1]:
+        #     self.sv_states[num - 1] = False
 
-            if not use_labjack:
-                return
+        #     if not use_labjack:
+        #         return
             
+
             dio = "FIO" + str(self.sv_dio[num - 1])
             aNames = ["DIO%i_EF_ENABLE" % self.sv_dio[num - 1]]
             aValues = [0]
@@ -208,3 +214,30 @@ class TestStand:
         self.mav_on(2)
         timer_1 = threading.Timer(150 / 1000, self.mav_off, [1])
         timer_2 = threading.Timer(150 / 1000, self.mav_off, [2])
+
+    # Sensors
+    
+    def initialize_sensors(self) -> dict:
+        """
+        Initialize all sensors with their attributes.
+        Sensors are initialized as follows:
+        s = Sensor(voltage min, voltage max, value 1, value 2)
+
+        Returns a dictionary of initialized sensors with indices as keys.
+
+        TO DO: Add details for reading (positive and negative channels, etc), gain, offset
+        """
+        pt2000 = PT_FM(0.0, 10.0, 0.0, 2000.0)
+        pt3000 = PT_FM(0.0, 10.0, 0.0, 3000.0)
+        pt1500 = PT_FM(0.0, 10.0, 0.0, 1500.0)
+        tc = TC(0.0, 10.0, 1.0, 200.0)
+        fm = PT_FM(1.72, 10.32, 2.5, 29.0)
+        lc1000 = LC(0.0, 0.0036, 31.27993035, -0.2654580671)
+        lc2000 = LC(0.0, 0.0036, 60.25906654, -0.02513497142)
+
+
+        return {0: pt2000, 1: pt2000, 2: pt3000, 3: pt3000, 4: pt1500, 5: pt2000, 6: pt3000, 7: pt2000,
+                8: tc, 9: tc, 10: tc,
+                11: fm,
+                12: lc1000, 13: lc2000}
+    
