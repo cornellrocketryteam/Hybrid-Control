@@ -16,22 +16,28 @@ def main():
     # Number of seconds to stream out waveforms
     runTime = 5
 
+    # aNames = [
+    #     "FIO_STATE"
+    # ]
+    # aValues = [
+    #     32386 # 11111101 0000010
+    # ]
+    #numFrames = len(aNames)
+	#results = ljm.eWriteNames(handle, numFrames, aNames, aValues)
+
     # The desired stream channels. Up to 4 out-streams can be ran at once
-    scanListNames = ["STREAM_OUT0"]
-    scanList = ljm.namesToAddresses(len(scanListNames), scanListNames)[0]
+    # scanListNames = ["STREAM_OUT0"]
+    # scanList = ljm.namesToAddresses(len(scanListNames), scanListNames)[0]
 
     # Only stream out to DIO1 - CONFIRM THIS IS THE RIGHT ADDRESS https://gist.github.com/chrisJohn404/11064514
-    targetAddr = 2002
+    targetAddr = 2500
 
     # Stream out index can only be a number between 0-3
     streamOutIndex = 0
     samplesToWrite = 512
 
     # Make an arbitrary waveform that increases voltage linearly from 0-2.5V
-    writeData = []
-    for i in range(samplesToWrite):
-        sample = 2.5*i/samplesToWrite
-        writeData.append(sample)
+    writeData = [32386, 32386, 32386, 32386, 32384, 32384, 32384, 32384, 32384, 32384]
 
     handle = ljm.openS("T7", "ANY", "ANY")
 
