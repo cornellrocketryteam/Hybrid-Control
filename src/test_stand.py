@@ -174,8 +174,8 @@ class TestStand:
             self.fill()
         elif mode == Mode.SUPERCHARGE:
             self.supercharge()
-        elif mode == Mode.IGNITION:
-            self.ignition()
+        elif mode == Mode.POSTFIRE_PURGE_ENGINE:
+            self.postfire_purge_engine()
         elif mode == Mode.FIRE:
             self.fire()
 
@@ -206,9 +206,8 @@ class TestStand:
     def supercharge(self) -> None:
         self.set_sv_states([False, False, False, True, False])
 
-    def ignition(self) -> None:
-        self.set_sv_states([False, False, False, True, False])
-        # Igniter
+    def postfire_purge_engine(self) -> None:
+        self.set_sv_states([True, False, False, True, False])
     
     def fire(self) -> None:
         self.set_sv_states([False, False, False, True, False])

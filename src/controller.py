@@ -13,13 +13,14 @@ import time
 class Controller:
 
     def __init__(self, handle: int) -> None:
+        self.last_command = ""
         self.test_stand = TestStand(handle)
         self.tui = TUI(self.test_stand)
         self.handle = handle
 
         self.awaiting_mode = -1
 
-        self.awaiting_mappings = [52, 53, 54, 43, 55, 56, 57]
+        self.awaiting_mappings = [52, 53, 54, 465, 55, 56, 57]
 
         self.ain_data = []
 
@@ -51,8 +52,11 @@ class Controller:
 
                 input_str = self.tui.input_str
                 input_str = input_str[2:]
+                
+                if c == KEY_UPARROW: 
+                    self.tui.input_str = "> " + self.last_command
 
-                if input_str == "" and c in [KEYPAD_0,KEYPAD_1,KEYPAD_2,KEYPAD_3,KEYPAD_DOT]: #
+                if input_str == "" and c in [KEYPAD_0,KEYPAD_1,KEYPAD_2,KEYPAD_3,KEYPAD_DOT,KEYPAD_DASH]: #Valve keypad
                     if c == KEYPAD_0:
                         self.tui.input_str = "> sv 1 " + state_onoff(self.test_stand.sv_states[0])
                     elif c == KEYPAD_1:
@@ -63,12 +67,12 @@ class Controller:
                         self.tui.input_str = "> sv 4 " + state_onoff(self.test_stand.sv_states[3])
                     elif c == KEYPAD_DOT:
                         self.tui.input_str = "> sv 5 " + state_onoff(self.test_stand.sv_states[4])
+                    elif c == KEYPAD_DASH:
+                        self.tui.input_str = "> mav 1 " + state_onoff(self.test_stand.mav_states[0])
                     
 
-                if input_str == "" and ((c >= 52 and c <= 61)): #Mode Popups
+                if input_str == "" and ((c >= 52 and c <= 61) or c == 465) : #Mode Popups
                     index = self.awaiting_mappings.index(c)
-                    if c == 55: #7 Key on numpad for supercharge
-                        self.supercharged = True 
                     if self.awaiting_mode == index:
                         self.tui.end_await()
                         self.awaiting_mode = -1
@@ -80,9 +84,10 @@ class Controller:
                     self.tui.clear()
                     continue
 
-                if input_str == "" and (c == curses.KEY_ENTER or c == 10 or c == 13):
-                    print("dsadsd")
+                if input_str == "" and (c == curses.KEY_ENTER or c == 10 or c == 13 or c == 459):
                     if self.awaiting_mode != -1:
+                        if self.awaiting_mode == 4:
+                            self.tui.supercharged = True 
                         self.test_stand.confirm_mode(Mode(self.awaiting_mode))
                         self.tui.to_mode(Mode(self.awaiting_mode))
 
@@ -92,8 +97,9 @@ class Controller:
                 if c == 27:
                     break
 
-                elif c == curses.KEY_ENTER or c == 10 or c == 13 or c == curses.KEY_DC or c == 173 or c == 218:
+                elif c == curses.KEY_ENTER or c == 10 or c == 13 or c == 459:
                     if input_str in valid_commands:
+                        self.last_command = input_str
                         if input_str == "quit":
                             break
                         words = input_str.split(" ")
@@ -115,7 +121,7 @@ class Controller:
                         self.tui.input_str = self.tui.input_str[:-1]
                         self.tui.clear()
                 else:
-                    if c not in [-1, KEYPAD_0, KEYPAD_1, KEYPAD_2, KEYPAD_3, KEYPAD_DOT]:
+                    if c not in [-1, KEYPAD_0, KEYPAD_1, KEYPAD_2, KEYPAD_3, KEYPAD_DOT, KEYPAD_DASH, KEY_UPARROW]:
                         self.tui.input_str += chr(c)
 
             except KeyboardInterrupt:
@@ -159,15 +165,14 @@ class Controller:
                         for k in range(j, j+numAddresses):
                             if aData[k] == -9999.0:
                                 totalSkip += 1
-                            file.write(str(round(aData[k], 3)) + ", ")
-                            data_temp.append(round(aData[k], 3))
+                            file.write(str(round(aData[k], 9)) + ", ")
+                            data_temp.append(round(aData[k], 9))
                         file.write('\n')
                         self.ain_data = data_temp
 
                 end = time.time()
 
                 ljm.eStreamStop(self.handle)
-                #print("after read")
         except KeyboardInterrupt:
             self.handle.close()
             pass

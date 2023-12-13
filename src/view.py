@@ -3,12 +3,13 @@ view.py: Manages the text-based user interface
 """
 
 import curses
-from util import Mode, sensor_keys
+from util import *
 
 class TUI:
     def __init__(self, test_stand) -> None:
         self.stdscr = curses.initscr()
         self.stdscr.nodelay(True)
+        self.stdscr.keypad(True)
         curses.echo()
         curses.start_color()
         curses.use_default_colors()
@@ -26,7 +27,7 @@ class TUI:
             "Prefire purge engine",
             "Fill",
             "Supercharge",
-            "Ignition",
+            "Postfire purge engine",
             "Fire"
         ]
         
@@ -42,7 +43,7 @@ class TUI:
         self.stdscr.addstr(2, 0, "=" * curses.COLS)
 
         for i in range(0, len(self.test_stand.sv_states)):
-            sv_str = "SV {num}: {state}".format(num = i+1, state = "ON" if self.test_stand.sv_states[i] else "OFF")
+            sv_str = "SV {num}: {state}".format(num = str(i+1) + " " + nameofSV(i+1), state = "ON" if self.test_stand.sv_states[i] else "OFF")
             self.stdscr.addstr(i+4, 0, sv_str)
 
         mav_str_1 = "MAV 1: {state}".format(state = "ON" if self.test_stand.mav_states[0] else "OFF")
@@ -66,7 +67,6 @@ class TUI:
         for i in range(1, 7):
             if i == 4:
                 if self.supercharged:
-                    print("bruhbuhr")
                     self.stdscr.addstr(i+5, 50, "Supercharged", curses.A_ITALIC)
                 else:
                     self.stdscr.addstr(i+5, 50, self.modes[i])

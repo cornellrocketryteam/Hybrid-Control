@@ -8,7 +8,8 @@ KEYPAD_1 = 49
 KEYPAD_2 = 50
 KEYPAD_3 = 51
 KEYPAD_DOT = 46
-
+KEYPAD_DASH = 464
+KEY_UPARROW = 259
 
 class Mode(Enum):
     DEFAULT = 0
@@ -16,7 +17,7 @@ class Mode(Enum):
     PREFIRE_PURGE_ENGINE = 2
     FILL = 3
     SUPERCHARGE = 4
-    IGNITION = 5
+    POSTFIRE_PURGE_ENGINE = 5
     FIRE = 6
 
 
@@ -117,3 +118,15 @@ def state_onoff(state):
         return 'off'
     else:
         return 'on'
+    
+def nameofSV(num):
+    if num == 1:
+        return "N2 Engine Purge Solenoid"
+    elif num == 2:
+        return "N2 Tank/Line Purge Solenoid"
+    elif num == 3:
+        return "N2O Fill Solenoid"
+    elif num == 4:
+        return "N2 Supercharge Solenoid"
+    elif num == 5:
+        return "Tank Vent Solenoid"
