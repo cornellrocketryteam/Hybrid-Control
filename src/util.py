@@ -3,6 +3,13 @@ util.py: Helpful utility objects
 """
 from enum import Enum
 
+KEYPAD_0 = 48
+KEYPAD_1 = 49
+KEYPAD_2 = 50
+KEYPAD_3 = 51
+KEYPAD_DOT = 46
+
+
 class Mode(Enum):
     DEFAULT = 0
     PREFIRE_PURGE_TANKS = 1
@@ -104,3 +111,9 @@ for valve in ['sv 1 ', 'sv 2 ', 'sv 3 ', 'sv 4 ', 'sv 5 ', 'mav 1 ']:
     for state in ['on', 'off']:
         valid_commands.append(valve + state)
 valid_commands.append('')
+
+def state_onoff(state):
+    if state:
+        return 'off'
+    else:
+        return 'on'

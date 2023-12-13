@@ -5,7 +5,7 @@ controller.py: Manages user commands and actions
 from test_stand import TestStand
 from view import TUI
 import curses
-from util import Mode, sensor_keys, ain_channels, valid_commands
+from util import *
 from labjack import ljm
 import time
 
@@ -13,7 +13,6 @@ import time
 class Controller:
 
     def __init__(self, handle: int) -> None:
-        self.last_command = ""
         self.test_stand = TestStand(handle)
         self.tui = TUI(self.test_stand)
         self.handle = handle
@@ -49,11 +48,24 @@ class Controller:
                 c = self.tui.get_input()
                 if c != -1:
                     print(c)
-                    
+
                 input_str = self.tui.input_str
                 input_str = input_str[2:]
 
-                if input_str == "" and ((c >= 52 and c <= 61) or c == 43):
+                if input_str == "" and c in [KEYPAD_0,KEYPAD_1,KEYPAD_2,KEYPAD_3,KEYPAD_DOT]: #
+                    if c == KEYPAD_0:
+                        self.tui.input_str = "> sv 1 " + state_onoff(self.test_stand.sv_states[0])
+                    elif c == KEYPAD_1:
+                        self.tui.input_str = "> sv 2 " + state_onoff(self.test_stand.sv_states[1])
+                    elif c == KEYPAD_2:
+                        self.tui.input_str = "> sv 3 " + state_onoff(self.test_stand.sv_states[2])
+                    elif c == KEYPAD_3:
+                        self.tui.input_str = "> sv 4 " + state_onoff(self.test_stand.sv_states[3])
+                    elif c == KEYPAD_DOT:
+                        self.tui.input_str = "> sv 5 " + state_onoff(self.test_stand.sv_states[4])
+                    
+
+                if input_str == "" and ((c >= 52 and c <= 61)): #Mode Popups
                     index = self.awaiting_mappings.index(c)
                     if c == 55: #7 Key on numpad for supercharge
                         self.supercharged = True 
@@ -81,7 +93,6 @@ class Controller:
                     break
 
                 elif c == curses.KEY_ENTER or c == 10 or c == 13 or c == curses.KEY_DC or c == 173 or c == 218:
-                    self.last_command = input_str
                     if input_str in valid_commands:
                         if input_str == "quit":
                             break
@@ -99,14 +110,12 @@ class Controller:
                                 self.test_stand.mav_off(int(words[1]))
                     self.tui.input_str = "> "
                     self.tui.clear()
-                elif c == 48:
-                    self.tui.input_str = "> " + self.last_command
                 elif c == curses.KEY_BACKSPACE or c == 127 or c == 8:
                     if len(input_str) > 0:
                         self.tui.input_str = self.tui.input_str[:-1]
                         self.tui.clear()
                 else:
-                    if c != -1:
+                    if c not in [-1, KEYPAD_0, KEYPAD_1, KEYPAD_2, KEYPAD_3, KEYPAD_DOT]:
                         self.tui.input_str += chr(c)
 
             except KeyboardInterrupt:

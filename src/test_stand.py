@@ -4,7 +4,7 @@ test_stand.py: The model for the Test Stand
 
 from labjack import ljm
 import threading
-from util import Mode, PT_FM, TC, LC, use_labjack, ain_channels
+from util import *
 from typing import List
 import time
 
@@ -243,4 +243,5 @@ class TestStand:
                 8: tc, 9: tc, 10: tc,
                 11: fm,
                 12: lc1000, 13: lc2000}
+
     
