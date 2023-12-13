@@ -66,7 +66,7 @@ class TUI:
             self.stdscr.addstr(4, 50, self.modes[0])
 
         for modeIndex in range(1, 7):
-               if modeIndex == 4:
+            if modeIndex == 4:
                 if self.supercharged:
                     self.stdscr.addstr(modeIndex+5, 50, "Supercharged", curses.BOLD)
                 else:
