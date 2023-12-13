@@ -54,6 +54,7 @@ class TestStand:
                 self.mav_states[num - 1] = True
                 self._mav_actuate(num, 26.4)
             else:
+                return #TODO SCUFFED PWM
                 self.mav_states[num - 1] = True
                 self._mav_actuate(num, 72.6)
 
@@ -123,10 +124,14 @@ class TestStand:
 
     def sv_on(self, num: int) -> None:
         if not self.sv_states[num - 1]:
+            if self.sv_dio[num-1] == 1:
+                return #TODO scuffed PWM
+            
             self.sv_states[num - 1] = True
 
             if not use_labjack:
                 return
+            print(self.sv_dio[num-1])
             
             dio = "FIO" + str(self.sv_dio[num - 1])
 

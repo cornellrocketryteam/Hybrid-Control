@@ -98,3 +98,9 @@ sensor_keys = ["PT1", "PT2", "PT3", "PT4", "PT5", "PT6", "PT7", "PT8",
               "TC1", "TC2", "TC3",
               "FM1",
               "LC1", "LC2"]
+
+valid_commands = []
+for valve in ['sv 1 ', 'sv 2 ', 'sv 3 ', 'sv 4 ', 'sv 5 ', 'mav 1 ']:
+    for state in ['on', 'off']:
+        valid_commands.append(valve + state)
+valid_commands.append('')

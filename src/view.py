@@ -51,10 +51,6 @@ class TUI:
         self.stdscr.addstr(11, 0, mav_str_2)
 
         data_dict = self.convert_data(ain_data, self.test_stand.sensor_dict)
-
-        # with open("converted_data.csv", 'a') as file:
-        #     file.write(str(data_dict))
-        #     file.write('\n')
         
         i = 0
         for s in sensor_keys:
@@ -70,6 +66,7 @@ class TUI:
         for i in range(1, 7):
             if i == 4:
                 if self.supercharged:
+                    print("bruhbuhr")
                     self.stdscr.addstr(i+5, 50, "Supercharged", curses.A_ITALIC)
                 else:
                     self.stdscr.addstr(i+5, 50, self.modes[i])
@@ -83,7 +80,7 @@ class TUI:
             self.stdscr.addstr(curses.LINES - 3, 0, "Confirm")
             self.stdscr.addstr(curses.LINES - 3, 8, self.modes[self.awaited_mode], curses.A_BOLD)
         else:
-            self.stdscr.addstr(curses.LINES - 3, 0, "")
+            self.stdscr.addstr(curses.LINES - 1, 0, "")
         self.stdscr.addstr(curses.LINES - 1, 0, self.input_str)
 
     def get_input(self) -> int:

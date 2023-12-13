@@ -5,7 +5,7 @@ controller.py: Manages user commands and actions
 from test_stand import TestStand
 from view import TUI
 import curses
-from util import Mode, sensor_keys, ain_channels
+from util import Mode, sensor_keys, ain_channels, valid_commands
 from labjack import ljm
 import time
 
@@ -13,6 +13,7 @@ import time
 class Controller:
 
     def __init__(self, handle: int) -> None:
+        self.last_command = ""
         self.test_stand = TestStand(handle)
         self.tui = TUI(self.test_stand)
         self.handle = handle
@@ -46,13 +47,16 @@ class Controller:
             try:
                 self.tui.update_screen(self.ain_data)
                 c = self.tui.get_input()
-
+                if c != -1:
+                    print(c)
+                    
                 input_str = self.tui.input_str
                 input_str = input_str[2:]
 
                 if input_str == "" and ((c >= 52 and c <= 61) or c == 43):
                     index = self.awaiting_mappings.index(c)
-
+                    if c == 55: #7 Key on numpad for supercharge
+                        self.supercharged = True 
                     if self.awaiting_mode == index:
                         self.tui.end_await()
                         self.awaiting_mode = -1
@@ -65,6 +69,7 @@ class Controller:
                     continue
 
                 if input_str == "" and (c == curses.KEY_ENTER or c == 10 or c == 13):
+                    print("dsadsd")
                     if self.awaiting_mode != -1:
                         self.test_stand.confirm_mode(Mode(self.awaiting_mode))
                         self.tui.to_mode(Mode(self.awaiting_mode))
@@ -74,30 +79,30 @@ class Controller:
                     
                 if c == 27:
                     break
-                elif c == curses.KEY_ENTER or c == 10 or c == 13:
 
-                    if input_str == "quit":
-                        break
+                elif c == curses.KEY_ENTER or c == 10 or c == 13 or c == curses.KEY_DC or c == 173 or c == 218:
+                    self.last_command = input_str
+                    if input_str in valid_commands:
+                        if input_str == "quit":
+                            break
+                        words = input_str.split(" ")
 
-                    words = input_str.split(" ")
-
-                    if words[0] == "sv":
-                        if words[2] == "on":
-                            self.test_stand.sv_on(int(words[1]))
-                        else:
-                            self.test_stand.sv_off(int(words[1]))
-
-                    if words[0] == "mav":
-                        if words[2] == "on":
-                            self.test_stand.mav_on(int(words[1]))
-                        else:
-                            self.test_stand.mav_off(int(words[1]))
-
+                        if words[0] == "sv":
+                            if words[2] == "on":
+                                self.test_stand.sv_on(int(words[1]))
+                            elif words[2] == "off":
+                                self.test_stand.sv_off(int(words[1]))
+                        elif words[0] == "mav":
+                            if words[2] == "on":
+                                self.test_stand.mav_on(int(words[1]))
+                            else:
+                                self.test_stand.mav_off(int(words[1]))
                     self.tui.input_str = "> "
                     self.tui.clear()
-
-                elif c == curses.KEY_BACKSPACE or c == 127:
-                    if len(input_str) > 2:
+                elif c == 48:
+                    self.tui.input_str = "> " + self.last_command
+                elif c == curses.KEY_BACKSPACE or c == 127 or c == 8:
+                    if len(input_str) > 0:
                         self.tui.input_str = self.tui.input_str[:-1]
                         self.tui.clear()
                 else:
@@ -105,6 +110,7 @@ class Controller:
                         self.tui.input_str += chr(c)
 
             except KeyboardInterrupt:
+                self.handle.close()
                 print("run fail")
     
     def read(self) -> None:
@@ -154,6 +160,7 @@ class Controller:
                 ljm.eStreamStop(self.handle)
                 #print("after read")
         except KeyboardInterrupt:
+            self.handle.close()
             pass
 
         except Exception as e:
