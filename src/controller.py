@@ -47,8 +47,6 @@ class Controller:
             try:
                 self.tui.update_screen(self.ain_data)
                 c = self.tui.get_input()
-                if c != -1:
-                    print(c)
 
                 input_str = self.tui.input_str
                 input_str = input_str[2:]

@@ -10,6 +10,7 @@ KEYPAD_3 = 51
 KEYPAD_DOT = 46
 KEYPAD_DASH = 464
 KEY_UPARROW = 259
+AMBIENT_TEMP = 20 # TODO update this based on environment
 
 class Mode(Enum):
     DEFAULT = 0
@@ -71,11 +72,12 @@ class TC(Sensor):
         # constants
         r_ref = 15000
         v_c = 5
-        r_s = 50
         alpha = 0.00392 # Ohms/Ohms/ºC
+        r_nom = 100
 
-        r_rtd = r_ref * ((v_c/volt_act) - 1) - r_s
-        temp = (1/alpha) * ((r_rtd/r_ref) - 1)
+        r_rtd = (r_ref * (v_c - volt_act))/(volt_act)
+        delta_temp = (1/alpha) * ((r_rtd/r_nom) - 1)
+        temp = AMBIENT_TEMP + delta_temp 
 
         return temp
 

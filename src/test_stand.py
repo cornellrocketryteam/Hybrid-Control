@@ -131,7 +131,6 @@ class TestStand:
 
             if not use_labjack:
                 return
-            print(self.sv_dio[num-1])
             
             dio = "FIO" + str(self.sv_dio[num - 1])
 

@@ -21,7 +21,18 @@ def PT15kconv(V):
     return ((float(V)) * (1500)) / (12)
 
 def TCConv(V):
-    return 0
+    if V == 0:
+        return 0
+    r_ref = 15000
+    v_c = 5 #TODO implement this
+    alpha = 0.00392 # Ohms/Ohms/ºC
+    r_nom = 100
+
+    r_rtd = (r_ref * (v_c - V))/(V)
+    print(r_rtd)
+    delta_temp = (1/alpha) * ((r_rtd/r_nom) - 1)
+    temp = 15.5 + delta_temp 
+    return delta_temp
 
 #{0: pt2000, 1: pt2000, 2: pt3000, 3: pt3000, 4: pt1500, 5: pt2000, 6: pt3000, 7: pt2000,
  ##               8: tc, 9: tc, 10: tc,
@@ -31,7 +42,7 @@ def TCConv(V):
 
 sense_names = ["PT1", "PT2", "PT3", "PT4", "PT5", "PT6", "PT7", "PT8", "TC1", "TC2", "TC3", "FM1", "LD1", "LD2"]
 sensors = [[], [], [], [], [], [], [], [], [], [], [], [], [], []]
-path = "labjackcoldflow_data.csv"
+path = "C:\\Users\\chris\\Hybrid-Control\\labjackcoldflow_data.csv"
 with open(path, 'r') as file:
     csv_reader = csv.reader(file)
     accum = 0
@@ -49,9 +60,9 @@ with open(path, 'r') as file:
         sensors[5].append(PT2kConv(row[5]))
         sensors[6].append(PT3kConv(row[6]))
         sensors[7].append(PT2kConv(row[7]))
-        sensors[8].append(float(row[8]))
-        sensors[9].append(float(row[9]))
-        sensors[10].append(float(row[10]))
+        sensors[8].append(TCConv(float(row[8])))
+        sensors[9].append(TCConv(float(row[9])))
+        sensors[10].append(TCConv(float(row[10])))
 
         sensors[11].append(FMconv(float(row[11])))
 
