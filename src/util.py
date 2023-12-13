@@ -11,6 +11,32 @@ KEYPAD_DOT = 46
 KEYPAD_DASH = 464
 KEY_UPARROW = 259
 AMBIENT_TEMP = 20 # TODO update this based on environment
+DAC1_REF = 5 #Ref value for DAC1, updated by reading later
+KEYPAD_MODE_BUTTONS = [52, 53, 54, 465, 55, 56, 57] #ASCII codes for numbers + mode buttons
+KEY_BACKSPACE = [263, 127, 8]
+KEY_ENTER = [343, 10, 13, 459] #Possible ASCII codes for enter key
+use_labjack = True
+
+# AIN 127-120 for PT 1-8, AIN 0-2 for TC 1-3, AIN 60 for FM1, AIN 48-49 for Load Cell 1-2
+ain_channels = ["AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
+                "AIN0", "AIN1", "AIN2",
+                "AIN60",
+                "AIN48", "AIN49"]
+
+sensor_keys = ["PT1", "PT2", "PT3", "PT4", "PT5", "PT6", "PT7", "PT8",
+              "TC1", "TC2", "TC3",
+              "FM1",
+              "LC1", "LC2"]
+
+sensor_units = ["psi", "psi", "psi", "psi", "psi", "psi", "psi", "psi",
+                "*F", "*F", "*F", 
+                "GPM", "lbf", "lbf"]
+
+valid_commands = []
+for valve in ['sv 1 ', 'sv 2 ', 'sv 3 ', 'sv 4 ', 'sv 5 ', 'mav 1 ']:
+    for state in ['on', 'off']:
+        valid_commands.append(valve + state)
+valid_commands.append('')
 
 class Mode(Enum):
     DEFAULT = 0
@@ -71,15 +97,14 @@ class TC(Sensor):
         """
         # constants
         r_ref = 15000
-        v_c = 5
+        v_c = DAC1_REF
         alpha = 0.00392 # Ohms/Ohms/ºC
         r_nom = 100
 
         r_rtd = (r_ref * (v_c - volt_act))/(volt_act)
-        delta_temp = (1/alpha) * ((r_rtd/r_nom) - 1)
-        temp = AMBIENT_TEMP + delta_temp 
-
-        return temp
+        delta_tempC = (1/alpha) * ((r_rtd/r_nom) - 1)
+        #temp = AMBIENT_TEMP + delta_temp
+        return delta_tempC *(9/5) + 32 #return in *F
 
 class LC(Sensor):
 
@@ -95,25 +120,6 @@ class LC(Sensor):
         b = self.val_2
 
         return 1000 * ((m * x) + b)
-
-use_labjack = True
-
-# AIN 127-120 for PT 1-8, AIN 0-2 for TC 1-3, AIN 60 for FM1, AIN 48-49 for Load Cell 1-2
-ain_channels = ["AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
-                "AIN0", "AIN1", "AIN2",
-                "AIN60",
-                "AIN48", "AIN49"]
-
-sensor_keys = ["PT1", "PT2", "PT3", "PT4", "PT5", "PT6", "PT7", "PT8",
-              "TC1", "TC2", "TC3",
-              "FM1",
-              "LC1", "LC2"]
-
-valid_commands = []
-for valve in ['sv 1 ', 'sv 2 ', 'sv 3 ', 'sv 4 ', 'sv 5 ', 'mav 1 ']:
-    for state in ['on', 'off']:
-        valid_commands.append(valve + state)
-valid_commands.append('')
 
 def state_onoff(state):
     if state:

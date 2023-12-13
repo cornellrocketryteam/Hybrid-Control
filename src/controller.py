@@ -4,7 +4,6 @@ controller.py: Manages user commands and actions
 
 from test_stand import TestStand
 from view import TUI
-import curses
 from util import *
 from labjack import ljm
 import time
@@ -20,25 +19,29 @@ class Controller:
 
         self.awaiting_mode = -1
 
-        self.awaiting_mappings = [52, 53, 54, 465, 55, 56, 57]
-
         self.ain_data = []
 
         info = ljm.getHandleInfo(self.handle)
-
+        
         ljm.eWriteName(self.handle, "STREAM_TRIGGER_INDEX", 0)
         ljm.eWriteName(self.handle, "STREAM_CLOCK_SOURCE", 0)
         ljm.eWriteName(self.handle, "STREAM_SETTLING_US", 0)
         ljm.eWriteName(self.handle, "STREAM_RESOLUTION_INDEX", 0)
         ljm.eWriteName(self.handle, "AIN_ALL_NEGATIVE_CH", 199)
         ljm.eWriteName(self.handle, "AIN_ALL_RANGE", 10.0)
+        ljm.eWriteName(self.handle, "DAC1", 5)
+        time.sleep(0.2) #let DAC1 settle
+        DAC1_REF = ljm.eReadName(self.handle, "DAC1")
 
+        #Setting sensor ranges, negative channels
         aNames = ["AIN60_NEGATIVE_CH", "AIN60_RANGE",
                 "AIN48_NEGATIVE_CH", "AIN48_RANGE",
-                "AIN49_NEGATIVE_CH", "AIN49_RANGE",]
+                "AIN49_NEGATIVE_CH", "AIN49_RANGE",
+                "AIN0_RANGE", "AIN1_RANGE", "AIN2_RANGE", "AIN60_RANGE"]
         aValues = [ljm.constants.GND, 2.4,
-                56, 10.0,
-                57, 10.0,]
+                56, 0.1,
+                57, 0.1,
+                10.0, 10.0, 10.0, 10.0]
         ljm.eWriteNames(self.handle, len(aNames), aNames, aValues)
 
     def run(self) -> None:
@@ -51,9 +54,11 @@ class Controller:
                 input_str = self.tui.input_str
                 input_str = input_str[2:]
                 
+                #Process up arrow to replace text box with last command
                 if c == KEY_UPARROW: 
                     self.tui.input_str = "> " + self.last_command
 
+                #Handle Valve Buttons
                 if input_str == "" and c in [KEYPAD_0,KEYPAD_1,KEYPAD_2,KEYPAD_3,KEYPAD_DOT,KEYPAD_DASH]: #Valve keypad
                     if c == KEYPAD_0:
                         self.tui.input_str = "> sv 1 " + state_onoff(self.test_stand.sv_states[0])
@@ -68,9 +73,9 @@ class Controller:
                     elif c == KEYPAD_DASH:
                         self.tui.input_str = "> mav 1 " + state_onoff(self.test_stand.mav_states[0])
                     
-
-                if input_str == "" and ((c >= 52 and c <= 61) or c == 465) : #Mode Popups
-                    index = self.awaiting_mappings.index(c)
+                #Handle State Buttons
+                if input_str == "" and c in KEYPAD_MODE_BUTTONS : #Mode Popups
+                    index = KEYPAD_MODE_BUTTONS.index(c)
                     if self.awaiting_mode == index:
                         self.tui.end_await()
                         self.awaiting_mode = -1
@@ -81,8 +86,9 @@ class Controller:
 
                     self.tui.clear()
                     continue
-
-                if input_str == "" and (c == curses.KEY_ENTER or c == 10 or c == 13 or c == 459):
+                
+                #Handle State Confirmations
+                if input_str == "" and (c in KEY_ENTER):
                     if self.awaiting_mode != -1:
                         if self.awaiting_mode == 4:
                             self.tui.supercharged = True 
@@ -95,7 +101,8 @@ class Controller:
                 if c == 27:
                     break
 
-                elif c == curses.KEY_ENTER or c == 10 or c == 13 or c == 459:
+                #Handle Enter Key
+                elif c in KEY_ENTER:
                     if input_str in valid_commands:
                         self.last_command = input_str
                         if input_str == "quit":
@@ -114,10 +121,12 @@ class Controller:
                                 self.test_stand.mav_off(int(words[1]))
                     self.tui.input_str = "> "
                     self.tui.clear()
-                elif c == curses.KEY_BACKSPACE or c == 127 or c == 8:
+                elif c in KEY_BACKSPACE:
                     if len(input_str) > 0:
                         self.tui.input_str = self.tui.input_str[:-1]
                         self.tui.clear()
+
+                #Handle Letter Inputs
                 else:
                     if c not in [-1, KEYPAD_0, KEYPAD_1, KEYPAD_2, KEYPAD_3, KEYPAD_DOT, KEYPAD_DASH, KEY_UPARROW]:
                         self.tui.input_str += chr(c)
@@ -132,7 +141,6 @@ class Controller:
         """
 
         try:
-            #print("trying to read")
             with open("labjack_data.csv", 'w') as file:
 
                 aScanListNames = ain_channels
@@ -163,8 +171,8 @@ class Controller:
                         for k in range(j, j+numAddresses):
                             if aData[k] == -9999.0:
                                 totalSkip += 1
-                            file.write(str(round(aData[k], 9)) + ", ")
-                            data_temp.append(round(aData[k], 9))
+                            file.write(str(round(aData[k], 10)) + ", ")
+                            data_temp.append(round(aData[k], 10))
                         file.write('\n')
                         self.ain_data = data_temp
 
@@ -177,4 +185,3 @@ class Controller:
 
         except Exception as e:
             print(e)
-        

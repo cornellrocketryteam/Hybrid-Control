@@ -38,10 +38,12 @@ class TUI:
      
         self.stdscr.refresh()
 
+        #Title
         self.stdscr.addstr(0, 0, "=" * curses.COLS)
         self.stdscr.addstr(1, 0, "Hybrid Test Stand Control", curses.A_BOLD)
         self.stdscr.addstr(2, 0, "=" * curses.COLS)
 
+        #Valve Names and State
         for i in range(0, len(self.test_stand.sv_states)):
             sv_str = "SV {num}: {state}".format(num = str(i+1) + " " + nameofSV(i+1), state = "ON" if self.test_stand.sv_states[i] else "OFF")
             self.stdscr.addstr(i+4, 0, sv_str)
@@ -51,36 +53,38 @@ class TUI:
         self.stdscr.addstr(10, 0, mav_str_1)
         self.stdscr.addstr(11, 0, mav_str_2)
 
+        #Sensor Names and Values
         data_dict = self.convert_data(ain_data, self.test_stand.sensor_dict)
-        
-        i = 0
-        for s in sensor_keys:
-            s_str = s + ": {value}".format(value = str(round(data_dict[s], 3)) if s in data_dict else "0")
+        for i, s in enumerate(sensor_keys):
+            s_str = s + ": {value} {unit}".format(value = str(round(data_dict[s], 3)) if s in data_dict else "0", unit = sensor_units[i])
             self.stdscr.addstr(15+i, 0, s_str)
-            i += 1
 
+        #Printing Mode Names and active *
         if self.mode == 0:
             self.stdscr.addstr(4, 48, "* " + self.modes[0], curses.A_BOLD)
         else:
             self.stdscr.addstr(4, 50, self.modes[0])
 
-        for i in range(1, 7):
-            if i == 4:
+        for modeIndex in range(1, 7):
+               if modeIndex == 4:
                 if self.supercharged:
-                    self.stdscr.addstr(i+5, 50, "Supercharged", curses.A_ITALIC)
+                    self.stdscr.addstr(modeIndex+5, 50, "Supercharged", curses.BOLD)
                 else:
-                    self.stdscr.addstr(i+5, 50, self.modes[i])
+                    self.stdscr.addstr(modeIndex+5, 50, self.modes[modeIndex])
             else:
-                if self.mode == i:
-                    self.stdscr.addstr(i+5, 48, "* " + self.modes[i], curses.A_BOLD)
+                if self.mode == modeIndex:
+                    self.stdscr.addstr(modeIndex+5, 48, "* " + self.modes[modeIndex], curses.A_BOLD)
                 else:
-                    self.stdscr.addstr(i+5, 50, self.modes[i])
+                    self.stdscr.addstr(modeIndex+5, 50, self.modes[modeIndex])
 
+        #Confirm mode dialogue
         if self.awaited_mode != -1:
             self.stdscr.addstr(curses.LINES - 3, 0, "Confirm")
             self.stdscr.addstr(curses.LINES - 3, 8, self.modes[self.awaited_mode], curses.A_BOLD)
         else:
             self.stdscr.addstr(curses.LINES - 1, 0, "")
+        
+        #Input Text
         self.stdscr.addstr(curses.LINES - 1, 0, self.input_str)
 
     def get_input(self) -> int:

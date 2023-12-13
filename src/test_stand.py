@@ -11,16 +11,11 @@ import time
 class TestStand:
 
     def __init__(self, handle: int) -> None:
-        # Consider a class
         self.sv_states = [False, False, False, False, False]
         self.sv_dio = [1, 0, 2, 3, 4]
         self.sv_freq = 1000
         self.sv_dc = 60
         self.sv_timers = []
-
-        # self.temp_timer = threading.Timer(150 / 1000, self._sv_pwm, [2])
-        # for i in range(5):
-        #     self.sv_timers.append(threading.Timer(150 / 1000, self._sv_pwm, [i]))
 
         self.mav_states = [False, False]
         self.mav_dio = [5, 6]
@@ -31,13 +26,13 @@ class TestStand:
         # pressure (PSI) - 8x
         self.pt_pressures = []
 
-        # Thermocouplers (Temp Kelvin) - 4x
+        # Thermocouplers (Temp F) - 4x
         self.tc_temps = []
 
         # Flowmeter (Gallons per min) - 1x
         self.flowmeter_gpm = -1
 
-        # Load cell (Kilograms) - 2x
+        # Load cell (KLbs) - 2x
         self.load_cell_weights = []
 
         self.handle = handle
@@ -64,6 +59,7 @@ class TestStand:
                 self.mav_states[num - 1] = False
                 self._mav_actuate(num, 72.6)
             else:
+                return #TODO SCUFFED PWM
                 self.mav_states[num - 1] = False
                 self._mav_actuate(num, 26.4)
 
