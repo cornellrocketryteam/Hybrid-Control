@@ -141,7 +141,7 @@ class Controller:
         """
 
         try:
-            with open("labjack_data.csv", 'w') as file:
+            with open("labjack_data.csv", 'a') as file:
 
                 aScanListNames = ain_channels
                 numAddresses = len(aScanListNames)
