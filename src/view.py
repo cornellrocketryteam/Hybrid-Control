@@ -56,7 +56,7 @@ class TUI:
         #Sensor Names and Values
         data_dict = self.convert_data(ain_data, self.test_stand.sensor_dict)
         for i, s in enumerate(sensor_keys):
-            s_str = s + ": {value} {unit}".format(value = str(round(data_dict[s], 3)) if s in data_dict else "0", unit = sensor_units[i])
+            s_str = s + ": {value} {unit}         ".format(value = str(round(data_dict[s], 3)) if s in data_dict else "0", unit = sensor_units[i])
             self.stdscr.addstr(15+i, 0, s_str)
 
         #Printing Mode Names and active *
@@ -68,7 +68,7 @@ class TUI:
         for modeIndex in range(1, 7):
             if modeIndex == 4:
                 if self.supercharged:
-                    self.stdscr.addstr(modeIndex+5, 50, "Supercharged", curses.BOLD)
+                    self.stdscr.addstr(modeIndex+5, 50, "Supercharged", curses.A_BOLD)
                 else:
                     self.stdscr.addstr(modeIndex+5, 50, self.modes[modeIndex])
             else:

@@ -16,6 +16,8 @@ class TestStand:
         self.sv_freq = 1000
         self.sv_dc = 60
         self.sv_timers = []
+        self.handle = handle
+
 
         self.mav_states = [False, False]
         self.mav_dio = [5, 6]
@@ -35,13 +37,12 @@ class TestStand:
         # Load cell (KLbs) - 2x
         self.load_cell_weights = []
 
-        self.handle = handle
-
         self.awaited_mode = -1
 
         self.tanks_purging = False
         self.engine_purging = False
         self.filling = False
+        
 
     def mav_on(self, num: int) -> None:
         if not self.mav_states[num - 1]:
@@ -202,7 +203,7 @@ class TestStand:
         self.set_sv_states([False, False, False, True, False])
 
     def postfire_purge_engine(self) -> None:
-        self.set_sv_states([True, False, False, True, False])
+        self.set_sv_states([False, True, False, True, False])
     
     def fire(self) -> None:
         self.set_sv_states([False, False, False, True, False])
@@ -227,15 +228,15 @@ class TestStand:
         pt2000 = PT_FM(0.0, 10.0, 0.0, 2000.0)
         pt3000 = PT_FM(0.0, 10.0, 0.0, 3000.0)
         pt1500 = PT_FM(0.0, 10.0, 0.0, 1500.0)
-        tc = TC(0.0, 10.0, 1.0, 200.0)
+        tc = TC(0.0, 10.0, 1.0, 200.0, ljm.eReadName(self.handle, "AIN52"))
         fm = PT_FM(1.72, 10.32, 2.5, 29.0)
-        lc1000 = LC(0.0, 0.0036, 31.27993035, -0.2654580671)
+        lc1000 = LC(0.0, 0.0036, 31.27993035, -0.2654580671) 
         lc2000 = LC(0.0, 0.0036, 60.25906654, -0.02513497142)
 
 
         return {0: pt2000, 1: pt2000, 2: pt3000, 3: pt3000, 4: pt1500, 5: pt2000, 6: pt3000, 7: pt2000,
                 8: tc, 9: tc, 10: tc,
                 11: fm,
-                12: lc1000, 13: lc2000}
+                12: lc2000, 13: lc1000}
 
     

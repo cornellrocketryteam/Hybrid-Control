@@ -12,27 +12,26 @@ import time
 class Controller:
 
     def __init__(self, handle: int) -> None:
+        self.handle = handle
+
+        ljm.eWriteName(self.handle, "STREAM_TRIGGER_INDEX", 0)
+        ljm.eWriteName(self.handle, "STREAM_CLOCK_SOURCE", 0)
+        ljm.eWriteName(self.handle, "STREAM_SETTLING_US", 1000)
+        ljm.eWriteName(self.handle, "STREAM_RESOLUTION_INDEX", 4)
+        ljm.eWriteName(self.handle, "AIN_ALL_NEGATIVE_CH", 199)
+        ljm.eWriteName(self.handle, "AIN_ALL_RANGE", 10.0)
+        ljm.eWriteName(self.handle, "DAC1", 5)
+              
         self.last_command = ""
         self.test_stand = TestStand(handle)
         self.tui = TUI(self.test_stand)
-        self.handle = handle
+       
+
+        info = ljm.getHandleInfo(self.handle)
 
         self.awaiting_mode = -1
 
         self.ain_data = []
-
-        info = ljm.getHandleInfo(self.handle)
-        
-        ljm.eWriteName(self.handle, "STREAM_TRIGGER_INDEX", 0)
-        ljm.eWriteName(self.handle, "STREAM_CLOCK_SOURCE", 0)
-        ljm.eWriteName(self.handle, "STREAM_SETTLING_US", 0)
-        ljm.eWriteName(self.handle, "STREAM_RESOLUTION_INDEX", 0)
-        ljm.eWriteName(self.handle, "AIN_ALL_NEGATIVE_CH", 199)
-        ljm.eWriteName(self.handle, "AIN_ALL_RANGE", 10.0)
-        ljm.eWriteName(self.handle, "DAC1", 5)
-        time.sleep(0.2) #let DAC1 settle
-        DAC1_REF = ljm.eReadName(self.handle, "DAC1")
-
         #Setting sensor ranges, negative channels
         aNames = ["AIN60_NEGATIVE_CH", "AIN60_RANGE",
                 "AIN48_NEGATIVE_CH", "AIN48_RANGE",
@@ -146,7 +145,7 @@ class Controller:
                 aScanListNames = ain_channels
                 numAddresses = len(aScanListNames)
                 aScanList = ljm.namesToAddresses(numAddresses, aScanListNames)[0]
-                scanRate = 100
+                scanRate = 70
                 scansPerRead = int(scanRate / 2)
                 scanRate = ljm.eStreamStart(self.handle, scansPerRead, numAddresses, aScanList, scanRate)
 

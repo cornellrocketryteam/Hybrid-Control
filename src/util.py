@@ -11,7 +11,6 @@ KEYPAD_DOT = 46
 KEYPAD_DASH = 464
 KEY_UPARROW = 259
 AMBIENT_TEMP = 20 # TODO update this based on environment
-DAC1_REF = 5 #Ref value for DAC1, updated by reading later
 KEYPAD_MODE_BUTTONS = [52, 53, 54, 465, 55, 56, 57] #ASCII codes for numbers + mode buttons
 KEY_BACKSPACE = [263, 127, 8]
 KEY_ENTER = [343, 10, 13, 459] #Possible ASCII codes for enter key
@@ -19,14 +18,14 @@ use_labjack = True
 
 # AIN 127-120 for PT 1-8, AIN 0-2 for TC 1-3, AIN 60 for FM1, AIN 48-49 for Load Cell 1-2
 ain_channels = ["AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
-                "AIN0", "AIN1", "AIN2",
+                "AIN3", "AIN1", "AIN2",
                 "AIN60",
                 "AIN48", "AIN49"]
 
-sensor_keys = ["PT1", "PT2", "PT3", "PT4", "PT5", "PT6", "PT7", "PT8",
-              "TC1", "TC2", "TC3",
+sensor_keys = ["PT1: Supercharge Downstream", "PT2: Engine Chamber", "PT3: ??", "PT4: Purge Tank", "PT5: N2O Tank", "PT6: Run Tank", "PT7: Injector Manifold", "PT8: Purge Downstream",
+              "TC1: Run Tank Temp", "TC2: Engine Temp", "TC3: MAV Inlet Temp",
               "FM1",
-              "LC1", "LC2"]
+              "LC1: Thrust", "LC2: Tank Weight"]
 
 sensor_units = ["psi", "psi", "psi", "psi", "psi", "psi", "psi", "psi",
                 "*F", "*F", "*F", 
@@ -82,8 +81,9 @@ class PT_FM(Sensor):
 
 class TC(Sensor):
 
-    def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float) -> None:
+    def __init__(self, volt_min: float, volt_max: float, val_1: float, val_2: float, dacref: float) -> None:
         super().__init__(volt_min, volt_max, val_1, val_2)
+        self.DACREF = dacref
     
     def scale(self, volt_act: float) -> float:
         """
@@ -96,12 +96,12 @@ class TC(Sensor):
         output for an RTD.
         """
         # constants
+        #print(volt_act)
         r_ref = 15000
-        v_c = DAC1_REF
         alpha = 0.00392 # Ohms/Ohms/ºC
         r_nom = 100
 
-        r_rtd = (r_ref * (v_c - volt_act))/(volt_act)
+        r_rtd = (r_ref * (self.DACREF - volt_act))/(volt_act)
         delta_tempC = (1/alpha) * ((r_rtd/r_nom) - 1)
         #temp = AMBIENT_TEMP + delta_temp
         return delta_tempC *(9/5) + 32 #return in *F
