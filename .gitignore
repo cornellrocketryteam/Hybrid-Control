@@ -1,9 +1,11 @@
-# Python
-**/__pycache__
+# Build directories
+**/build/
+
+# Doxygen output directory
+docs/
 
 # macOS
 **/.DS_Store
 
-# Labjack Data
-labjack_data.csv
-converted_data.csv
+# VS Code
+.vscode/
