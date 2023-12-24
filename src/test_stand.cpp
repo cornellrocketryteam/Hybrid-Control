@@ -35,7 +35,6 @@ void TestStand::sv_off(int num) {
 }
 
 void TestStand::sv_pwm(int num) {
-
 }
 
 void TestStand::mav_on() {
