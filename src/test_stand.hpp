@@ -3,7 +3,7 @@
 
 class TestStand {
 public:
-    TestStand();
+    TestStand(int handle);
 
     void sv_on(int num);
     void sv_off(int num);

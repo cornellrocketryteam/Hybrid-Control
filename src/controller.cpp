@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-Controller::Controller() : test_stand(TestStand()), tui(TUI(&test_stand)) {
+Controller::Controller(int handle) : test_stand(TestStand(handle)), tui(TUI(&test_stand)) {
 }
 
 // Instruct the view to update and process any input commands

@@ -1,4 +1,4 @@
 #include "test_stand.hpp"
 
-TestStand::TestStand() {
+TestStand::TestStand(int handle) {
 }

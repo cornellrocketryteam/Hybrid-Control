@@ -4,9 +4,14 @@ project(hybrid C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(Curses REQUIRED)
-include_directories(${CURSES_INCLUDE_DIR})
+# add_definitions(-DUSE_LABJACK)
 
+set(LJM_LIBRARY "/usr/local/lib/libLabJackM.dylib")
+find_package(Curses REQUIRED)
+
+# Include curses and the LabJack library
+include_directories("/usr/local/include/")
+include_directories(${CURSES_INCLUDE_DIR})
 
 # Add compiler flags and definitions
 add_compile_options(
@@ -28,5 +33,5 @@ add_executable(${PROJECT_NAME}
     ${SOURCES}
 )
 
-target_link_libraries(${PROJECT_NAME} ${CURSES_LIBRARIES})
-
+# Link curses and the LabJack library
+target_link_libraries(${PROJECT_NAME} ${LJM_LIBRARY} ${CURSES_LIBRARIES})

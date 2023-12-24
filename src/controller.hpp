@@ -5,7 +5,7 @@
 
 class Controller {
 public:
-    Controller();
+    Controller(int handle);
     void run();
     void read();
 
