@@ -8,11 +8,13 @@ Hybrid test stand control software.
 
 
 ## Running
-*When running while connected to the LabJack, make sure that* ```add_definitions(-DUSE_LABJACK)``` *is uncommented in the ```CMakeLists.txt``` file*
+*When running while connected to the LabJack, make sure that* ```add_definitions(-DUSE_LABJACK)``` *is uncommented in the ```CMakeLists.txt``` file.*
 1. Create a top-level ```build/``` directory
 2. Run ```cmake ..``` from within ```build/```
 3. Run ```make```
 4. Run ```./hybrid```
+
+Note: On macOS, you may have to manually set your ```DYLD_LIBRARY_PATH```, such as ```export DYLD_LIBRARY_PATH=/usr/local/lib/```
    
 ### Usage
 ```zsh
