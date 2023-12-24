@@ -8,7 +8,7 @@ Hybrid test stand control software.
 
 
 ## Running
-*When running while connected to the LabJack, make sure that ```add_definitions(-DUSE_LABJACK)``` is uncommented in the ```CMakeLists.txt``` file*
+*When running while connected to the LabJack, make sure that* ```add_definitions(-DUSE_LABJACK)``` *is uncommented in the ```CMakeLists.txt``` file*
 1. Create a top-level ```build/``` directory
 2. Run ```cmake ..``` from within ```build/```
 3. Run ```make```
@@ -25,3 +25,4 @@ Valve numbers `1-5` for `sv`
 
 ## Useful Links
 - [LabJack PWM pseudocode generator](https://labjack.com/pages/support/?doc=%2Fdatasheets%2Ft-series-datasheet%2F1322-pwm-out-t-series-datasheet%2F)
+- [LabJack function reference](https://labjack.com/pages/support/?doc=/software-driver/ljm-users-guide/function-reference/)
