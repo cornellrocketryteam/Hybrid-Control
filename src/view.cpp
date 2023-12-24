@@ -15,7 +15,7 @@ TUI::TUI(TestStand *test_stand) {
     cbreak();
     curs_set(0);
     start_color();
-    //use_default_colors();
+    // use_default_colors();
 
     init_pair(SCREEN_BKGD, COLOR_BLACK, COLOR_BLUE);
     init_pair(WINDOW_BKGD, COLOR_WHITE, COLOR_WHITE);
@@ -25,10 +25,9 @@ TUI::TUI(TestStand *test_stand) {
     init_pair(TEXT_OFF, COLOR_RED, COLOR_WHITE);
 
     bkgd(COLOR_PAIR(SCREEN_BKGD));
-    
 
-    int x_max{getmaxx(stdscr)};
-    int y_max{getmaxy(stdscr)};
+    int x_max {getmaxx(stdscr)};
+    int y_max {getmaxy(stdscr)};
 
     valves_shadow = newwin(9, (x_max / 2) - 3, 3, 2);
     wbkgd(valves_shadow, COLOR_PAIR(WINDOW_SHADOW));
@@ -41,7 +40,7 @@ TUI::TUI(TestStand *test_stand) {
 
     sensors_window = newwin(9, (x_max / 2) - 3, 17, 1);
     wbkgd(sensors_window, COLOR_PAIR(WINDOW_BKGD));
-    
+
     modes_shadow = newwin(10, (x_max / 2) - 2, 3, (x_max / 2) + 2);
     wbkgd(modes_shadow, COLOR_PAIR(WINDOW_SHADOW));
 
@@ -60,8 +59,8 @@ void TUI::update() {
     werase(valves_window);
     werase(sensors_window);
     werase(modes_window);
-    
-    //wclear(input_window);
+
+        // wclear(input_window);
 
     wattron(valves_window, COLOR_PAIR(TEXT_COLOR));
     wattron(sensors_window, COLOR_PAIR(TEXT_COLOR));
@@ -72,16 +71,16 @@ void TUI::update() {
     box(sensors_window, 0, 0);
     box(modes_window, 0, 0);
     box(input_window, 0, 0);
-    
+
     wattron(valves_window, A_BOLD);
     for (int i = 0; i < 5; i++) {
         if (test_stand->sv_states[i]) {
             wattron(valves_window, COLOR_PAIR(TEXT_ON));
-            mvwprintw(valves_window, i+1, 2, "SV %d: %s", i+1, "ON");
+            mvwprintw(valves_window, i + 1, 2, "SV %d: %s", i + 1, "ON");
             wattroff(valves_window, COLOR_PAIR(TEXT_ON));
         } else {
             wattron(valves_window, COLOR_PAIR(TEXT_OFF));
-            mvwprintw(valves_window, i+1, 2, "SV %d: %s", i+1, "OFF");
+            mvwprintw(valves_window, i + 1, 2, "SV %d: %s", i + 1, "OFF");
             wattroff(valves_window, COLOR_PAIR(TEXT_OFF));
         }
     }
@@ -109,18 +108,18 @@ void TUI::update() {
         if (i == 4) {
             if (supercharged) {
                 wattron(modes_window, A_ITALIC);
-                mvwprintw(modes_window, i+2, 4, "Supercharged");
+                mvwprintw(modes_window, i + 2, 4, "Supercharged");
                 wattroff(modes_window, A_ITALIC);
             } else {
-                mvwprintw(modes_window, i+2, 4, "Supercharge");
+                mvwprintw(modes_window, i + 2, 4, "Supercharge");
             }
         } else {
             if (mode == i) {
                 wattron(modes_window, A_BOLD);
-                mvwprintw(modes_window, i+2, 2, "* %s", modes[i]);
+                mvwprintw(modes_window, i + 2, 2, "* %s", modes[i]);
                 wattroff(modes_window, A_BOLD);
             } else {
-                mvwprintw(modes_window, i+2, 4, "%s", modes[i]);
+                mvwprintw(modes_window, i + 2, 4, "%s", modes[i]);
             }
         }
     }
@@ -136,26 +135,29 @@ void TUI::update() {
 
     wnoutrefresh(sensors_shadow);
     wnoutrefresh(sensors_window);
-   
+
     wnoutrefresh(modes_shadow);
     wnoutrefresh(modes_window);
-    
+
     wnoutrefresh(input_window);
     doupdate();
-    //refresh();
+    // refresh();
 }
-
 
 bool TUI::get_command() {
     int ch;
     bool is_cmd = false;
-    
+
     switch (ch = wgetch(input_window)) {
-    case KEY_ENTER: case 10: case 13:
+    case KEY_ENTER:
+    case 10:
+    case 13:
         wclear(input_window);
         is_cmd = true;
         break;
-    case KEY_BACKSPACE: case 127: case 8:
+    case KEY_BACKSPACE:
+    case 127:
+    case 8:
         if (input.size() > 0) {
             wclear(input_window);
             input.pop_back();

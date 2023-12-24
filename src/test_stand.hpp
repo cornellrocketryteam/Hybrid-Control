@@ -26,7 +26,6 @@ private:
 
     int sv_dio[5] = {1, 0, 2, 3, 4};
     int mav_dio = 5;
-
 };
 
 #endif

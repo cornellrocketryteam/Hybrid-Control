@@ -1,12 +1,11 @@
 #include "controller.hpp"
 #include "test_stand.hpp"
 #include <iostream>
-#include <string>
 #include <sstream>
+#include <string>
 #include <vector>
 
 Controller::Controller() : test_stand(TestStand()), tui(TUI(&test_stand)) {
-
 }
 
 // Instruct the view to update and process any input commands
@@ -37,18 +36,21 @@ void Controller::parse_typed_command() {
         iss >> word;
         tokens.push_back(word);
     } while (iss);
-    
+
     tokens.pop_back();
 
     if (tokens[0] == "sv") {
-        if (tokens[1].size() != 1) { return; }
+        if (tokens[1].size() != 1) {
+            return;
+        }
         int sv = tokens[1].at(0) - '0';
-        if (sv < 1 || sv > 5) { return; }
+        if (sv < 1 || sv > 5) {
+            return;
+        }
 
         if (tokens[2] == "on") {
             test_stand.sv_states[sv - 1] = true;
-        }
-        else if (tokens[2] == "off") {
+        } else if (tokens[2] == "off") {
             test_stand.sv_states[sv - 1] = false;
         }
     }
@@ -61,5 +63,4 @@ void Controller::parse_typed_command() {
 }
 
 void Controller::parse_mode_command() {
-
 }

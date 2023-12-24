@@ -10,7 +10,7 @@ class TUI {
 public:
     TUI(TestStand *test_stand);
     void update();
-    //int get_input();
+    // int get_input();
     void await_mode();
     void end_await();
     void to_mode();
@@ -40,8 +40,6 @@ private:
     int mode = 0;
     char const *modes[7] = {"Default", "Prefire purge tanks", "Prefire purge engines", "Fill", "Supercharge", "Postfire purge engine", "Fire"};
     bool supercharged = false;
-
-    
 };
 
 #endif
