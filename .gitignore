@@ -1,5 +1,8 @@
-# Build directories
-**/build/
+# Build directory
+build/
+
+# Data directory
+data/
 
 # Doxygen output directory
 docs/

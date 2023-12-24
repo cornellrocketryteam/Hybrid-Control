@@ -1,6 +1,7 @@
 #ifndef TEST_STAND_HPP_
 #define TEST_STAND_HPP_
 
+#include "constants.hpp"
 class TestStand {
 public:
     TestStand(int handle);
@@ -17,15 +18,17 @@ public:
     bool mav_state = false;
 
 private:
-    void mav_actuate(float dc);
+    void mav_pwm(float dc);
     void sv_pwm(int num);
 
     void set_sv_states(bool states[]);
 
+    int handle; // TODO: Probably make handle a global variable
+
     // Pin assignments
 
-    int sv_dio[5] = {1, 0, 2, 3, 4};
-    int mav_dio = 5;
+    int sv_dio[5] = {SV1_DIO, SV2_DIO, SV3_DIO, SV4_DIO, SV5_DIO};
+    int mav_dio = MAV_DIO;
 };
 
 #endif

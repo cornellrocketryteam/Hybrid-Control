@@ -49,16 +49,16 @@ void Controller::parse_typed_command() {
         }
 
         if (tokens[2] == "on") {
-            test_stand.sv_states[sv - 1] = true;
+            test_stand.sv_on(sv);
         } else if (tokens[2] == "off") {
-            test_stand.sv_states[sv - 1] = false;
+            test_stand.sv_off(sv);
         }
     }
     if (tui.input == "mav on") {
-        test_stand.mav_state = true;
+        test_stand.mav_on();
     }
     if (tui.input == "mav off") {
-        test_stand.mav_state = false;
+        test_stand.mav_off();
     }
 }
 
