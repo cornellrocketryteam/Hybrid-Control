@@ -3,6 +3,7 @@
 
 #include <curses.h>
 #include <string>
+#include <vector>
 
 #include "test_stand.hpp"
 
@@ -35,6 +36,9 @@ private:
     WINDOW *valves_shadow;
     WINDOW *sensors_shadow;
     WINDOW *modes_shadow;
+
+    std::vector<std::string> command_history;
+    int keys_up = -1;
 
     // Test stand-specific variables
     int mode = 0;

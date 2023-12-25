@@ -49,7 +49,7 @@ TUI::TUI(TestStand *test_stand) {
 
     input_window = newwin(5, x_max - 2, y_max - 5, 1);
     wbkgd(input_window, COLOR_PAIR(WINDOW_BKGD));
-    keypad(input_window, false);
+    keypad(input_window, true);
     nodelay(input_window, true);
 
     refresh();
@@ -152,6 +152,8 @@ bool TUI::get_command() {
     case KEY_ENTER:
     case 10:
     case 13:
+        command_history.insert(command_history.begin(), input);
+        keys_up = -1;
         wclear(input_window);
         is_cmd = true;
         break;
@@ -161,6 +163,24 @@ bool TUI::get_command() {
         if (input.size() > 0) {
             wclear(input_window);
             input.pop_back();
+        }
+        break;
+    case KEY_UP:
+        if (keys_up < (int)command_history.size() - 1) {
+            wclear(input_window);
+            keys_up++;
+            input = command_history[keys_up];
+        }
+        break;
+    case KEY_DOWN:
+        if (keys_up > 0) {
+            wclear(input_window);
+            keys_up--;
+            input = command_history[keys_up];
+        } else if (keys_up == 0) {
+            wclear(input_window);
+            keys_up--;
+            input = "";
         }
         break;
     default:
