@@ -100,7 +100,7 @@ void TestStand::to_mode(Mode mode) {
             set_sv_states("00000");
         }
         break;
-     case Mode::fill:
+    case Mode::fill:
         if (!filling) {
             set_sv_states("00100");
         } else {

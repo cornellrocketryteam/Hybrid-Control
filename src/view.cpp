@@ -123,7 +123,6 @@ void TUI::update() {
             }
         }
     }
-    
 
     mvwprintw(sensors_window, 1, 1, "%d", (rand() % 100));
     wattroff(valves_window, COLOR_PAIR(TEXT_COLOR));

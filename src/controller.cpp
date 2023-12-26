@@ -1,6 +1,6 @@
 #include "controller.hpp"
-#include "test_stand.hpp"
 #include "config.hpp"
+#include "test_stand.hpp"
 #include <iostream>
 #include <sstream>
 #include <string>
