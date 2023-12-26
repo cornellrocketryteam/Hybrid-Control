@@ -97,7 +97,7 @@ void TUI::update() {
 
     wattroff(valves_window, A_BOLD);
 
-    if (mode == 0) {
+    if (test_stand->mode == Mode::default_mode) {
         wattron(modes_window, A_BOLD);
         mvwprintw(modes_window, 1, 2, "* Default");
         wattroff(modes_window, A_BOLD);
@@ -114,7 +114,7 @@ void TUI::update() {
                 mvwprintw(modes_window, i + 2, 4, "Supercharge");
             }
         } else {
-            if (mode == i) {
+            if (test_stand->mode == static_cast<Mode>(i)) {
                 wattron(modes_window, A_BOLD);
                 mvwprintw(modes_window, i + 2, 2, "* %s", modes[i]);
                 wattroff(modes_window, A_BOLD);
@@ -123,6 +123,7 @@ void TUI::update() {
             }
         }
     }
+    
 
     mvwprintw(sensors_window, 1, 1, "%d", (rand() % 100));
     wattroff(valves_window, COLOR_PAIR(TEXT_COLOR));
@@ -165,6 +166,19 @@ bool TUI::get_command() {
             input.pop_back();
         }
         break;
+    // case 52: // 4
+    //     if (input.size() == 0) {
+    //         mvwprintw(sensors_window, 5, 5, "52");
+    //         wrefresh(sensors_window);
+
+    //         command_history.insert(command_history.begin(), "Default");
+    //         keys_up = -1;
+    //         wclear(input_window);
+    //         is_cmd = true;
+    //         input += ch;
+    //         break;
+    //     }
+    //     // fall through
     case KEY_UP:
         if (keys_up < (int)command_history.size() - 1) {
             wclear(input_window);
@@ -185,6 +199,11 @@ bool TUI::get_command() {
         break;
     default:
         if (ch != ERR) {
+            if (input.size() == 0) {
+                if (ch == 52 || ch == 53 || ch == 54 || ch == 465 || ch == 55) {
+                    is_cmd = true;
+                }
+            }
             input += ch;
         }
     }

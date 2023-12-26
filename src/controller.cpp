@@ -1,5 +1,6 @@
 #include "controller.hpp"
 #include "test_stand.hpp"
+#include "config.hpp"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -63,4 +64,16 @@ void Controller::parse_typed_command() {
 }
 
 void Controller::parse_mode_command() {
+    int command = tui.input.at(0) - '0';
+
+    // TODO: Complete this and make less hard-coded
+    if (command == 4) {
+        test_stand.to_mode(Mode::default_mode);
+    }
+    if (command == 5) {
+        test_stand.to_mode(Mode::prefire_purge_tanks);
+    }
+    if (command == 6) {
+        test_stand.to_mode(Mode::fill);
+    }
 }

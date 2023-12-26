@@ -1,5 +1,5 @@
 #include "test_stand.hpp"
-#include "constants.hpp"
+#include "config.hpp"
 #include <LabJackM.h>
 // #include <LJM_Utilities.h>
 #include <cstdio>
@@ -72,4 +72,55 @@ void TestStand::mav_pwm(float dc) {
 
     (void)LJM_eWriteNames(handle, NUM_FRAMES, names, values, &errorAddress);
     // ErrorCheckWithAddress(err, errorAddress, "LJM_eWriteNames"); TODO: Talk to LabJack people about error in util header file
+}
+
+void TestStand::set_sv_states(std::string mask) {
+    for (int i = 0; i < mask.size(); i++) {
+        if (mask[i] - '0') {
+            sv_on(i + 1);
+        } else {
+            sv_off(i + 1);
+        }
+    }
+}
+
+void TestStand::to_mode(Mode mode) {
+    switch (mode) {
+    case Mode::prefire_purge_tanks:
+        if (!tanks_purging) {
+            set_sv_states("01001");
+        } else {
+            set_sv_states("00000");
+        }
+        break;
+    case Mode::prefire_purge_engine:
+        if (!engine_purging) {
+            set_sv_states("10000");
+        } else {
+            set_sv_states("00000");
+        }
+        break;
+     case Mode::fill:
+        if (!filling) {
+            set_sv_states("00100");
+        } else {
+            set_sv_states("00000");
+        }
+        break;
+    case Mode::supercharge:
+        set_sv_states("00010");
+        break;
+    case Mode::postfire_purge_engine:
+        set_sv_states("01010");
+        break;
+    case Mode::fire:
+        set_sv_states("00010");
+        mav_on();
+        break;
+    default:
+        set_sv_states("00000");
+        mav_off();
+    }
+
+    this->mode = mode;
 }
