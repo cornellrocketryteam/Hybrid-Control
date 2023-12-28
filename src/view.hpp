@@ -30,6 +30,7 @@ private:
 
     WINDOW *modes_window;
     WINDOW *input_window;
+    WINDOW *input_container_window;
 
     WINDOW *valves_shadow;
     WINDOW *sensors_shadow;

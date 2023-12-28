@@ -47,10 +47,13 @@ TUI::TUI(TestStand *test_stand) {
     modes_window = newwin(10, (x_max / 2) - 2, 2, (x_max / 2) + 1);
     wbkgd(modes_window, COLOR_PAIR(WINDOW_BKGD));
 
-    input_window = newwin(5, x_max - 2, y_max - 5, 1);
+    input_window = newwin(2, x_max - 5, y_max - 3, 4);
     wbkgd(input_window, COLOR_PAIR(WINDOW_BKGD));
     keypad(input_window, true);
     nodelay(input_window, true);
+
+    input_container_window = newwin(5, x_max - 2, y_max - 5, 1);
+    wbkgd(input_container_window, COLOR_PAIR(WINDOW_BKGD));
 
     refresh();
 }
@@ -59,18 +62,17 @@ void TUI::update() {
     werase(valves_window);
     werase(sensors_window);
     werase(modes_window);
-
-        // wclear(input_window);
+    werase(input_container_window);
 
     wattron(valves_window, COLOR_PAIR(TEXT_COLOR));
     wattron(sensors_window, COLOR_PAIR(TEXT_COLOR));
     wattron(modes_window, COLOR_PAIR(TEXT_COLOR));
-    wattron(input_window, COLOR_PAIR(TEXT_COLOR));
+    wattron(input_container_window, COLOR_PAIR(TEXT_COLOR));
 
     box(valves_window, 0, 0);
     box(sensors_window, 0, 0);
     box(modes_window, 0, 0);
-    box(input_window, 0, 0);
+    box(input_container_window, 0, 0);
 
     wattron(valves_window, A_BOLD);
     for (int i = 0; i < 5; i++) {
@@ -125,10 +127,13 @@ void TUI::update() {
     }
 
     mvwprintw(sensors_window, 1, 1, "%d", (rand() % 100));
+
+    mvwprintw(input_container_window, 1, 2, "Enter a command below");
+    mvwprintw(input_container_window, 3, 2, "> ");
     wattroff(valves_window, COLOR_PAIR(TEXT_COLOR));
     wattroff(sensors_window, COLOR_PAIR(TEXT_COLOR));
     wattroff(modes_window, COLOR_PAIR(TEXT_COLOR));
-    wattroff(input_window, COLOR_PAIR(TEXT_COLOR));
+    wattroff(input_container_window, COLOR_PAIR(TEXT_COLOR));
 
     wnoutrefresh(valves_shadow);
     wnoutrefresh(valves_window);
@@ -139,9 +144,11 @@ void TUI::update() {
     wnoutrefresh(modes_shadow);
     wnoutrefresh(modes_window);
 
+    wnoutrefresh(input_container_window);
     wnoutrefresh(input_window);
+    
     doupdate();
-    // refresh();
+    //refresh();
 }
 
 bool TUI::get_command() {
@@ -165,19 +172,6 @@ bool TUI::get_command() {
             input.pop_back();
         }
         break;
-    // case 52: // 4
-    //     if (input.size() == 0) {
-    //         mvwprintw(sensors_window, 5, 5, "52");
-    //         wrefresh(sensors_window);
-
-    //         command_history.insert(command_history.begin(), "Default");
-    //         keys_up = -1;
-    //         wclear(input_window);
-    //         is_cmd = true;
-    //         input += ch;
-    //         break;
-    //     }
-    //     // fall through
     case KEY_UP:
         if (keys_up < (int)command_history.size() - 1) {
             wclear(input_window);
