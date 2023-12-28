@@ -57,11 +57,9 @@ void Controller::parse_typed_command() {
         } else {
             tui.display_input_error("Unknown SV operation \"" + tokens[2] + "\"");
         }
-    }
-    else if (tui.input == "mav on") {
+    } else if (tui.input == "mav on") {
         test_stand.mav_on();
-    }
-    else if (tui.input == "mav off") {
+    } else if (tui.input == "mav off") {
         test_stand.mav_off();
     } else {
         tui.display_input_error("Unknown command \"" + tui.input + "\"");

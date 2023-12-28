@@ -68,7 +68,7 @@ void TUI::update() {
     werase(valves_window);
     werase(sensors_window);
     werase(modes_window);
-    //werase(input_container_window);
+    // werase(input_container_window);
 
     wattron(valves_window, COLOR_PAIR(TEXT_COLOR));
     wattron(sensors_window, COLOR_PAIR(TEXT_COLOR));
@@ -80,11 +80,11 @@ void TUI::update() {
     box(modes_window, 0, 0);
     box(input_container_window, 0, 0);
 
-    //wattron(valves_window, A_ITALIC);
-    
+    // wattron(valves_window, A_ITALIC);
+
     wattron(valves_window, A_BOLD);
     mvwprintw(valves_window, 0, (x_max / 4) - 3, " Valves ");
-    //wattroff(valves_window, A_ITALIC);
+    // wattroff(valves_window, A_ITALIC);
     for (int i = 0; i < 5; i++) {
         if (test_stand->sv_states[i]) {
             wattron(valves_window, COLOR_PAIR(TEXT_GREEN));
@@ -112,7 +112,7 @@ void TUI::update() {
     wattron(modes_window, A_BOLD);
     mvwprintw(modes_window, 0, (x_max / 4) - 2, " Modes ");
     wattroff(modes_window, A_BOLD);
-    
+
     if (test_stand->mode == Mode::default_mode) {
         wattron(modes_window, A_BOLD);
         mvwprintw(modes_window, 1, 2, "* Default");
@@ -160,9 +160,9 @@ void TUI::update() {
 
     wnoutrefresh(input_container_window);
     wnoutrefresh(input_window);
-    
+
     doupdate();
-    //refresh();
+    // refresh();
 }
 
 bool TUI::get_command() {
