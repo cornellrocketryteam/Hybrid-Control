@@ -5,8 +5,8 @@
 #define WINDOW_BKGD 2
 #define TEXT_COLOR 3
 #define WINDOW_SHADOW 4
-#define TEXT_ON 5
-#define TEXT_OFF 6
+#define TEXT_GREEN 5
+#define TEXT_RED 6
 
 TUI::TUI(TestStand *test_stand) {
     this->test_stand = test_stand;
@@ -21,18 +21,18 @@ TUI::TUI(TestStand *test_stand) {
     init_pair(WINDOW_BKGD, COLOR_WHITE, COLOR_WHITE);
     init_pair(TEXT_COLOR, COLOR_BLACK, COLOR_WHITE);
     init_pair(WINDOW_SHADOW, COLOR_BLACK, COLOR_BLACK);
-    init_pair(TEXT_ON, COLOR_GREEN, COLOR_WHITE);
-    init_pair(TEXT_OFF, COLOR_RED, COLOR_WHITE);
+    init_pair(TEXT_GREEN, COLOR_GREEN, COLOR_WHITE);
+    init_pair(TEXT_RED, COLOR_RED, COLOR_WHITE);
 
     bkgd(COLOR_PAIR(SCREEN_BKGD));
 
     int x_max {getmaxx(stdscr)};
     int y_max {getmaxy(stdscr)};
 
-    valves_shadow = newwin(9, (x_max / 2) - 3, 3, 2);
+    valves_shadow = newwin(10, (x_max / 2) - 3, 3, 2);
     wbkgd(valves_shadow, COLOR_PAIR(WINDOW_SHADOW));
 
-    valves_window = newwin(9, (x_max / 2) - 3, 2, 1);
+    valves_window = newwin(10, (x_max / 2) - 3, 2, 1);
     wbkgd(valves_window, COLOR_PAIR(WINDOW_BKGD));
 
     sensors_shadow = newwin(9, (x_max / 2) - 3, 18, 2);
@@ -55,14 +55,20 @@ TUI::TUI(TestStand *test_stand) {
     input_container_window = newwin(5, x_max - 2, y_max - 5, 1);
     wbkgd(input_container_window, COLOR_PAIR(WINDOW_BKGD));
 
+    wattron(input_container_window, COLOR_PAIR(TEXT_COLOR));
+    mvwprintw(input_container_window, 1, 2, "Enter a command below");
+    mvwprintw(input_container_window, 3, 2, "> ");
+    wattroff(input_container_window, COLOR_PAIR(TEXT_COLOR));
+
     refresh();
 }
 
 void TUI::update() {
+    int x_max {getmaxx(stdscr)};
     werase(valves_window);
     werase(sensors_window);
     werase(modes_window);
-    werase(input_container_window);
+    //werase(input_container_window);
 
     wattron(valves_window, COLOR_PAIR(TEXT_COLOR));
     wattron(sensors_window, COLOR_PAIR(TEXT_COLOR));
@@ -74,31 +80,39 @@ void TUI::update() {
     box(modes_window, 0, 0);
     box(input_container_window, 0, 0);
 
+    //wattron(valves_window, A_ITALIC);
+    
     wattron(valves_window, A_BOLD);
+    mvwprintw(valves_window, 0, (x_max / 4) - 3, " Valves ");
+    //wattroff(valves_window, A_ITALIC);
     for (int i = 0; i < 5; i++) {
         if (test_stand->sv_states[i]) {
-            wattron(valves_window, COLOR_PAIR(TEXT_ON));
+            wattron(valves_window, COLOR_PAIR(TEXT_GREEN));
             mvwprintw(valves_window, i + 1, 2, "SV %d: %s", i + 1, "ON");
-            wattroff(valves_window, COLOR_PAIR(TEXT_ON));
+            wattroff(valves_window, COLOR_PAIR(TEXT_GREEN));
         } else {
-            wattron(valves_window, COLOR_PAIR(TEXT_OFF));
+            wattron(valves_window, COLOR_PAIR(TEXT_RED));
             mvwprintw(valves_window, i + 1, 2, "SV %d: %s", i + 1, "OFF");
-            wattroff(valves_window, COLOR_PAIR(TEXT_OFF));
+            wattroff(valves_window, COLOR_PAIR(TEXT_RED));
         }
     }
 
     if (test_stand->mav_state) {
-        wattron(valves_window, COLOR_PAIR(TEXT_ON));
-        mvwprintw(valves_window, 7, 2, "MAV: %s", "ON");
-        wattroff(valves_window, COLOR_PAIR(TEXT_ON));
+        wattron(valves_window, COLOR_PAIR(TEXT_GREEN));
+        mvwprintw(valves_window, 8, 2, "MAV: %s", "ON");
+        wattroff(valves_window, COLOR_PAIR(TEXT_GREEN));
     } else {
-        wattron(valves_window, COLOR_PAIR(TEXT_OFF));
-        mvwprintw(valves_window, 7, 2, "MAV: %s", "OFF");
-        wattroff(valves_window, COLOR_PAIR(TEXT_OFF));
+        wattron(valves_window, COLOR_PAIR(TEXT_RED));
+        mvwprintw(valves_window, 8, 2, "MAV: %s", "OFF");
+        wattroff(valves_window, COLOR_PAIR(TEXT_RED));
     }
 
     wattroff(valves_window, A_BOLD);
 
+    wattron(modes_window, A_BOLD);
+    mvwprintw(modes_window, 0, (x_max / 4) - 2, " Modes ");
+    wattroff(modes_window, A_BOLD);
+    
     if (test_stand->mode == Mode::default_mode) {
         wattron(modes_window, A_BOLD);
         mvwprintw(modes_window, 1, 2, "* Default");
@@ -128,7 +142,7 @@ void TUI::update() {
 
     mvwprintw(sensors_window, 1, 1, "%d", (rand() % 100));
 
-    mvwprintw(input_container_window, 1, 2, "Enter a command below");
+    // mvwprintw(input_container_window, 1, 2, "Enter a command below");
     mvwprintw(input_container_window, 3, 2, "> ");
     wattroff(valves_window, COLOR_PAIR(TEXT_COLOR));
     wattroff(sensors_window, COLOR_PAIR(TEXT_COLOR));
@@ -205,6 +219,14 @@ bool TUI::get_command() {
     wattroff(input_window, COLOR_PAIR(TEXT_COLOR));
 
     return is_cmd;
+}
+
+void TUI::display_input_error(std::string error) {
+    werase(input_container_window);
+    wattron(input_container_window, COLOR_PAIR(TEXT_RED));
+    mvwprintw(input_container_window, 1, 2, error.c_str());
+    wattroff(input_container_window, COLOR_PAIR(TEXT_RED));
+    wrefresh(input_container_window);
 }
 
 void TUI::clear_input() {

@@ -17,6 +17,8 @@ public:
 
     bool get_command();
 
+    void display_input_error(std::string error);
+
     std::string input;
 
 private:

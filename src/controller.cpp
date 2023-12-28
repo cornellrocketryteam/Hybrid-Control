@@ -46,6 +46,7 @@ void Controller::parse_typed_command() {
         }
         int sv = tokens[1].at(0) - '0';
         if (sv < 1 || sv > 5) {
+            tui.display_input_error("Invalid SV index \"" + std::to_string(sv) + "\"");
             return;
         }
 
@@ -53,17 +54,27 @@ void Controller::parse_typed_command() {
             test_stand.sv_on(sv);
         } else if (tokens[2] == "off") {
             test_stand.sv_off(sv);
+        } else {
+            tui.display_input_error("Unknown SV operation \"" + tokens[2] + "\"");
         }
     }
-    if (tui.input == "mav on") {
+    else if (tui.input == "mav on") {
         test_stand.mav_on();
     }
-    if (tui.input == "mav off") {
+    else if (tui.input == "mav off") {
         test_stand.mav_off();
+    } else {
+        tui.display_input_error("Unknown command \"" + tui.input + "\"");
+        return;
     }
+    tui.display_input_error("");
 }
 
 void Controller::parse_mode_command() {
+    if (tui.input.size() == 0) {
+        tui.display_input_error("");
+        return;
+    }
     int command = tui.input.at(0) - '0';
 
     // TODO: Complete this and make less hard-coded
