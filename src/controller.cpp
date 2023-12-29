@@ -73,18 +73,14 @@ void Controller::parse_mode_command() {
         tui.display_input_error("");
         return;
     }
-    int command = tui.input.at(0) - '0';
+    int command = (int)tui.input.at(0);
 
-    // TODO: Complete this and make less hard-coded
-    if (command == 4) {
-        test_stand.to_mode(Mode::default_mode);
-    } else if (command == 5) {
-        test_stand.to_mode(Mode::prefire_purge_tanks);
-    } else if (command == 6) {
-        test_stand.to_mode(Mode::fill);
-    } else {
-        tui.display_input_error("Unknown command \"" + tui.input + "\"");
-        return;
+    for (int i = 0; i < 7; i++) {
+        if (command == ascii_mappings[i]) {
+            test_stand.to_mode(static_cast<Mode>(i));
+            tui.display_input_error("");
+            return;
+        }
     }
-    tui.display_input_error("");
+    tui.display_input_error("Unknown command \"" + tui.input + "\"");
 }

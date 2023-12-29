@@ -1,5 +1,4 @@
 #include "test_stand.hpp"
-#include "config.hpp"
 #include <LabJackM.h>
 // #include <LJM_Utilities.h>
 #include <cstdio>

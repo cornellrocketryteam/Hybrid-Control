@@ -21,6 +21,6 @@ enum class Mode : int {
     fire
 };
 
-// TODO: Add some kind of mapping between Mode and ASCII character, maybe just modify the existing enum class's ints
+extern int ascii_mappings[7];
 
 #endif // CONFIG_HPP_

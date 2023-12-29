@@ -26,6 +26,7 @@ set(SOURCES
     src/test_stand.cpp
     src/controller.cpp
     src/view.cpp
+    src/config.cpp
 )
 
 # Add all executables

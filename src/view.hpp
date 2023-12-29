@@ -41,8 +41,8 @@ private:
     std::vector<std::string> command_history;
     int keys_up = -1;
 
-    // Test stand-specific variables: Probably move modes to get directly from config
-    char const *modes[7] = {"Default", "Prefire purge tanks", "Prefire purge engines", "Fill", "Supercharge", "Postfire purge engine", "Fire"};
+    // Probably move mode names to get directly from config
+    char const *modes[7] = {"Default", "Prefire purge tanks", "Prefire purge engine", "Fill", "Supercharge", "Postfire purge engine", "Fire"};
 };
 
 #endif

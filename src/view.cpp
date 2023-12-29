@@ -207,8 +207,11 @@ bool TUI::get_command() {
     default:
         if (ch != ERR) {
             if (input.size() == 0) {
-                if (ch == 52 || ch == 53 || ch == 54 || ch == 465 || ch == 55) {
-                    is_cmd = true;
+                for (int ascii : ascii_mappings) {
+                    if (ch == ascii) {
+                        is_cmd = true;
+                        break;
+                    }
                 }
             }
             input += ch;
