@@ -232,6 +232,17 @@ void TUI::display_input_error(std::string error) {
     wrefresh(input_container_window);
 }
 
+void TUI::display_await_mode() {
+    werase(input_container_window);
+    wattron(input_container_window, COLOR_PAIR(TEXT_COLOR));
+    mvwprintw(input_container_window, 1, 2, "Confirm");
+    wattron(input_container_window, A_BOLD);
+    mvwprintw(input_container_window, 1, 10, "%s", modes[static_cast<int>(test_stand->awaited_mode)]);
+    wattroff(input_container_window, A_BOLD);
+    wattroff(input_container_window, COLOR_PAIR(TEXT_COLOR));
+    wrefresh(input_container_window);
+}
+
 void TUI::clear_input() {
     input.clear();
     wclear(input_window);

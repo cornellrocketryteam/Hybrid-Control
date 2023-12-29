@@ -13,14 +13,15 @@ public:
     void mav_on();
     void mav_off();
 
-    void confirm_mode();
-
     bool sv_states[5] = {false, false, false, false, false};
     bool mav_state = false;
 
     void to_mode(Mode mode);
 
     Mode mode = Mode::default_mode;
+
+    Mode awaited_mode;
+    bool is_awaiting = false;
 
     bool supercharged = false;
 

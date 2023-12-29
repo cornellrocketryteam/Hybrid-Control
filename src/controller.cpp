@@ -77,8 +77,20 @@ void Controller::parse_mode_command() {
 
     for (int i = 0; i < 7; i++) {
         if (command == ascii_mappings[i]) {
-            test_stand.to_mode(static_cast<Mode>(i));
-            tui.display_input_error("");
+            Mode mode = static_cast<Mode>(i);
+            if (test_stand.is_awaiting) {
+                if (test_stand.awaited_mode == mode) {
+                    test_stand.to_mode(mode);
+                    test_stand.is_awaiting = false;
+                    tui.display_input_error("");
+                } else {
+                    test_stand.awaited_mode = mode;
+                }
+            } else {
+                test_stand.is_awaiting = true;
+                test_stand.awaited_mode = mode;
+                tui.display_await_mode();
+            }
             return;
         }
     }
