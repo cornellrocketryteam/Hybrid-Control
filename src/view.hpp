@@ -10,7 +10,7 @@
 class TUI {
 public:
     TUI(TestStand *test_stand);
-    
+
     void update();
     bool get_command();
     void clear_input();
