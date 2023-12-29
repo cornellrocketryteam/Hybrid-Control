@@ -22,6 +22,8 @@ public:
 
     Mode mode = Mode::default_mode;
 
+    bool supercharged = false;
+
 private:
     void mav_pwm(float dc);
     void sv_pwm(int num);

@@ -79,10 +79,14 @@ void Controller::parse_mode_command() {
     if (command == 4) {
         test_stand.to_mode(Mode::default_mode);
     }
-    if (command == 5) {
+    else if (command == 5) {
         test_stand.to_mode(Mode::prefire_purge_tanks);
     }
-    if (command == 6) {
+    else if (command == 6) {
         test_stand.to_mode(Mode::fill);
+    } else {
+        tui.display_input_error("Unknown command \"" + tui.input + "\"");
+        return;
     }
+    tui.display_input_error("");
 }

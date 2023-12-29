@@ -13,7 +13,7 @@ TUI::TUI(TestStand *test_stand) {
     initscr();
     noecho();
     cbreak();
-    curs_set(0);
+    curs_set(1);
     start_color();
     // use_default_colors();
 
@@ -122,7 +122,7 @@ void TUI::update() {
     }
     for (int i = 1; i < 7; i++) {
         if (i == 4) {
-            if (supercharged) {
+            if (test_stand->supercharged) {
                 wattron(modes_window, A_ITALIC);
                 mvwprintw(modes_window, i + 2, 4, "Supercharged");
                 wattroff(modes_window, A_ITALIC);

@@ -10,14 +10,14 @@
 class TUI {
 public:
     TUI(TestStand *test_stand);
+    
     void update();
-    void await_mode();
-    void end_await();
+    bool get_command();
     void clear_input();
 
-    bool get_command();
-
     void display_input_error(std::string error);
+    void display_await_mode();
+    void end_await();
 
     std::string input;
 
@@ -43,7 +43,6 @@ private:
 
     // Test stand-specific variables: Probably move modes to get directly from config
     char const *modes[7] = {"Default", "Prefire purge tanks", "Prefire purge engines", "Fill", "Supercharge", "Postfire purge engine", "Fire"};
-    bool supercharged = false;
 };
 
 #endif

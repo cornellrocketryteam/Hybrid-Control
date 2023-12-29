@@ -108,6 +108,7 @@ void TestStand::to_mode(Mode mode) {
         }
         break;
     case Mode::supercharge:
+        supercharged = true;
         set_sv_states("00010");
         break;
     case Mode::postfire_purge_engine:
