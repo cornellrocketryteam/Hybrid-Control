@@ -28,6 +28,10 @@ void Controller::run() {
 }
 
 void Controller::parse_typed_command() {
+    if (test_stand.is_awaiting) {
+        test_stand.is_awaiting = false;
+    }
+
     // Split up input string by spaces
     std::istringstream iss(tui.input);
     std::vector<std::string> tokens;
@@ -70,6 +74,10 @@ void Controller::parse_typed_command() {
 
 void Controller::parse_mode_command() {
     if (tui.input.size() == 0) {
+        if (test_stand.is_awaiting) {
+            test_stand.to_mode(test_stand.awaited_mode);
+            test_stand.is_awaiting = false;
+        }
         tui.display_input_error("");
         return;
     }
@@ -80,7 +88,6 @@ void Controller::parse_mode_command() {
             Mode mode = static_cast<Mode>(i);
             if (test_stand.is_awaiting) {
                 if (test_stand.awaited_mode == mode) {
-                    test_stand.to_mode(mode);
                     test_stand.is_awaiting = false;
                     tui.display_input_error("");
                 } else {

@@ -140,9 +140,8 @@ void TUI::update() {
         }
     }
 
-    mvwprintw(sensors_window, 1, 1, "%d", (rand() % 100));
+    // mvwprintw(sensors_window, 1, 1, "%d", (rand() % 100));
 
-    // mvwprintw(input_container_window, 1, 2, "Enter a command below");
     mvwprintw(input_container_window, 3, 2, "> ");
     wattroff(valves_window, COLOR_PAIR(TEXT_COLOR));
     wattroff(sensors_window, COLOR_PAIR(TEXT_COLOR));
