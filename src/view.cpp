@@ -29,30 +29,33 @@ TUI::TUI(TestStand *test_stand) {
     int x_max {getmaxx(stdscr)};
     int y_max {getmaxy(stdscr)};
 
-    valves_shadow = newwin(10, (x_max / 2) - 3, 3, 2);
+    valves_shadow = newwin(10, (x_max / 2) - 4, 3, 3);
     wbkgd(valves_shadow, COLOR_PAIR(WINDOW_SHADOW));
 
-    valves_window = newwin(10, (x_max / 2) - 3, 2, 1);
+    valves_window = newwin(10, (x_max / 2) - 4, 2, 2);
     wbkgd(valves_window, COLOR_PAIR(WINDOW_BKGD));
 
-    sensors_shadow = newwin(9, (x_max / 2) - 3, 18, 2);
-    wbkgd(sensors_shadow, COLOR_PAIR(WINDOW_SHADOW));
-
-    sensors_window = newwin(9, (x_max / 2) - 3, 17, 1);
-    wbkgd(sensors_window, COLOR_PAIR(WINDOW_BKGD));
-
-    modes_shadow = newwin(10, (x_max / 2) - 2, 3, (x_max / 2) + 2);
+    modes_shadow = newwin(10, (x_max / 2) - 4, 3, (x_max / 2) + 2);
     wbkgd(modes_shadow, COLOR_PAIR(WINDOW_SHADOW));
 
-    modes_window = newwin(10, (x_max / 2) - 2, 2, (x_max / 2) + 1);
+    modes_window = newwin(10, (x_max / 2) - 4, 2, (x_max / 2) + 1);
     wbkgd(modes_window, COLOR_PAIR(WINDOW_BKGD));
 
-    input_window = newwin(2, x_max - 5, y_max - 3, 4);
+    sensors_shadow = newwin(14, x_max - 5, 15, 3);
+    wbkgd(sensors_shadow, COLOR_PAIR(WINDOW_SHADOW));
+
+    sensors_window = newwin(14, x_max - 5, 14, 2);
+    wbkgd(sensors_window, COLOR_PAIR(WINDOW_BKGD));
+
+    input_window = newwin(2, x_max - 8, y_max - 4, 5);
     wbkgd(input_window, COLOR_PAIR(WINDOW_BKGD));
     keypad(input_window, true);
     nodelay(input_window, true);
 
-    input_container_window = newwin(5, x_max - 2, y_max - 5, 1);
+    input_container_shadow = newwin(5, x_max - 5, y_max - 5, 3);
+    wbkgd(input_container_shadow, COLOR_PAIR(WINDOW_SHADOW));
+
+    input_container_window = newwin(5, x_max - 5, y_max - 6, 2);
     wbkgd(input_container_window, COLOR_PAIR(WINDOW_BKGD));
 
     wattron(input_container_window, COLOR_PAIR(TEXT_COLOR));
@@ -68,7 +71,6 @@ void TUI::update() {
     werase(valves_window);
     werase(sensors_window);
     werase(modes_window);
-    // werase(input_container_window);
 
     wattron(valves_window, COLOR_PAIR(TEXT_COLOR));
     wattron(sensors_window, COLOR_PAIR(TEXT_COLOR));
@@ -141,6 +143,23 @@ void TUI::update() {
     }
 
     // mvwprintw(sensors_window, 1, 1, "%d", (rand() % 100));
+    wattron(sensors_window, A_BOLD);
+    mvwprintw(sensors_window, 0, (x_max / 2) - 5, " Sensors ");
+    wattroff(sensors_window, A_BOLD);
+
+    // TODO: Finish and clean up - WIP
+    for (int i = 1; i < 9; i++) {
+        mvwprintw(sensors_window, i, 2, "PT %d", i);
+    }
+
+    mvwprintw(sensors_window, 1, 50, "TC %d", 1);
+    mvwprintw(sensors_window, 2, 50, "TC %d", 2);
+    mvwprintw(sensors_window, 3, 50, "TC %d", 3);
+
+    mvwprintw(sensors_window, 5, 50, "FM %d", 1);
+
+    mvwprintw(sensors_window, 7, 50, "LC %d", 1);
+    mvwprintw(sensors_window, 8, 50, "LC %d", 2);
 
     mvwprintw(input_container_window, 3, 2, "> ");
     wattroff(valves_window, COLOR_PAIR(TEXT_COLOR));
@@ -157,6 +176,7 @@ void TUI::update() {
     wnoutrefresh(modes_shadow);
     wnoutrefresh(modes_window);
 
+    wnoutrefresh(input_container_shadow);
     wnoutrefresh(input_container_window);
     wnoutrefresh(input_window);
 
@@ -237,8 +257,7 @@ void TUI::display_await_mode() {
     mvwprintw(input_container_window, 1, 2, "Confirm");
     wattron(input_container_window, A_BOLD);
     mvwprintw(input_container_window, 1, 10, "%s", modes[static_cast<int>(test_stand->awaited_mode)]);
-    wattroff(input_container_window, A_BOLD);
-    wattroff(input_container_window, COLOR_PAIR(TEXT_COLOR));
+    wattroff(input_container_window, COLOR_PAIR(TEXT_COLOR) | A_BOLD);
     wrefresh(input_container_window);
 }
 

@@ -37,6 +37,7 @@ private:
     WINDOW *valves_shadow;
     WINDOW *sensors_shadow;
     WINDOW *modes_shadow;
+    WINDOW *input_container_shadow;
 
     std::vector<std::string> command_history;
     int keys_up = -1;
