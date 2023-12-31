@@ -1,4 +1,5 @@
 #include "view.hpp"
+#include "config.hpp"
 #include <iostream>
 
 #define SCREEN_BKGD 1
@@ -41,10 +42,10 @@ TUI::TUI(TestStand *test_stand) {
     modes_window = newwin(10, (x_max / 2) - 4, 2, (x_max / 2) + 1);
     wbkgd(modes_window, COLOR_PAIR(WINDOW_BKGD));
 
-    sensors_shadow = newwin(14, x_max - 5, 15, 3);
+    sensors_shadow = newwin(16, x_max - 5, 15, 3);
     wbkgd(sensors_shadow, COLOR_PAIR(WINDOW_SHADOW));
 
-    sensors_window = newwin(14, x_max - 5, 14, 2);
+    sensors_window = newwin(16, x_max - 5, 14, 2);
     wbkgd(sensors_window, COLOR_PAIR(WINDOW_BKGD));
 
     input_window = newwin(2, x_max - 8, y_max - 4, 5);
@@ -148,18 +149,38 @@ void TUI::update() {
     wattroff(sensors_window, A_BOLD);
 
     // TODO: Finish and clean up - WIP
-    for (int i = 1; i < 9; i++) {
-        mvwprintw(sensors_window, i, 2, "PT %d", i);
+
+    wattron(sensors_window, A_ITALIC);
+    mvwprintw(sensors_window, 1, 2, "Pressure Transducers");
+    wattroff(sensors_window, A_ITALIC);
+
+    for (int i = 0; i < pt_names.size(); i++) {
+        mvwprintw(sensors_window, i + 3, 2, "%s %d PSI", pt_names[i].c_str(), 0);
     }
 
-    mvwprintw(sensors_window, 1, 50, "TC %d", 1);
-    mvwprintw(sensors_window, 2, 50, "TC %d", 2);
-    mvwprintw(sensors_window, 3, 50, "TC %d", 3);
+    wattron(sensors_window, A_ITALIC);
+    mvwprintw(sensors_window, 1, 70, "Thermocouples");
+    wattroff(sensors_window, A_ITALIC);
 
-    mvwprintw(sensors_window, 5, 50, "FM %d", 1);
+    for (int i = 0; i < tc_names.size(); i++) {
+        mvwprintw(sensors_window, i + 3, 70, "%s %d F", tc_names[i].c_str(), 0);
+    }
 
-    mvwprintw(sensors_window, 7, 50, "LC %d", 1);
-    mvwprintw(sensors_window, 8, 50, "LC %d", 2);
+    wattron(sensors_window, A_ITALIC);
+    mvwprintw(sensors_window, 7, 70, "Load Cells");
+    wattroff(sensors_window, A_ITALIC);
+
+    for (int i = 0; i < lc_names.size(); i++) {
+        mvwprintw(sensors_window, i + 9, 70, "%s %d lbf", lc_names[i].c_str(), 0);
+    }
+
+    wattron(sensors_window, A_ITALIC);
+    mvwprintw(sensors_window, 12, 2, "Flowmeters");
+    wattroff(sensors_window, A_ITALIC);
+
+    for (int i = 0; i < fm_names.size(); i++) {
+        mvwprintw(sensors_window, i + 14, 2, "%s %d GPM", fm_names[i].c_str(), 0);
+    }
 
     mvwprintw(input_container_window, 3, 2, "> ");
     wattroff(valves_window, COLOR_PAIR(TEXT_COLOR));

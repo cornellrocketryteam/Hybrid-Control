@@ -17,7 +17,6 @@ public:
 
     void display_input_error(std::string error);
     void display_await_mode();
-    void end_await();
 
     std::string input;
 
