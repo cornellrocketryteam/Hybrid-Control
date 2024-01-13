@@ -23,7 +23,8 @@ class TestStand:
         self.mav_dio = [5, 6]
 
         # sensor dict
-        self.sensor_dict = self.initialize_sensors()
+        if use_labjack:
+            self.sensor_dict = self.initialize_sensors()
 
         # pressure (PSI) - 8x
         self.pt_pressures = []

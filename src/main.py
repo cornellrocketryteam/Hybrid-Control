@@ -18,17 +18,22 @@ if __name__ == "__main__":
 
     controller = Controller(handle)
 
-    run = threading.Thread(target= controller.run)
-    read = threading.Thread(target=controller.read, daemon= True)
+    if use_labjack:
+        run = threading.Thread(target= controller.run)
+        read = threading.Thread(target=controller.read, daemon= True)
 
-    run.start()
-    read.start()
+        run.start()
+        read.start()
 
-    
-    run.join()
-    read.join()
+        
+        run.join()
+        read.join()
+    else:
+        controller.run()
 
-    # make data file available to close here ?
 
     if use_labjack:
-        ljm.close(handle)
+        try:
+            pass
+        finally:
+            ljm.close(handle)
