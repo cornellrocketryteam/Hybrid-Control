@@ -83,11 +83,11 @@ void TUI::update() {
     box(modes_window, 0, 0);
     box(input_container_window, 0, 0);
 
-    // wattron(valves_window, A_ITALIC);
+    // wattron(valves_window, NCURSES_BITS(1U,23));
 
     wattron(valves_window, A_BOLD);
     mvwprintw(valves_window, 0, (x_max / 4) - 3, " Valves ");
-    // wattroff(valves_window, A_ITALIC);
+    // wattroff(valves_window, NCURSES_BITS(1U,23));
     for (int i = 0; i < 5; i++) {
         if (test_stand->sv_states[i]) {
             wattron(valves_window, COLOR_PAIR(TEXT_GREEN));
@@ -126,9 +126,9 @@ void TUI::update() {
     for (int i = 1; i < 7; i++) {
         if (i == 4) {
             if (test_stand->supercharged) {
-                wattron(modes_window, A_ITALIC);
+                wattron(modes_window, NCURSES_BITS(1U, 23));
                 mvwprintw(modes_window, i + 2, 4, "Supercharged");
-                wattroff(modes_window, A_ITALIC);
+                wattroff(modes_window, NCURSES_BITS(1U, 23));
             } else {
                 mvwprintw(modes_window, i + 2, 4, "Supercharge");
             }
@@ -150,33 +150,33 @@ void TUI::update() {
 
     // TODO: Finish and clean up - WIP
 
-    wattron(sensors_window, A_ITALIC);
+    wattron(sensors_window, NCURSES_BITS(1U, 23));
     mvwprintw(sensors_window, 1, 2, "Pressure Transducers");
-    wattroff(sensors_window, A_ITALIC);
+    wattroff(sensors_window, NCURSES_BITS(1U, 23));
 
     for (int i = 0; i < pt_names.size(); i++) {
         mvwprintw(sensors_window, i + 3, 2, "%s %d PSI", pt_names[i].c_str(), 0);
     }
 
-    wattron(sensors_window, A_ITALIC);
+    wattron(sensors_window, NCURSES_BITS(1U, 23));
     mvwprintw(sensors_window, 1, 70, "Thermocouples");
-    wattroff(sensors_window, A_ITALIC);
+    wattroff(sensors_window, NCURSES_BITS(1U, 23));
 
     for (int i = 0; i < tc_names.size(); i++) {
         mvwprintw(sensors_window, i + 3, 70, "%s %d F", tc_names[i].c_str(), 0);
     }
 
-    wattron(sensors_window, A_ITALIC);
+    wattron(sensors_window, NCURSES_BITS(1U, 23));
     mvwprintw(sensors_window, 7, 70, "Load Cells");
-    wattroff(sensors_window, A_ITALIC);
+    wattroff(sensors_window, NCURSES_BITS(1U, 23));
 
     for (int i = 0; i < lc_names.size(); i++) {
         mvwprintw(sensors_window, i + 9, 70, "%s %d lbf", lc_names[i].c_str(), 0);
     }
 
-    wattron(sensors_window, A_ITALIC);
+    wattron(sensors_window, NCURSES_BITS(1U, 23));
     mvwprintw(sensors_window, 12, 2, "Flowmeters");
-    wattroff(sensors_window, A_ITALIC);
+    wattroff(sensors_window, NCURSES_BITS(1U, 23));
 
     for (int i = 0; i < fm_names.size(); i++) {
         mvwprintw(sensors_window, i + 14, 2, "%s %d GPM", fm_names[i].c_str(), 0);
