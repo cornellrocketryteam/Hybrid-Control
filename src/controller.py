@@ -13,22 +13,11 @@ class Controller:
 
     def __init__(self, handle: int) -> None:
         self.handle = handle
-
-        ljm.eWriteName(self.handle, "STREAM_TRIGGER_INDEX", 0)
-        ljm.eWriteName(self.handle, "STREAM_CLOCK_SOURCE", 0)
-        ljm.eWriteName(self.handle, "STREAM_SETTLING_US", 1000)
-        ljm.eWriteName(self.handle, "STREAM_RESOLUTION_INDEX", 4)
-        ljm.eWriteName(self.handle, "AIN_ALL_NEGATIVE_CH", 199)
-        ljm.eWriteName(self.handle, "AIN_ALL_RANGE", 10.0)
-        ljm.eWriteName(self.handle, "DAC1", 5)
               
         self.last_command = ""
         self.test_stand = TestStand(handle)
         self.tui = TUI(self.test_stand)
        
-
-        info = ljm.getHandleInfo(self.handle)
-
         self.awaiting_mode = -1
 
         self.ain_data = []
@@ -41,7 +30,16 @@ class Controller:
                 56, 0.1,
                 57, 0.1,
                 10.0, 10.0, 10.0, 10.0]
-        ljm.eWriteNames(self.handle, len(aNames), aNames, aValues)
+        
+        if use_labjack:
+            ljm.eWriteName(self.handle, "STREAM_TRIGGER_INDEX", 0)
+            ljm.eWriteName(self.handle, "STREAM_CLOCK_SOURCE", 0)
+            ljm.eWriteName(self.handle, "STREAM_SETTLING_US", 1000)
+            ljm.eWriteName(self.handle, "STREAM_RESOLUTION_INDEX", 4)
+            ljm.eWriteName(self.handle, "AIN_ALL_NEGATIVE_CH", 199)
+            ljm.eWriteName(self.handle, "AIN_ALL_RANGE", 10.0)
+            ljm.eWriteName(self.handle, "DAC1", 5)
+            ljm.eWriteNames(self.handle, len(aNames), aNames, aValues)
 
     def run(self) -> None:
                     

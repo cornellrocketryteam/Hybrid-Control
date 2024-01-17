@@ -54,10 +54,11 @@ class TUI:
         self.stdscr.addstr(11, 0, mav_str_2)
 
         #Sensor Names and Values
-        data_dict = self.convert_data(ain_data, self.test_stand.sensor_dict)
-        for i, s in enumerate(sensor_keys):
-            s_str = s + ": {value} {unit}         ".format(value = str(round(data_dict[s], 3)) if s in data_dict else "0", unit = sensor_units[i])
-            self.stdscr.addstr(15+i, 0, s_str)
+        if use_labjack:
+            data_dict = self.convert_data(ain_data, self.test_stand.sensor_dict)
+            for i, s in enumerate(sensor_keys):
+                s_str = s + ": {value} {unit}         ".format(value = str(round(data_dict[s], 3)) if s in data_dict else "0", unit = sensor_units[i])
+                self.stdscr.addstr(15+i, 0, s_str)
 
         #Printing Mode Names and active *
         if self.mode == 0:
