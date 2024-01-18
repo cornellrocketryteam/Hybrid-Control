@@ -36,4 +36,5 @@ if __name__ == "__main__":
         try:
             pass
         finally:
+            #log quit
             ljm.close(handle)

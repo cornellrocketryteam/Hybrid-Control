@@ -47,6 +47,7 @@ class Controller:
             try:
                 self.tui.update_screen(self.ain_data)
                 c = self.tui.get_input()
+                # log c
 
                 input_str = self.tui.input_str
                 input_str = input_str[2:]
@@ -172,6 +173,7 @@ class Controller:
                             data_temp.append(round(aData[k], 10))
                         file.write('\n')
                         self.ain_data = data_temp
+                        # log time stamp
 
                 end = time.time()
 

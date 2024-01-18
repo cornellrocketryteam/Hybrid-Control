@@ -1,5 +1,5 @@
 ###To use this file, the only thing you need to change is the variable path1
-path1 = "C:\\Users\\chris\\Hybrid-Control\\src\\05 high dip tube.csv"
+path1 = "/Users/nissiragland/Documents/CRT/Hybrid Control/Hybrid-Control/src/07 hotfire_01-15-24_cleaned.csv"
 
 ###If you want to plot multiple files one after another, build this list of pathoffsets and paths
 ##Changing the pathoffset cuts the plotted data at the end by that amount, can be used to remove the 
@@ -15,7 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def savitzky_golay(y, window_size, order, deriv=0, rate=1):
-    r"""Smooth (and optionally differentiate) data with a Savitzky-Golay filter.
+    """Smooth (and optionally differentiate) data with a Savitzky-Golay filter.
     The Savitzky-Golay filter removes high frequency noise from data.
     It has the advantage of preserving the original shape and
     features of the signal better than other types of filtering
@@ -135,20 +135,20 @@ for offset, path in PATHS:
                 break #Cut off incomplete data from crashing etc
             else:
                 numpoints = len(sensors[0])
-            sensors[0].append(PT2kConv(float(row[0])))
-            sensors[1].append(PT3kConv(float(row[1])))
-            sensors[2].append(PT3kConv(float(row[2])))
-            sensors[3].append(PT3kConv(float(row[3])))
-            sensors[4].append(PT15kconv(float(row[4])))
-            sensors[5].append(PT2kConv(float(row[5])))
-            sensors[6].append(PT2kConv(float(row[6])))
-            sensors[7].append(PT2kConv(float(row[7])))
-            sensors[8].append(TCConv(float(row[8])))
-            sensors[9].append(TCConv(float(row[9])))
-            sensors[10].append(TCConv(float(row[10])))
-            sensors[11].append(FMconv(float(row[11])))
-            sensors[12].append(LD1conv(float(row[12])))
-            sensors[13].append(LD2conv(float(row[13])))
+            sensors[0].append(float(row[0])) #PT2kConv(float(row[0])))
+            sensors[1].append(float(row[1])) #PT3kConv(float(row[1])))
+            sensors[2].append(float(row[2])) #(PT3kConv(float(row[2])))
+            sensors[3].append(float(row[3]))#(PT3kConv(float(row[3])))
+            sensors[4].append(float(row[4]))#(PT15kconv(float(row[4])))
+            sensors[5].append(float(row[5]))#(PT2kConv(float(row[5])))
+            sensors[6].append(float(row[6]))#(PT2kConv(float(row[6])))
+            sensors[7].append(float(row[7]))#(PT2kConv(float(row[7])))
+            sensors[8].append(float(row[8]))#(TCConv(float(row[8])))
+            sensors[9].append(float(row[9]))#(TCConv(float(row[9])))
+            sensors[10].append(float(row[10]))#(TCConv(float(row[10])))
+            sensors[11].append(float(row[11]))#(FMconv(float(row[11])))
+            sensors[12].append(float(row[12]))#(LD1conv(float(row[12])))
+            sensors[13].append(float(row[13]))#(LD2conv(float(row[13])))
     file.close()
 
     numPoints = np.linspace(0,numpoints * 1/100, numpoints + 1)
