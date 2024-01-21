@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.15)
+project(EXAMPLE C CXX)
+add_executable(test stream_basic.c)
+target_include_directories(test PRIVATE ${CMAKE_SOURCE_DIR} /usr/local/include)
+target_link_directories(test PRIVATE /usr/local/lib)
+target_link_libraries(test PRIVATE LabJackM)
