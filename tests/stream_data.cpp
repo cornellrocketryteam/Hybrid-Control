@@ -4,6 +4,7 @@
 
 #include "LJM_StreamUtilities.h"
 #include <LabJackM.h>
+#include <fstream>
 #include <stdio.h>
 #include <string.h>
 
@@ -66,12 +67,6 @@ void HardcodedConfigureStream(int handle) {
                               LJM_GND,
                               0.1, 0.1, 56, 57};
 
-    // Individual Config Consts
-    const int AIN48_RANGE = 1;
-    const int AIN49_RANGE = 1;
-    const int AIN48_NEGATIVE_CH = 56;
-    const int AIN49_NEGATIVE_CH = 57;
-
     printf("Writing configurations:\n");
     WriteNamesOrDie(handle, NUM_FRAMES, aNames, aValues);
 }
@@ -87,14 +82,13 @@ void Stream(int handle, int numChannels, const char **channelNames,
     unsigned int receiveBufferBytesBacklog = 0;
     int connectionType;
 
-    // int *aScanList = malloc<int *>(sizeof(int) * numChannels);
     int *aScanList = new int[numChannels];
-
     unsigned int aDataSize = numChannels * scansPerRead;
     double *aData = new double[sizeof(double) * aDataSize];
 
-    err = LJM_GetHandleInfo(handle, NULL, &connectionType, NULL, NULL, NULL,
-                            NULL);
+    std::ofstream file("test_data.csv");
+
+    err = LJM_GetHandleInfo(handle, NULL, &connectionType, NULL, NULL, NULL, NULL);
     ErrorCheck(err, "LJM_GetHandleInfo");
 
  // Clear aData. This is not strictly necessary, but can help debugging.
@@ -136,7 +130,10 @@ void Stream(int handle, int numChannels, const char **channelNames,
         printf("  1st scan out of %d:\n", scansPerRead);
         for (channel = 0; channel < numChannels; channel++) {
             printf("    %s = %0.5f\n", channelNames[channel], aData[channel]);
+            file << aData[channel] << ", ";
         }
+
+        file << "\n";
 
         numSkippedScans = CountAndOutputNumSkippedScans(numChannels,
                                                         scansPerRead, aData);
@@ -148,6 +145,9 @@ void Stream(int handle, int numChannels, const char **channelNames,
         }
         printf("\n");
     }
+
+    file.close();
+
     if (totalSkippedScans) {
         printf("\n****** Total number of skipped scans: %d ******\n\n",
                totalSkippedScans);
