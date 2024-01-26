@@ -81,8 +81,14 @@ void HardcodedConfigureStream(int handle) {
     const int STREAM_CLOCK_SOURCE = 0;
     const int STREAM_RESOLUTION_INDEX = 0;
     const double STREAM_SETTLING_US = 0;
-    const double AIN_ALL_RANGE = 0;
+    const double AIN_ALL_RANGE = 10;
     const int AIN_ALL_NEGATIVE_CH = LJM_GND;
+
+    // Individual Config Consts
+    const int AIN48_RANGE = 1;
+    const int AIN49_RANGE = 1;
+    const int AIN48_NEGATIVE_CH = 56;
+    const int AIN49_NEGATIVE_CH = 57;
 
     printf("Writing configurations:\n");
 
@@ -121,6 +127,11 @@ void HardcodedConfigureStream(int handle) {
     }
     printf("\n");
     WriteNameOrDie(handle, "AIN_ALL_NEGATIVE_CH", AIN_ALL_NEGATIVE_CH);
+
+// Additional Config
+    printf("    Setting AIN48_RANGE to %d\n",
+           AIN48_RANGE);
+    WriteNameOrDie(handle, "AIN48_RANGE", AIN48_RANGE);
 }
 
 void Stream(int handle, int numChannels, const char **channelNames,
