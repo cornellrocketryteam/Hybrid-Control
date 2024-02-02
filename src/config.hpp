@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+/**
+ * Pin assignments.
+ */
 #define SV1_DIO 1
 #define SV2_DIO 0
 #define SV3_DIO 2
@@ -14,6 +17,9 @@
 
 #define MAV_ROLL_VALUE 240240.24024
 
+/**
+ * Defines each mode
+ */
 enum class Mode : int {
     default_mode = 0,
     prefire_purge_tanks,
@@ -24,8 +30,14 @@ enum class Mode : int {
     fire
 };
 
+/**
+ * The ASCII key mappings for each mode.
+ */
 extern int ascii_mappings[7];
 
+/**
+ * Descriptive names for each sensor to display on the TUI.
+ */
 extern std::vector<std::string> pt_names;
 extern std::vector<std::string> tc_names;
 extern std::vector<std::string> lc_names;
