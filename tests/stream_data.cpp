@@ -5,6 +5,7 @@
 #include "LJM_StreamUtilities.h"
 #include <LabJackM.h>
 #include <fstream>
+#include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -86,6 +87,12 @@ void Stream(int handle, int numChannels, const char **channelNames,
     unsigned int aDataSize = numChannels * scansPerRead;
     double *aData = new double[sizeof(double) * aDataSize];
 
+    char c;
+
+    initscr();
+    noecho();
+    cbreak();
+
     std::ofstream file("test_data.csv");
 
     err = LJM_GetHandleInfo(handle, NULL, &connectionType, NULL, NULL, NULL, NULL);
@@ -117,8 +124,8 @@ void Stream(int handle, int numChannels, const char **channelNames,
                               &LJMScanBacklog);
         ErrorCheck(err, "LJM_eStreamRead");
 
-        printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d",
-               iteration, deviceScanBacklog, LJMScanBacklog);
+        // printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d",
+        //        iteration, deviceScanBacklog, LJMScanBacklog);
         if (connectionType != LJM_ctUSB) {
             err = LJM_GetStreamTCPReceiveBufferStatus(handle,
                                                       &receiveBufferBytesSize, &receiveBufferBytesBacklog);
@@ -131,6 +138,11 @@ void Stream(int handle, int numChannels, const char **channelNames,
         for (channel = 0; channel < numChannels; channel++) {
             printf("    %s = %0.5f\n", channelNames[channel], aData[channel]);
             file << aData[channel] << ", ";
+        }
+
+        c = getch();
+        if (c == 'c') {
+            break;
         }
 
         file << "\n";
