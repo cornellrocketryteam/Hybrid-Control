@@ -1,6 +1,6 @@
 #include "test_stand.hpp"
+#include "LJM_Utilities.h"
 #include <LabJackM.h>
-// #include <LJM_Utilities.h>
 #include <cstdio>
 
 TestStand::TestStand(int handle) : handle(handle) {

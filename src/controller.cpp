@@ -1,6 +1,9 @@
 #include "controller.hpp"
+#include "LJM_StreamUtilities.h"
 #include "config.hpp"
 #include "test_stand.hpp"
+#include <LabJackM.h>
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -24,6 +27,109 @@ void Controller::run() {
             // TODO: Rework this so controller doesn't have to call clear - Probably pass the command as a buffer from get_command()
             tui.clear_input();
         }
+    }
+}
+
+void Controller::read() {
+
+    double INIT_SCAN_RATE = 70;
+    int SCANS_PER_READ = (int)INIT_SCAN_RATE / 2;
+    const int NUM_READS = 10;
+    enum { NUM_CHANNELS = 14 };
+    const char *CHANNEL_NAMES[] = {"AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
+                                   "AIN3", "AIN1", "AIN2",
+                                   "AIN60",
+                                   "AIN48", "AIN49"};
+
+    enum { NUM_FRAMES = 10 };
+    const char *aNames[] = {"STREAM_TRIGGER_INDEX", "STREAM_CLOCK_SOURCE", "STREAM_RESOLUTION_INDEX",
+                            "STREAM_SETTLING_US", "AIN_ALL_RANGE", "AIN_ALL_NEGATIVE_CH",
+                            "AIN48_RANGE", "AIN49_RANGE", "AIN48_NEGATIVE_CH", "AIN49_NEGATIVE_CH"};
+    const double aValues[] = {0,
+                              0,
+                              4,
+                              1000,
+                              10,
+                              LJM_GND,
+                              0.1, 0.1, 56, 57};
+
+    int err, iteration, channel;
+    int deviceScanBacklog = 0;
+    int LJMScanBacklog = 0;
+    unsigned int receiveBufferBytesSize = 0;
+    unsigned int receiveBufferBytesBacklog = 0;
+    int connectionType;
+
+    int *aScanList = new int[NUM_CHANNELS];
+    unsigned int aDataSize = NUM_CHANNELS * SCANS_PER_READ;
+    double *aData = new double[sizeof(double) * aDataSize];
+
+    try {
+
+        std::ofstream file("test_data.csv");
+
+        err = LJM_GetHandleInfo(handle, NULL, &connectionType, NULL, NULL, NULL, NULL);
+        ErrorCheck(err, "LJM_GetHandleInfo");
+
+    // Clear aData. This is not strictly necessary, but can help debugging.
+        memset(aData, 0, sizeof(double) * aDataSize);
+
+        err = LJM_NamesToAddresses(NUM_CHANNELS, CHANNEL_NAMES, aScanList, NULL);
+        ErrorCheck(err, "Getting positive channel addresses");
+
+        WriteNamesOrDie(handle, NUM_FRAMES, aNames, aValues);
+
+        printf("\n");
+        printf("Starting stream...\n");
+        err = LJM_eStreamStart(handle, SCANS_PER_READ, NUM_CHANNELS, aScanList,
+                               &INIT_SCAN_RATE);
+        ErrorCheck(err, "LJM_eStreamStart");
+        printf("Stream started. Actual scan rate: %.02f Hz (%.02f sample rate)\n",
+               INIT_SCAN_RATE, INIT_SCAN_RATE * NUM_CHANNELS);
+        printf("\n");
+
+    // Read the scans
+        printf("Now performing %d reads\n", NUM_READS);
+        printf("\n");
+        // change to while + delete numReads and NUM_READS
+        for (iteration = 0; iteration < NUM_READS; iteration++) {
+            err = LJM_eStreamRead(handle, aData, &deviceScanBacklog,
+                                  &LJMScanBacklog);
+            ErrorCheck(err, "LJM_eStreamRead");
+
+            // printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d",
+            //        iteration, deviceScanBacklog, LJMScanBacklog);
+            if (connectionType != LJM_ctUSB) {
+                err = LJM_GetStreamTCPReceiveBufferStatus(handle,
+                                                          &receiveBufferBytesSize, &receiveBufferBytesBacklog);
+                ErrorCheck(err, "LJM_GetStreamTCPReceiveBufferStatus");
+                printf(", receive backlog: %f%%",
+                       ((double)receiveBufferBytesBacklog) / receiveBufferBytesSize * 100);
+            }
+            printf("\n");
+            printf("  1st scan out of %d:\n", SCANS_PER_READ);
+            for (channel = 0; channel < NUM_CHANNELS; channel++) {
+                printf("    %s = %0.5f\n", CHANNEL_NAMES[channel], aData[channel]);
+                file << aData[channel] << ", ";
+            }
+
+            file << "\n";
+        }
+
+        file.close();
+
+        printf("Stopping stream\n");
+        err = LJM_eStreamStop(handle);
+        ErrorCheck(err, "Stopping stream");
+
+        delete[] aData;
+        delete[] aScanList;
+
+    } catch (...) {
+        printf("read fail");
+        CloseOrDie(handle);
+
+        WaitForUserIfWindows();
     }
 }
 

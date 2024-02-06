@@ -25,6 +25,7 @@ private:
      */
     TestStand test_stand;
     TUI tui;
+    int handle;
 
     /**
      * Processes a command that is entered through the TUI interface.

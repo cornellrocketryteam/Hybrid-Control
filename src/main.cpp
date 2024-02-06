@@ -1,5 +1,5 @@
+// #include "LJM_Utilities.h"
 #include "controller.hpp"
-#include <LJM_Utilities.h>
 #include <LabJackM.h>
 
 int main(int argc, char *argv[]) {

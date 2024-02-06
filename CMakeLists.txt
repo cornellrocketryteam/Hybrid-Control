@@ -27,12 +27,26 @@ set(SOURCES
     src/controller.cpp
     src/view.cpp
     src/config.cpp
+    src/LJM_Utilities.cpp
+    src/LJM_StreamUtilities.cpp
 )
 
 # Add all executables
 add_executable(${PROJECT_NAME}
     ${SOURCES}
 )
+
+# # Link library directories
+# target_link_directories(${PROJECT_NAME} 
+#     PRIVATE
+#     ${PROJECT_SOURCE_DIR}/lib
+# )
+
+# # Include library headers
+# target_include_directories(${PROJECT_NAME}
+#     PRIVATE
+#     ${PROJECT_SOURCE_DIR}/lib
+# )
 
 # Link curses and the LabJack library
 target_link_libraries(${PROJECT_NAME} ${LJM_LIBRARY} ${CURSES_LIBRARIES})
