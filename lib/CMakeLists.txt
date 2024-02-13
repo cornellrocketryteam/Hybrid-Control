@@ -4,8 +4,10 @@ set(LJM_LIBRARY "/usr/local/lib/libLabJackM.dylib")
 # Target LJM utility sources
 target_sources(${PROJECT_NAME}
     PRIVATE
-        LJM_Utilities.cpp
-        LJM_StreamUtilities.cpp
+    LJMUtil.cpp
+    LJMStreamUtil.cpp
+        # LJM_Utilities.cpp
+        # LJM_StreamUtilities.cpp
 )
 # Link LJM
 target_link_libraries(${PROJECT_NAME} ${LJM_LIBRARY})

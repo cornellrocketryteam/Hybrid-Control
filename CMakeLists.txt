@@ -8,6 +8,7 @@ set(CMAKE_VERBOSE_MAKEFILE TRUE)
 include_directories(${CURSES_INCLUDE_DIR})
 include_directories("/usr/local/include/")
 # include_directories(lib)
+# link_directories(lib)
 
 find_package(Curses REQUIRED)
 
@@ -17,6 +18,7 @@ add_compile_options(
     -Wall
     -Wno-format
     -Wno-unused-function
+    # -target arm64-apple-darwin20.3.0
 )
 
 # Add source files from src/

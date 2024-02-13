@@ -16,7 +16,8 @@
 #include <unistd.h> // For sleep() (with Mac OS or Linux).
 #endif
 
-#include "LJM_Utilities.h"
+#include "LJMUtil.hpp"
+// #include "LJM_Utilities.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>

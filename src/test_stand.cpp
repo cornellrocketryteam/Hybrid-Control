@@ -1,5 +1,8 @@
 #include "test_stand.hpp"
-#include "LJM_Utilities.h"
+#include "LJMStreamUtil.hpp"
+#include "LJMUtil.hpp"
+// #include <LJM_StreamUtilities.h>
+// #include <LJM_Utilities.h>
 #include <LabJackM.h>
 #include <cstdio>
 
@@ -69,7 +72,7 @@ void TestStand::mav_pwm(float dc) {
     // int errorAddress = INITIAL_ERR_ADDRESS;
     int errorAddress;
 
-    (void)LJM_eWriteNames(handle, NUM_FRAMES, names, values, &errorAddress);
+    // (void)WriteNames(handle, NUM_FRAMES, names, values, &errorAddress);
     // ErrorCheckWithAddress(err, errorAddress, "LJM_eWriteNames"); TODO: Talk to LabJack people about error in util header file
 }
 

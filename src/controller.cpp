@@ -1,7 +1,10 @@
 #include "controller.hpp"
-#include "LJM_StreamUtilities.h"
+#include "LJMStreamUtil.hpp"
+#include "LJMUtil.hpp"
 #include "config.hpp"
 #include "test_stand.hpp"
+// #include <LJM_StreamUtilities.h>
+// #include <LJM_Utilities.h>
 #include <LabJackM.h>
 #include <fstream>
 #include <iostream>
