@@ -8,6 +8,7 @@
 #include <iostream>
 #include <signal.h>
 #include <sstream>
+#include <thread>
 
 void read(int handle);
 
@@ -21,8 +22,11 @@ int main(int argc, char *argv[]) {
 #endif
 
     Controller c = Controller(handle);
-    // c.run();
-    c.read();
+    std::thread run(&Controller::run, &c);
+    std::thread read(&Controller::read, &c);
+
+    run.join();
+    read.join();
 
     return 0;
 }

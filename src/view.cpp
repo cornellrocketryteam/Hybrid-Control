@@ -67,7 +67,7 @@ TUI::TUI(TestStand *test_stand) {
     refresh();
 }
 
-void TUI::update() {
+void TUI::update(double *data) {
     int x_max {getmaxx(stdscr)};
     werase(valves_window);
     werase(sensors_window);
@@ -155,7 +155,7 @@ void TUI::update() {
     wattroff(sensors_window, NCURSES_BITS(1U, 23));
 
     for (int i = 0; i < pt_names.size(); i++) {
-        mvwprintw(sensors_window, i + 3, 2, "%s %d PSI", pt_names[i].c_str(), 0);
+        mvwprintw(sensors_window, i + 3, 2, "%s %d PSI", pt_names[i].c_str(), data[i]);
     }
 
     wattron(sensors_window, NCURSES_BITS(1U, 23));
@@ -163,7 +163,7 @@ void TUI::update() {
     wattroff(sensors_window, NCURSES_BITS(1U, 23));
 
     for (int i = 0; i < tc_names.size(); i++) {
-        mvwprintw(sensors_window, i + 3, 70, "%s %d F", tc_names[i].c_str(), 0);
+        mvwprintw(sensors_window, i + 3, 70, "%s %d F", tc_names[i].c_str(), data[pt_names.size() + i]);
     }
 
     wattron(sensors_window, NCURSES_BITS(1U, 23));
@@ -171,7 +171,7 @@ void TUI::update() {
     wattroff(sensors_window, NCURSES_BITS(1U, 23));
 
     for (int i = 0; i < lc_names.size(); i++) {
-        mvwprintw(sensors_window, i + 9, 70, "%s %d lbf", lc_names[i].c_str(), 0);
+        mvwprintw(sensors_window, i + 9, 70, "%s %d lbf", lc_names[i].c_str(), data[pt_names.size() + tc_names.size() + fm_names.size() + i]);
     }
 
     wattron(sensors_window, NCURSES_BITS(1U, 23));
@@ -179,7 +179,7 @@ void TUI::update() {
     wattroff(sensors_window, NCURSES_BITS(1U, 23));
 
     for (int i = 0; i < fm_names.size(); i++) {
-        mvwprintw(sensors_window, i + 14, 2, "%s %d GPM", fm_names[i].c_str(), 0);
+        mvwprintw(sensors_window, i + 14, 2, "%s %d GPM", fm_names[i].c_str(), data[pt_names.size() + tc_names.size() + i]);
     }
 
     mvwprintw(input_container_window, 3, 2, "> ");

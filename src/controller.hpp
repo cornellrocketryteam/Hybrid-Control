@@ -26,8 +26,13 @@ private:
     TestStand test_stand;
     TUI tui;
     int handle;
+    double *aData;
+    double INIT_SCAN_RATE;
+    int SCANS_PER_READ;
+    enum { NUM_CHANNELS = 14 };
+    double aDataSize;
 
-    /**
+        /**
      * Processes a command that is entered through the TUI interface.
      */
     void parse_typed_command();

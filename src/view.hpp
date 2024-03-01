@@ -18,7 +18,7 @@ public:
     /**
      * Queries the current state of the model and updates the view.
      */
-    void update();
+    void update(double *data);
 
     /**
      * Parses a keystroke and updates the input window.

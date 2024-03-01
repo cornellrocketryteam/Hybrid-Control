@@ -17,12 +17,16 @@
 #include <iomanip>
 
 Controller::Controller(int handle) : handle(handle), test_stand(TestStand(handle)), tui(TUI(&test_stand)) {
+    INIT_SCAN_RATE = 70;
+    SCANS_PER_READ = (int)INIT_SCAN_RATE / 2;
+    aDataSize = NUM_CHANNELS * SCANS_PER_READ;
+    aData = new double[sizeof(double) * aDataSize];
 }
 
 // Instruct the view to update and process any input commands
 void Controller::run() {
     while (true) {
-        tui.update();
+        tui.update(aData);
 
         if (tui.get_command()) {
             if (tui.input.size() > 1) {
@@ -45,10 +49,7 @@ void signalHandler(int signum) {
 
 void Controller::read() {
 
-    double INIT_SCAN_RATE = 70;
-    int SCANS_PER_READ = (int)INIT_SCAN_RATE / 2;
     const int NUM_READS = 10;
-    enum { NUM_CHANNELS = 14 };
     const char *CHANNEL_NAMES[] = {"AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
                                    "AIN3", "AIN1", "AIN2",
                                    "AIN60",
@@ -74,8 +75,6 @@ void Controller::read() {
     int connectionType;
 
     int *aScanList = new int[NUM_CHANNELS];
-    unsigned int aDataSize = NUM_CHANNELS * SCANS_PER_READ;
-    double *aData = new double[sizeof(double) * aDataSize];
 
     try {
 
@@ -93,14 +92,14 @@ void Controller::read() {
         err = LJM_NamesToAddresses(NUM_CHANNELS, CHANNEL_NAMES, aScanList, NULL);
         ErrorCheck(err, "Getting positive channel addresses");
 
-        printf("\n");
-        printf("Starting stream...\n");
+        // printf("\n");
+        // printf("Starting stream...\n");
         err = LJM_eStreamStart(handle, SCANS_PER_READ, NUM_CHANNELS, aScanList,
                                &INIT_SCAN_RATE);
         ErrorCheck(err, "LJM_eStreamStart");
-        printf("Stream started. Actual scan rate: %.02f Hz (%.02f sample rate)\n",
-               INIT_SCAN_RATE, INIT_SCAN_RATE * NUM_CHANNELS);
-        printf("\n");
+        // printf("Stream started. Actual scan rate: %.02f Hz (%.02f sample rate)\n",
+        //        INIT_SCAN_RATE, INIT_SCAN_RATE * NUM_CHANNELS);
+        // printf("\n");
 
         signal(SIGINT, signalHandler);
 
@@ -115,11 +114,11 @@ void Controller::read() {
                 err = LJM_GetStreamTCPReceiveBufferStatus(handle,
                                                           &receiveBufferBytesSize, &receiveBufferBytesBacklog);
                 ErrorCheck(err, "LJM_GetStreamTCPReceiveBufferStatus");
-                printf(", receive backlog: %f%%",
-                       ((double)receiveBufferBytesBacklog) / receiveBufferBytesSize * 100);
+                // printf(", receive backlog: %f%%",
+                //        ((double)receiveBufferBytesBacklog) / receiveBufferBytesSize * 100);
             }
-            printf("\n");
-            printf("  1st scan out of %d:\n", SCANS_PER_READ);
+            // printf("\n");
+            // printf("  1st scan out of %d:\n", SCANS_PER_READ);
 
             auto now = std::chrono::system_clock::now();
             time_t rawtime = std::chrono::system_clock::to_time_t(now);
@@ -128,17 +127,19 @@ void Controller::read() {
             file << std::put_time(local_time, "%F %T") << ", ";
 
             for (channel = 0; channel < NUM_CHANNELS; channel++) {
-                printf("    %s = %0.5f\n", CHANNEL_NAMES[channel], aData[channel]);
+                // printf("    %s = %0.5f\n", CHANNEL_NAMES[channel], aData[channel]);
                 file << aData[channel] << ", ";
                 file.flush();
             }
+
+            // add clean interval thing? (https://github.com/labjack/C_CPP_LJM/blob/develop/more/ain/dual_ain_loop.c)
 
             file << "\n";
         }
         file << "\n";
         file.close();
 
-        printf("Stopping stream\n");
+        // printf("Stopping stream\n");
         err = LJM_eStreamStop(handle);
         ErrorCheck(err, "Stopping stream");
 
