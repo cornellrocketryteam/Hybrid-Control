@@ -110,7 +110,7 @@ void Controller::read() {
 
             // printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d",
             //        iteration, deviceScanBacklog, LJMScanBacklog);
-            if (connectionType != LJM_ctUSB) {
+            if (connectionType != LJM_ctUSB) { // TODO: change for ethernet
                 err = LJM_GetStreamTCPReceiveBufferStatus(handle,
                                                           &receiveBufferBytesSize, &receiveBufferBytesBacklog);
                 ErrorCheck(err, "LJM_GetStreamTCPReceiveBufferStatus");
@@ -146,7 +146,7 @@ void Controller::read() {
         delete[] aData;
         delete[] aScanList;
 
-    } catch (...) {
+    } catch (...) { // maybe dont put read in try catch? or maybe move ^c catch to main.cpp?
         printf("read fail");
         CloseOrDie(handle);
 
