@@ -6,6 +6,7 @@
 #include <LabJackM.h>
 #include <fstream>
 #include <iostream>
+#include <numeric>
 #include <signal.h>
 #include <sstream>
 #include <stdio.h>
@@ -21,6 +22,8 @@ Controller::Controller(int handle) : handle(handle), test_stand(TestStand(handle
     SCANS_PER_READ = (int)INIT_SCAN_RATE / 2;
     aDataSize = NUM_CHANNELS * SCANS_PER_READ;
     aData = new double[sizeof(double) * aDataSize];
+    valid_input = false;
+    input = "";
 }
 
 // Instruct the view to update and process any input commands
@@ -120,6 +123,10 @@ void Controller::read() {
             // printf("\n");
             // printf("  1st scan out of %d:\n", SCANS_PER_READ);
 
+            if (valid_input) {
+                file << input << "\n";
+            }
+
             auto now = std::chrono::system_clock::now();
             time_t rawtime = std::chrono::system_clock::to_time_t(now);
             std::tm *local_time;
@@ -135,6 +142,7 @@ void Controller::read() {
             // add clean interval thing? (https://github.com/labjack/C_CPP_LJM/blob/develop/more/ain/dual_ain_loop.c)
 
             file << "\n";
+            valid_input = false;
         }
         file << "\n";
         file.close();
@@ -171,6 +179,14 @@ void Controller::parse_typed_command() {
 
     tokens.pop_back();
 
+    for (const auto &str : tokens) {
+        input = std::accumulate(
+            tokens.begin(), tokens.end(), std::string(),
+            [](const std::string &a, const std::string &b) {
+                return a + " " + b;
+            });
+    }
+
     if (tokens[0] == "sv") {
         if (tokens[1].size() != 1) {
             return;
@@ -183,15 +199,19 @@ void Controller::parse_typed_command() {
 
         if (tokens[2] == "on") {
             test_stand.sv_on(sv);
+            valid_input = true;
         } else if (tokens[2] == "off") {
             test_stand.sv_off(sv);
+            valid_input = true;
         } else {
             tui.display_input_error("Unknown SV operation \"" + tokens[2] + "\"");
         }
     } else if (tui.input == "mav on") {
         test_stand.mav_on();
+        valid_input = true;
     } else if (tui.input == "mav off") {
         test_stand.mav_off();
+        valid_input = true;
     } else {
         tui.display_input_error("Unknown command \"" + tui.input + "\"");
         return;
@@ -209,6 +229,7 @@ void Controller::parse_mode_command() {
         return;
     }
     int command = (int)tui.input.at(0);
+    input = command;
 
     for (int i = 0; i < 7; i++) {
         if (command == ascii_mappings[i]) {
@@ -225,6 +246,7 @@ void Controller::parse_mode_command() {
                 test_stand.awaited_mode = mode;
                 tui.display_await_mode();
             }
+            valid_input = true;
             return;
         }
     }

@@ -2,6 +2,7 @@
 #define CONTROLLER_HPP_
 
 #include "view.hpp"
+#include <string>
 
 class Controller {
 public:
@@ -31,6 +32,8 @@ private:
     int SCANS_PER_READ;
     enum { NUM_CHANNELS = 14 };
     double aDataSize;
+    bool valid_input;
+    std::string input;
 
         /**
      * Processes a command that is entered through the TUI interface.
