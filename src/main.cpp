@@ -1,6 +1,15 @@
-// #include "LJM_Utilities.h"
+#ifndef USE_LABJACK
+#define USE_LABJACK
+#endif
+#include "LJMUtil.hpp"
 #include "controller.hpp"
 #include <LabJackM.h>
+#include <fstream>
+#include <iostream>
+#include <signal.h>
+#include <sstream>
+
+void read(int handle);
 
 int main(int argc, char *argv[]) {
 
@@ -12,7 +21,8 @@ int main(int argc, char *argv[]) {
 #endif
 
     Controller c = Controller(handle);
-    c.run();
+    // c.run();
+    c.read();
 
     return 0;
 }

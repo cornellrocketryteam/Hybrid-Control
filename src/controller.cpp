@@ -3,16 +3,20 @@
 #include "LJMUtil.hpp"
 #include "config.hpp"
 #include "test_stand.hpp"
-// #include <LJM_StreamUtilities.h>
-// #include <LJM_Utilities.h>
 #include <LabJackM.h>
 #include <fstream>
 #include <iostream>
+#include <signal.h>
 #include <sstream>
+#include <stdio.h>
 #include <string>
 #include <vector>
 
-Controller::Controller(int handle) : test_stand(TestStand(handle)), tui(TUI(&test_stand)) {
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+
+Controller::Controller(int handle) : handle(handle), test_stand(TestStand(handle)), tui(TUI(&test_stand)) {
 }
 
 // Instruct the view to update and process any input commands
@@ -31,6 +35,12 @@ void Controller::run() {
             tui.clear_input();
         }
     }
+}
+
+bool interrupted = false;
+
+void signalHandler(int signum) {
+    interrupted = true;
 }
 
 void Controller::read() {
@@ -56,7 +66,7 @@ void Controller::read() {
                               LJM_GND,
                               0.1, 0.1, 56, 57};
 
-    int err, iteration, channel;
+    int err, channel;
     int deviceScanBacklog = 0;
     int LJMScanBacklog = 0;
     unsigned int receiveBufferBytesSize = 0;
@@ -69,18 +79,19 @@ void Controller::read() {
 
     try {
 
-        std::ofstream file("test_data.csv");
+        WriteNamesOrDie(handle, NUM_FRAMES, aNames, aValues);
+
+        std::ofstream file;
+        file.open("test_data.csv", std::ios::out | std::ios::app);
 
         err = LJM_GetHandleInfo(handle, NULL, &connectionType, NULL, NULL, NULL, NULL);
         ErrorCheck(err, "LJM_GetHandleInfo");
 
-    // Clear aData. This is not strictly necessary, but can help debugging.
+        // Clear aData. This is not strictly necessary, but can help debugging.
         memset(aData, 0, sizeof(double) * aDataSize);
 
         err = LJM_NamesToAddresses(NUM_CHANNELS, CHANNEL_NAMES, aScanList, NULL);
         ErrorCheck(err, "Getting positive channel addresses");
-
-        WriteNamesOrDie(handle, NUM_FRAMES, aNames, aValues);
 
         printf("\n");
         printf("Starting stream...\n");
@@ -91,11 +102,9 @@ void Controller::read() {
                INIT_SCAN_RATE, INIT_SCAN_RATE * NUM_CHANNELS);
         printf("\n");
 
-    // Read the scans
-        printf("Now performing %d reads\n", NUM_READS);
-        printf("\n");
-        // change to while + delete numReads and NUM_READS
-        for (iteration = 0; iteration < NUM_READS; iteration++) {
+        signal(SIGINT, signalHandler);
+
+        while (!interrupted) {
             err = LJM_eStreamRead(handle, aData, &deviceScanBacklog,
                                   &LJMScanBacklog);
             ErrorCheck(err, "LJM_eStreamRead");
@@ -111,14 +120,22 @@ void Controller::read() {
             }
             printf("\n");
             printf("  1st scan out of %d:\n", SCANS_PER_READ);
+
+            auto now = std::chrono::system_clock::now();
+            time_t rawtime = std::chrono::system_clock::to_time_t(now);
+            std::tm *local_time;
+            local_time = localtime(&rawtime);
+            file << std::put_time(local_time, "%F %T") << ", ";
+
             for (channel = 0; channel < NUM_CHANNELS; channel++) {
                 printf("    %s = %0.5f\n", CHANNEL_NAMES[channel], aData[channel]);
                 file << aData[channel] << ", ";
+                file.flush();
             }
 
             file << "\n";
         }
-
+        file << "\n";
         file.close();
 
         printf("Stopping stream\n");
