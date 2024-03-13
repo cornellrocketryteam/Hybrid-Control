@@ -15,10 +15,10 @@ public:
     /**
      * The main control loop. Updates the view and handles commands.
      */
-    void run();
+    void run(bool &running);
 
     // TODO: Implement
-    void read();
+    void read(bool &running);
 
 private:
     /**

@@ -10,11 +10,10 @@
 #include <sstream>
 #include <thread>
 
-void read(int handle);
-
 int main(int argc, char *argv[]) {
 
     int handle = -1;
+    bool running = true;
 
 #ifdef USE_LABJACK
     int err = LJM_Open(LJM_dtT7, LJM_ctANY, "LJM_idANY", &handle);
@@ -22,11 +21,14 @@ int main(int argc, char *argv[]) {
 #endif
 
     Controller c = Controller(handle);
-    std::thread run(&Controller::run, &c);
-    std::thread read(&Controller::read, &c);
+    std::thread run(&Controller::run, &c, std::ref(running));
+    std::thread read(&Controller::read, &c, std::ref(running));
 
     run.join();
     read.join();
+
+    CloseOrDie(handle);
+    WaitForUserIfWindows();
 
     return 0;
 }

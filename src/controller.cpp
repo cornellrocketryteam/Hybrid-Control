@@ -17,7 +17,7 @@
 #include <ctime>
 #include <iomanip>
 
-Controller::Controller(int handle) : handle(handle), test_stand(TestStand(handle)), tui(TUI(&test_stand)) {
+Controller::Controller(int handle) : test_stand(TestStand(handle)), tui(TUI(&test_stand)), handle(handle) {
     INIT_SCAN_RATE = 70;
     SCANS_PER_READ = (int)INIT_SCAN_RATE / 2;
     aDataSize = NUM_CHANNELS * SCANS_PER_READ;
@@ -27,8 +27,8 @@ Controller::Controller(int handle) : handle(handle), test_stand(TestStand(handle
 }
 
 // Instruct the view to update and process any input commands
-void Controller::run() {
-    while (true) {
+void Controller::run(bool &running) {
+    while (running) {
         tui.update(aData);
 
         if (tui.get_command()) {
@@ -50,9 +50,8 @@ void signalHandler(int signum) {
     interrupted = true;
 }
 
-void Controller::read() {
+void Controller::read(bool &running) {
 
-    const int NUM_READS = 10;
     const char *CHANNEL_NAMES[] = {"AIN127", "AIN126", "AIN125", "AIN124", "AIN123", "AIN122", "AIN121", "AIN120",
                                    "AIN3", "AIN1", "AIN2",
                                    "AIN60",
@@ -106,7 +105,7 @@ void Controller::read() {
 
         signal(SIGINT, signalHandler);
 
-        while (!interrupted) {
+        while (running) {
             err = LJM_eStreamRead(handle, aData, &deviceScanBacklog,
                                   &LJMScanBacklog);
             ErrorCheck(err, "LJM_eStreamRead");
@@ -155,10 +154,7 @@ void Controller::read() {
         delete[] aScanList;
 
     } catch (...) { // maybe dont put read in try catch? or maybe move ^c catch to main.cpp?
-        printf("read fail");
-        CloseOrDie(handle);
-
-        WaitForUserIfWindows();
+        running = false;
     }
 }
 
