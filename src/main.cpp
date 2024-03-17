@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     read.join();
 
     CloseOrDie(handle);
-    WaitForUserIfWindows();
+    // WaitForUserIfWindows();
 
     return 0;
 }

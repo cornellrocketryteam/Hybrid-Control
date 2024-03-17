@@ -121,14 +121,17 @@ void Controller::read(bool &running) {
             }
             // printf("\n");
             // printf("  1st scan out of %d:\n", SCANS_PER_READ);
-
-            if (valid_input) {
-                file << input << "\n";
-            }
-
             auto now = std::chrono::system_clock::now();
             time_t rawtime = std::chrono::system_clock::to_time_t(now);
             std::tm *local_time;
+            local_time = localtime(&rawtime);
+
+            if (valid_input) {
+                file << std::put_time(local_time, "%F %T") << ", " << input << "\n";
+            }
+
+            now = std::chrono::system_clock::now();
+            rawtime = std::chrono::system_clock::to_time_t(now);
             local_time = localtime(&rawtime);
             file << std::put_time(local_time, "%F %T") << ", ";
 
@@ -142,6 +145,8 @@ void Controller::read(bool &running) {
 
             file << "\n";
             valid_input = false;
+
+            running = !interrupted;
         }
         file << "\n";
         file.close();
