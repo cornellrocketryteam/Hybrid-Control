@@ -6,9 +6,6 @@
 #ifndef LJM_STREAM_UTILITIES
 #define LJM_STREAM_UTILITIES
 
-#include "LJM_Utilities.h"
-#include <stdlib.h>
-
 /**
  * Enables logging for stream purposes
  **/
@@ -90,32 +87,6 @@ void EnableFIO0PulseOut(int handle, int pulseRate, int numPulses);
 void PrintAndLog(const char *outputString, ...);
 
 // Source
-
-void PrintScans(int numScans, int numChannels, const char **channelNames,
-                const int *channelAddresses, int deviceScanBacklog, int LJMScanBacklog,
-                int iteration, double *aData);
-
-void PrintStreamConclusion(unsigned int timeStart, unsigned int timeEnd, int numReads,
-                           int scansPerRead, int numChannels, int totalSkippedScans);
-
-void SetupStreamDebugLogging();
-
-int CalculateNumReads(int numSeconds, double scanRate, int scansPerRead);
-
-void DisableStreamIfEnabled(int handle);
-
-int CountAndOutputNumSkippedScans(int numInChannels, int scansPerRead, double *aData);
-
-void OutputStreamIterationInfo(int iteration, int deviceScanBacklog, int deviceScanBacklogThreshold,
-                               int LJMScanBacklog, int LJMScanBacklogThreshold);
-
-double CalculateSleepFactor(int scansPerRead, int LJMScanBacklog);
-
-void VariableStreamSleep(int scansPerRead, int scanRate, int LJMScanBacklog);
-
-void SetupExternalClockStream(int handle);
-
-void EnableFIO0PulseOut(int handle, int pulseRate, int numPulses);
 
 #ifdef LABJACK_DEBUG_LOG_OUTPUT
 void PrintAndLog(const char *outputString, ...);

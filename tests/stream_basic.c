@@ -31,7 +31,7 @@
 
 #include <LabJackM.h>
 
-#include "LJM_StreamUtilities.h"
+#include "LJMStreamUtil.hpp"
 
 void Stream(int handle, int numChannels, const char **channelNames,
             double scanRate, int scansPerRead, int numReads);

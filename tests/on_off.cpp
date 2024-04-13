@@ -1,4 +1,4 @@
-#include <LJM_Utilities.h>
+#include <LJMUtil.hpp>
 #include <LabJackM.h>
 #include <stdio.h>
 

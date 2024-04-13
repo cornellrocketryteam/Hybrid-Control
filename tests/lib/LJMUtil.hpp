@@ -5,29 +5,24 @@
 
 #ifndef LJM_UTILITIES
 #define LJM_UTILITIES
-#include <time.h> // For timestamp info
-
-#ifdef _WIN32
-#include <Winsock2.h>
-#include <ws2tcpip.h>
-#else
-#include <arpa/inet.h>  // For inet_ntoa()
-#include <sys/time.h>
-#include <unistd.h> // For sleep() (with Mac OS or Linux).
-#endif
-
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <LabJackM.h>
 
 #define COMMAND 1
 #define RESPONSE 0
 
 #define INITIAL_ERR_ADDRESS -2
 // This is just something negative so normal addresses are not confused with it
+
+void CouldNotRead(int err, const char *valueName);
+void ErrorCheck(int err, const char *formattedDescription, ...);
+void ErrorCheckWithAddress(int err, int errAddress, const char *description,
+                           ...);
+void MillisecondSleep(unsigned int milliseconds);
+int IsNetwork(int connectionType);
+void PrintDeviceInfo(int deviceType, int connectionType, int serialNumber,
+                     int ipAddressInt, int portOrPipe, int MaxBytesPerMB);
+int WriteName(int handle, const char *name, double value);
+int WriteNames(int handle, int NumFrames, const char **aNames,
+               const double *aValues, int *errorAddress);
 
 // Prompts the user to press enter
 void WaitForUser();
@@ -155,9 +150,6 @@ void CouldNotRead(int err, const char *valueName);
 void ErrorCheckWithAddress(int err, int errAddress,
                            const char *formattedDescription, ...);
 
-// Sleeps for the given number of milliseconds
-void MillisecondSleep(unsigned int milliseconds);
-
 // Turns on the specified level of logging
 void EnableLoggingLevel(double logLevel);
 
@@ -199,7 +191,7 @@ const char *NumberToDebugLogMode(int mode);
 /**
  * Desc: Returns the current CPU time in milliseconds
  **/
-LJM_LONG_LONG_RETURN GetCurrentTimeMS();
+// LJM_LONG_LONG_RETURN GetCurrentTimeMS();
 
 /**
  * Desc: Returns IPv4String in integer form, handling error by calling
@@ -246,110 +238,8 @@ void PrintTimeStamp();
 
 // Source
 
-const char *NumberToDebugLogMode(int mode);
-
-const char *NumberToConnectionType(int connectionType);
-
-const char *NumberToDeviceType(int deviceType);
-
-int GetDeviceType(int handle);
-
-void PrintDeviceInfoFromHandle(int handle);
-
-void PrintDeviceInfo(int deviceType, int connectionType, int serialNumber,
-                     int ipAddressInt, int portOrPipe, int packetMaxBytes);
-
-void WaitForUserIfWindows();
-
-void WaitForUser();
-
-int OpenOrDie(int deviceType, int connectionType, const char *identifier);
-
-int OpenSOrDie(const char *deviceType, const char *connectionType,
-               const char *identifier);
-
-void CloseOrDie(int handle);
-
 void PrintErrorAddressHelper(int errAddress);
-
-void PrintErrorIfError(int err, const char *formattedDescription, ...);
-
-void PrintErrorWithAddressIfError(int err, int errAddress,
-                                  const char *formattedDescription, ...);
-
-void ErrorCheck(int err, const char *formattedDescription, ...);
-
-void ErrorCheckWithAddress(int err, int errAddress, const char *description,
-                           ...);
 
 void MillisecondSleep(unsigned int milliseconds);
 
-double Get(int handle, const char *valueName);
-
-double GetAndPrint(int handle, const char *valueName);
-
-void GetAndPrintIPAddress(int handle, const char *valueName);
-
-void GetAndPrintMACAddressFromValueAddress(int handle, const char *valueName,
-                                           int valueAddress);
-
-void GetAndPrintAddressAndType(int handle, const char *valueDescription,
-                               int address, int type);
-
-void GetAndPrintConfigValue(const char *configParameter);
-
-void GetAndPrintConfigString(const char *configParameter);
-
-void SetConfigValue(const char *configParameter, double value);
-
-void SetConfigString(const char *configParameter, const char *string);
-
-void WriteNameOrDie(int handle, const char *name, double value);
-
-int WriteName(int handle, const char *name, double value);
-
-void WriteNameAltTypeOrDie(int handle, const char *name, int type,
-                           double value);
-
-void WriteNamesOrDie(int handle, int NumFrames, const char **aNames,
-                     const double *aValues);
-
-int WriteNames(int handle, int NumFrames, const char **aNames,
-               const double *aValues, int *errorAddress);
-
-void WriteNameArrayOrDie(int handle, const char *name, int numValues,
-                         const double *aValues);
-
-void WriteNameByteArrayOrDie(int handle, const char *name, int numBytes,
-                             const char *aBytes);
-
-void ReadNameArrayOrDie(int handle, const char *name, int numValues,
-                        double *aValues);
-
-void ReadNameByteArrayOrDie(int handle, const char *name, int numBytes,
-                            char *aBytes);
-
-void CouldNotRead(int err, const char *valueName);
-
-void EnableLoggingLevel(double logLevel);
-
-LJM_LONG_LONG_RETURN GetCurrentTimeMS();
-
-unsigned int IPToNumber(const char *IPv4String);
-
-int EqualFloats(double v1, double v2, double delta);
-
-int IsTCP(int connectionType);
-
-int IsUDP(int connectionType);
-
-int IsNetwork(int connectionType);
-
-int DoesDeviceHaveWiFi(int handle);
-
-void DisplayDebugLoggingConfigurations();
-
-int GetAddressFromNameOrDie(const char *name);
-
-void PrintTimeStamp();
 #endif // #define LJM_UTILITIES

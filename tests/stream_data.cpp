@@ -2,7 +2,7 @@
  * stream_data.cpp: config and stream from multiple AIN channels
  **/
 
-#include "LJM_StreamUtilities.h"
+#include "LJMStreamUtil.hpp"
 #include <LabJackM.h>
 #include <fstream>
 #include <stdio.h>

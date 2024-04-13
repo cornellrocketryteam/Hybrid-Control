@@ -29,7 +29,7 @@
 
 // For LabJackM helper functions, such as OpenOrDie, PrintDeviceInfoFromHandle,
 // ErrorCheck, etc.
-#include "LJM_Utilities.h"
+#include "LJMUtil.hpp"
 
 int main() {
     int err, i, handle;
