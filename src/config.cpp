@@ -5,7 +5,7 @@ int ascii_mappings[7] = {52, 53, 54, 465, 55, 56, 57};
 std::vector<std::string> pt_names = {
     "PT 1: Supercharge Downstream:",
     "PT 2: Engine Chamber:        ",
-    "PT 3: ??:                    ",
+    "PT 3: Supercharge Tank:      ",
     "PT 4: Purge Tank:            ",
     "PT 5: N2O Tank:              ",
     "PT 6: Run Tank:              ",
