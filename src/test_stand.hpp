@@ -1,8 +1,12 @@
 #ifndef TEST_STAND_HPP
 #define TEST_STAND_HPP
 
+#include "LJMStreamUtil.hpp"
+#include "LJMUtil.hpp"
 #include "config.hpp"
+#include <LabJackM.h>
 #include <string>
+
 class TestStand {
 public:
     /**
@@ -73,6 +77,12 @@ private:
     void mav_pwm(float dc);
 
     /**
+     * Sets PWM on an SV's pin.
+     * @param The valve to PWM (1-5)
+     */
+    void sv_pwm(int num);
+
+    /**
      * Helper function to quickly set all the SV states at once.
      * @param A bitmask representing the 5 SV states to set
      */
@@ -89,10 +99,15 @@ private:
     int handle;
 
     /**
-     * Pin assignments.
+     * LabJack return codes.
+     */
+    int err;
+    int error_address = INITIAL_ERR_ADDRESS;
+
+    /**
+     * Solenoid valve pin assignments.
      */
     int sv_dio[5] = {SV1_DIO, SV2_DIO, SV3_DIO, SV4_DIO, SV5_DIO};
-    int mav_dio = MAV_DIO;
 };
 
 #endif // TEST_STAND_HPP
