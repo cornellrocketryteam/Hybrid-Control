@@ -1,5 +1,5 @@
-#ifndef CONFIG_HPP_
-#define CONFIG_HPP_
+#ifndef CONFIG_HPP
+#define CONFIG_HPP
 
 #include <string>
 #include <vector>
@@ -18,7 +18,7 @@
 #define MAV_ROLL_VALUE 240240.24024
 
 /**
- * Defines each mode
+ * Defines each mode.
  */
 enum class Mode : int {
     default_mode = 0,
@@ -43,4 +43,4 @@ extern std::vector<std::string> tc_names;
 extern std::vector<std::string> lc_names;
 extern std::vector<std::string> fm_names;
 
-#endif // CONFIG_HPP_
+#endif // CONFIG_HPP

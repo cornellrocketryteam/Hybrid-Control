@@ -1,6 +1,3 @@
-#ifndef USE_LABJACK
-#define USE_LABJACK
-#endif
 #include "LJMUtil.hpp"
 #include "controller.hpp"
 #include <LabJackM.h>
@@ -22,10 +19,14 @@ int main(int argc, char *argv[]) {
 
     Controller c = Controller(handle);
     std::thread run(&Controller::run, &c, std::ref(running));
+#ifdef USE_LABJACK
     std::thread read(&Controller::read, &c, std::ref(running));
+#endif
 
     run.join();
+#ifdef USE_LABJACK
     read.join();
+#endif
 
     CloseOrDie(handle);
     // WaitForUserIfWindows();

@@ -1,5 +1,5 @@
-#ifndef CONTROLLER_HPP_
-#define CONTROLLER_HPP_
+#ifndef CONTROLLER_HPP
+#define CONTROLLER_HPP
 
 #include "view.hpp"
 #include <string>
@@ -14,10 +14,15 @@ public:
 
     /**
      * The main control loop. Updates the view and handles commands.
+     * @param running Whether or not the thread should be running
      */
     void run(bool &running);
 
-    // TODO: Implement
+    /**
+     * A separate thread that reads data from certain channels and logs
+     * that data to a file.
+     * @param running Whether or not the thread should be running
+     */
     void read(bool &running);
 
 private:
@@ -35,7 +40,7 @@ private:
     bool valid_input;
     std::string input;
 
-        /**
+    /**
      * Processes a command that is entered through the TUI interface.
      */
     void parse_typed_command();
@@ -46,4 +51,4 @@ private:
     void parse_mode_command();
 };
 
-#endif
+#endif // CONTROLLER_HPP

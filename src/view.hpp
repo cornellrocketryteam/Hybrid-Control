@@ -1,5 +1,5 @@
-#ifndef VIEW_HPP_
-#define VIEW_HPP_
+#ifndef VIEW_HPP
+#define VIEW_HPP
 
 #include <curses.h>
 #include <string>
@@ -88,4 +88,4 @@ private:
     char const *modes[7] = {"Default", "Prefire purge tanks", "Prefire purge engine", "Fill", "Supercharge", "Postfire purge engine", "Fire"};
 };
 
-#endif
+#endif // VIEW_HPP
