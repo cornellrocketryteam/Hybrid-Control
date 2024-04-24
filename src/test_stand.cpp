@@ -1,5 +1,7 @@
 #include "test_stand.hpp"
+#include <chrono>
 #include <cstdio>
+#include <thread>
 
 TestStand::TestStand(int handle) : handle(handle) {
 }
@@ -14,8 +16,10 @@ void TestStand::sv_on(int num) {
     err = LJM_eWriteName(handle, fio_name, 1);
     ErrorCheckWithAddress(err, error_address, "LJM_eWriteNames");
 
-    // TODO: Non-blocking timer
-    sv_pwm(num);
+    std::thread timer_thread([this, num]() {
+        this->sv_pwm(num);
+    });
+    timer_thread.detach();
 #endif
 }
 
@@ -71,6 +75,8 @@ void TestStand::mav_pwm(float dc) {
 }
 
 void TestStand::sv_pwm(int num) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+
     int pwm_dio = sv_dio[num - 1];
     float config_a = SV_DC * SV_ROLL_VALUE / 100;
 
