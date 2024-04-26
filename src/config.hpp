@@ -36,7 +36,12 @@ enum class Mode : int {
 /**
  * The ASCII key mappings for each mode.
  */
-extern int ascii_mappings[7];
+extern int mode_ascii_mappings[7];
+
+/**
+ * The ASCII key mappings for each valve.
+ */
+extern int valve_ascii_mappings[6];
 
 /**
  * Descriptive names for each sensor to display on the TUI.

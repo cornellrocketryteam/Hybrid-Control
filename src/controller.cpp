@@ -164,8 +164,8 @@ void Controller::read(bool &running) {
 }
 
 void Controller::parse_typed_command() {
-    if (test_stand.is_awaiting) {
-        test_stand.is_awaiting = false;
+    if (test_stand.is_awaiting_mode) {
+        test_stand.is_awaiting_mode = false;
     }
 
     // Split up input string by spaces
@@ -222,9 +222,16 @@ void Controller::parse_typed_command() {
 
 void Controller::parse_mode_command() {
     if (tui.input.size() == 0) {
-        if (test_stand.is_awaiting) {
+        if (test_stand.is_awaiting_mode) {
             test_stand.to_mode(test_stand.awaited_mode);
-            test_stand.is_awaiting = false;
+            test_stand.is_awaiting_mode = false;
+        } else if (test_stand.is_awaiting_valve) {
+            if (test_stand.awaited_valve == 5) {
+                test_stand.mav_toggle();
+            } else {
+                test_stand.sv_toggle(test_stand.awaited_valve + 1);
+            }
+            test_stand.is_awaiting_valve = false;
         }
         tui.display_input_error("");
         return;
@@ -233,19 +240,36 @@ void Controller::parse_mode_command() {
     input = command;
 
     for (int i = 0; i < 7; i++) {
-        if (command == ascii_mappings[i]) {
+        if (command == mode_ascii_mappings[i]) {
+            test_stand.is_awaiting_valve = false;
             Mode mode = static_cast<Mode>(i);
-            if (test_stand.is_awaiting) {
+            if (test_stand.is_awaiting_mode) {
                 if (test_stand.awaited_mode == mode) {
-                    test_stand.is_awaiting = false;
+                    test_stand.is_awaiting_mode = false;
                     tui.display_input_error("");
                 } else {
                     test_stand.awaited_mode = mode;
                 }
             } else {
-                test_stand.is_awaiting = true;
+                test_stand.is_awaiting_mode = true;
                 test_stand.awaited_mode = mode;
                 tui.display_await_mode();
+            }
+            valid_input = true;
+            return;
+        } else if (command == valve_ascii_mappings[i]) {
+            test_stand.is_awaiting_mode = false;
+            if (test_stand.is_awaiting_valve) {
+                if (test_stand.awaited_valve == i) {
+                    test_stand.is_awaiting_valve = false;
+                    tui.display_input_error("");
+                } else {
+                    test_stand.awaited_valve = i;
+                }
+            } else {
+                test_stand.is_awaiting_valve = true;
+                test_stand.awaited_valve = i;
+                tui.display_await_valve();
             }
             valid_input = true;
             return;

@@ -247,7 +247,13 @@ bool TUI::get_command() {
     default:
         if (ch != ERR) {
             if (input.size() == 0) {
-                for (int ascii : ascii_mappings) {
+                for (int ascii : mode_ascii_mappings) {
+                    if (ch == ascii) {
+                        is_cmd = true;
+                        break;
+                    }
+                }
+                for (int ascii : valve_ascii_mappings) {
                     if (ch == ascii) {
                         is_cmd = true;
                         break;
@@ -278,6 +284,16 @@ void TUI::display_await_mode() {
     mvwprintw(input_container_window, 1, 2, "Confirm");
     wattron(input_container_window, A_BOLD);
     mvwprintw(input_container_window, 1, 10, "%s", modes[static_cast<int>(test_stand->awaited_mode)]);
+    wattroff(input_container_window, COLOR_PAIR(TEXT_COLOR) | A_BOLD);
+    wrefresh(input_container_window);
+}
+
+void TUI::display_await_valve() {
+    werase(input_container_window);
+    wattron(input_container_window, COLOR_PAIR(TEXT_COLOR));
+    mvwprintw(input_container_window, 1, 2, "Confirm");
+    wattron(input_container_window, A_BOLD);
+    mvwprintw(input_container_window, 1, 10, "%s", valves[test_stand->awaited_valve]);
     wattroff(input_container_window, COLOR_PAIR(TEXT_COLOR) | A_BOLD);
     wrefresh(input_container_window);
 }

@@ -43,6 +43,11 @@ public:
     void display_await_mode();
 
     /**
+     * Displays the valve awaiting confirmation atop the input window.
+     */
+    void display_await_valve();
+
+    /**
      * The input buffer that is updated with every keystroke.
      */
     std::string input;
@@ -86,6 +91,8 @@ private:
 
     // TODO: Probably move mode names to get directly from config
     char const *modes[7] = {"Default", "Prefire purge tanks", "Prefire purge engine", "Fill", "Supercharge", "Postfire purge engine", "Fire"};
+
+    char const *valves[6] = {"SV 1", "SV 2", "SV 3", "SV 4", "SV 5", "MAV"};
 };
 
 #endif // VIEW_HPP

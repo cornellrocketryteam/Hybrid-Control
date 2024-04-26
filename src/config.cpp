@@ -1,6 +1,9 @@
 #include "config.hpp"
 
-int ascii_mappings[7] = {52, 53, 54, 465, 55, 56, 57};
+// TODO: Check compatability with non-macOS computers
+int mode_ascii_mappings[7] = {52, 53, 54, 43, 55, 56, 57};
+
+int valve_ascii_mappings[6] = {48, 49, 50, 51, 46, 45};
 
 std::vector<std::string> pt_names = {
     "PT 1: Supercharge Downstream:",

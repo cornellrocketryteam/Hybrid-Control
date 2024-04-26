@@ -6,6 +6,14 @@
 TestStand::TestStand(int handle) : handle(handle) {
 }
 
+void TestStand::sv_toggle(int num) {
+    if (sv_states[num - 1]) {
+        sv_off(num);
+    } else {
+        sv_on(num);
+    }
+}
+
 void TestStand::sv_on(int num) {
     sv_states[num - 1] = true;
 
@@ -33,12 +41,20 @@ void TestStand::sv_off(int num) {
     char dio_ef_enable[16];
     snprintf(dio_ef_enable, 16, "DIO%d_EF_ENABLE", num - 1);
 
-    err = LJM_eWriteName(handle, fio_name, 0);
-    ErrorCheckWithAddress(err, error_address, "LJM_eWriteNames");
-
     err = LJM_eWriteName(handle, dio_ef_enable, 0);
-    ErrorCheckWithAddress(err, error_address, "LJM_eWriteNames");
+    ErrorCheckWithAddress(err, error_address, "LJM_eWriteName");
+
+    err = LJM_eWriteName(handle, fio_name, 0);
+    ErrorCheckWithAddress(err, error_address, "LJM_eWriteName");
 #endif
+}
+
+void TestStand::mav_toggle() {
+    if (mav_state) {
+        mav_off();
+    } else {
+        mav_on();
+    }
 }
 
 void TestStand::mav_on() {

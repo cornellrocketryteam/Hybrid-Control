@@ -16,6 +16,12 @@ public:
     TestStand(int handle);
 
     /**
+     * Toggles a solenoid valve and updates state.
+     * @param The valve to toggle (1-5)
+     */
+    void sv_toggle(int num);
+
+    /**
      * Turns on a solenoid valve and updates state.
      * @param num The valve to turn on (1-5)
      */
@@ -26,6 +32,11 @@ public:
      * @param num The valve to turn off (1-5)
      */
     void sv_off(int num);
+
+    /**
+     * Toggles the MAV and updates state.
+     */
+    void mav_toggle();
 
     /**
      * Turns on the MAV and updates state.
@@ -62,7 +73,17 @@ public:
     /**
      * Whether or not we are awaiting a mode to switch to.
      */
-    bool is_awaiting = false;
+    bool is_awaiting_mode = false;
+
+    /**
+     * The valve that is awaiting confirmation to toggle.
+     */
+    int awaited_valve = -1;
+
+    /**
+     * Whether or not we are awaiting a valve to toggle.
+     */
+    bool is_awaiting_valve = false;
 
     /**
      * Whether or not we have supercharged.
