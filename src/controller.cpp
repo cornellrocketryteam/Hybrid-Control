@@ -83,25 +83,19 @@ void Controller::read(bool &running) {
         WriteNamesOrDie(handle, NUM_FRAMES, aNames, aValues);
 
         std::ofstream file;
+        auto startTime = std::chrono::steady_clock::now();
         file.open("test_data.csv", std::ios::out | std::ios::app);
 
         err = LJM_GetHandleInfo(handle, NULL, &connectionType, NULL, NULL, NULL, NULL);
         ErrorCheck(err, "LJM_GetHandleInfo");
-
-        // Clear aData. This is not strictly necessary, but can help debugging.
         memset(aData, 0, sizeof(double) * aDataSize);
 
         err = LJM_NamesToAddresses(NUM_CHANNELS, CHANNEL_NAMES, aScanList, NULL);
         ErrorCheck(err, "Getting positive channel addresses");
 
-        // printf("\n");
-        // printf("Starting stream...\n");
         err = LJM_eStreamStart(handle, SCANS_PER_READ, NUM_CHANNELS, aScanList,
                                &INIT_SCAN_RATE);
         ErrorCheck(err, "LJM_eStreamStart");
-        // printf("Stream started. Actual scan rate: %.02f Hz (%.02f sample rate)\n",
-        //        INIT_SCAN_RATE, INIT_SCAN_RATE * NUM_CHANNELS);
-        // printf("\n");
 
         signal(SIGINT, signalHandler);
 
@@ -110,33 +104,24 @@ void Controller::read(bool &running) {
                                   &LJMScanBacklog);
             ErrorCheck(err, "LJM_eStreamRead");
 
-            // printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d",
-            //        iteration, deviceScanBacklog, LJMScanBacklog);
             if (connectionType != LJM_ctUSB) { // TODO: change for ethernet
                 err = LJM_GetStreamTCPReceiveBufferStatus(handle,
                                                           &receiveBufferBytesSize, &receiveBufferBytesBacklog);
                 ErrorCheck(err, "LJM_GetStreamTCPReceiveBufferStatus");
-                // printf(", receive backlog: %f%%",
-                //        ((double)receiveBufferBytesBacklog) / receiveBufferBytesSize * 100);
             }
-            // printf("\n");
-            // printf("  1st scan out of %d:\n", SCANS_PER_READ);
-            auto now = std::chrono::system_clock::now();
-            time_t rawtime = std::chrono::system_clock::to_time_t(now);
-            std::tm *local_time;
-            local_time = localtime(&rawtime);
+
+            auto currentTime = std::chrono::steady_clock::now() - startTime;
+            auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime).count();
 
             if (valid_input) {
-                file << std::put_time(local_time, "%F %T") << ", " << input << "\n";
+                file << millis << ", " << input << "\n";
             }
 
-            now = std::chrono::system_clock::now();
-            rawtime = std::chrono::system_clock::to_time_t(now);
-            local_time = localtime(&rawtime);
-            file << std::put_time(local_time, "%F %T") << ", ";
+            currentTime = std::chrono::steady_clock::now() - startTime;
+            millis = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime).count();
+            file << millis << ", ";
 
             for (channel = 0; channel < NUM_CHANNELS; channel++) {
-                // printf("    %s = %0.5f\n", CHANNEL_NAMES[channel], aData[channel]);
                 file << aData[channel] << ", ";
                 file.flush();
             }
@@ -151,14 +136,13 @@ void Controller::read(bool &running) {
         file << "\n";
         file.close();
 
-        // printf("Stopping stream\n");
         err = LJM_eStreamStop(handle);
         ErrorCheck(err, "Stopping stream");
 
         delete[] aData;
         delete[] aScanList;
 
-    } catch (...) { // maybe dont put read in try catch? or maybe move ^c catch to main.cpp?
+    } catch (...) {
         running = false;
     }
 }
