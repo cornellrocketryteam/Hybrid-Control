@@ -19,7 +19,7 @@ void TestStand::sv_on(int num) {
 
 #ifdef USE_LABJACK
     char fio_name[5];
-    snprintf(fio_name, 5, "FIO%d", num - 1);
+    snprintf(fio_name, 5, "FIO%d", sv_dio[num - 1]);
 
     err = LJM_eWriteName(handle, fio_name, 1);
     ErrorCheckWithAddress(err, error_address, "LJM_eWriteNames");
@@ -36,10 +36,10 @@ void TestStand::sv_off(int num) {
 
 #ifdef USE_LABJACK
     char fio_name[5];
-    snprintf(fio_name, 5, "FIO%d", num - 1);
+    snprintf(fio_name, 5, "FIO%d", sv_dio[num - 1]);
 
     char dio_ef_enable[16];
-    snprintf(dio_ef_enable, 16, "DIO%d_EF_ENABLE", num - 1);
+    snprintf(dio_ef_enable, 16, "DIO%d_EF_ENABLE", sv_dio[num - 1]);
 
     err = LJM_eWriteName(handle, dio_ef_enable, 0);
     ErrorCheckWithAddress(err, error_address, "LJM_eWriteName");
@@ -104,7 +104,7 @@ void TestStand::sv_pwm(int num) {
 
     const int NUM_FRAMES = 5;
     const char *names[NUM_FRAMES] = {"DIO_EF_CLOCK0_ROLL_VALUE", "DIO_EF_CLOCK0_ENABLE", dio_ef_enable, dio_ef_config_a, dio_ef_enable};
-    double values[NUM_FRAMES] = {MAV_ROLL_VALUE, 1, 0, config_a, 1};
+    double values[NUM_FRAMES] = {SV_ROLL_VALUE, 1, 0, config_a, 1};
 
     err = WriteNames(handle, NUM_FRAMES, names, values, &error_address);
     ErrorCheckWithAddress(err, error_address, "LJM_eWriteNames");
