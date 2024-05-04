@@ -73,6 +73,31 @@ void TestStand::mav_off() {
 #endif
 }
 
+double TestStand::pt_scale(float volt_act, float volt_min, float volt_max, float val_min, float val_max) {
+    return ((volt_act - volt_min) * (val_max - val_min)) / (volt_max - volt_min) + val_min;
+}
+
+/**
+ * Scales thermocouple voltage readings into a farenheit value.
+ */
+double TestStand::tc_scale(float volt_act) {
+    double r_ref = 15000;
+    double alpha = 0.00392;
+    double r_nom = 100;
+    double value;
+    double dac_ref = LJM_eReadName(handle, "AIN52", &value);
+    double r_rtd = (r_ref * (dac_ref - volt_act)) / (volt_act);
+    double delta_tempC = (1 / alpha) * ((r_rtd / r_nom) - 1);
+    return delta_tempC * (9 / 5) + 32;
+}
+
+/**
+ * Scales load cell voltage readings into a pounds value.
+ */
+double TestStand::lc_scale(float volt_act, float m, float b) {
+    return 1000 * ((m * volt_act) + b);
+}
+
 void TestStand::mav_pwm(float dc) {
     float config_a = dc * MAV_ROLL_VALUE / 100;
 

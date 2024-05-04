@@ -49,6 +49,21 @@ public:
     void mav_off();
 
     /**
+     * Scales pressure transducer voltage readings into a PSI value.
+     */
+    double pt_scale(float volt_act, float volt_min, float volt_max, float val_min, float val_max);
+
+    /**
+     * Scales thermocouple voltage readings into a farenheit value.
+     */
+    double tc_scale(float volt_act);
+
+    /**
+     * Scales load cell voltage readings into a pounds value.
+     */
+    double lc_scale(float volt_act, float m, float b);
+
+    /**
      * The state of all the valves.
      */
     bool sv_states[5] = {false, false, false, false, false};

@@ -155,7 +155,27 @@ void TUI::update(double *data) {
     wattroff(sensors_window, NCURSES_BITS(1U, 23));
 
     for (int i = 0; i < pt_names.size(); i++) {
-        mvwprintw(sensors_window, i + 3, 2, "%s   %f PSI", pt_names[i].c_str(), data[i]);
+        double volt_act = data[i];
+        double val = volt_act;
+
+#ifdef USE_LABJACK
+        double volt_min = 0;
+        double volt_max = 10;
+        double val_min = 0;
+        double val_max;
+
+        if (i == 0 | i == 5 | i == 6 | i == 7) {
+            val_max = 2000;
+        } else if (i == 1 | i == 2 | i == 3) {
+            val_max = 3000;
+        } else if (i == 4) {
+            val_max = 1500;
+        } else {
+            val_max = 0;
+        }
+        val = test_stand->pt_scale(volt_act, volt_min, volt_max, val_min, val_max);
+#endif
+        mvwprintw(sensors_window, i + 3, 2, "%s   %f PSI", pt_names[i].c_str(), val);
     }
 
     wattron(sensors_window, NCURSES_BITS(1U, 23));
@@ -163,7 +183,13 @@ void TUI::update(double *data) {
     wattroff(sensors_window, NCURSES_BITS(1U, 23));
 
     for (int i = 0; i < tc_names.size(); i++) {
-        mvwprintw(sensors_window, i + 3, 70, "%s   %f F", tc_names[i].c_str(), data[pt_names.size() + i]);
+        double volt_act = data[pt_names.size() + i];
+        double val = volt_act;
+#ifdef USE_LABJACK
+        val = test_stand->tc_scale(volt_act);
+#endif
+
+        mvwprintw(sensors_window, i + 3, 70, "%s   %f F", tc_names[i].c_str(), val);
     }
 
     wattron(sensors_window, NCURSES_BITS(1U, 23));
@@ -171,7 +197,23 @@ void TUI::update(double *data) {
     wattroff(sensors_window, NCURSES_BITS(1U, 23));
 
     for (int i = 0; i < lc_names.size(); i++) {
-        mvwprintw(sensors_window, i + 9, 70, "%s   %f lbf", lc_names[i].c_str(), data[pt_names.size() + tc_names.size() + fm_names.size() + i]);
+        double volt_act = data[pt_names.size() + tc_names.size() + fm_names.size() + i];
+        double val = volt_act;
+#ifdef USE_LABJACK
+        double m, b;
+        if (i == 0) {
+            m = 31.27993035;
+            b = -0.2654580671;
+        } else if (i == 1) {
+            m = 60.25906654;
+            b = -0.02513497142;
+        } else {
+            m = 0;
+            b = 0;
+        }
+        val = test_stand->lc_scale(volt_act, m, b);
+#endif
+        mvwprintw(sensors_window, i + 9, 70, "%s   %f lbf", lc_names[i].c_str(), val);
     }
 
     wattron(sensors_window, NCURSES_BITS(1U, 23));
