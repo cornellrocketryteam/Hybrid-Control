@@ -15,6 +15,9 @@ void TestStand::sv_toggle(int num) {
 }
 
 void TestStand::sv_on(int num) {
+    if (num == 4) { // NOTE: SV 4 is never being actuated
+        return;
+    }
     sv_states[num - 1] = true;
 
 #ifdef USE_LABJACK
@@ -173,10 +176,10 @@ void TestStand::to_mode(Mode mode) {
         set_sv_states("00010");
         break;
     case Mode::postfire_purge_engine:
-        set_sv_states("01010");
+        set_sv_states("10000");
         break;
     case Mode::fire:
-        set_sv_states("00010");
+        set_sv_states("00000");
         mav_on();
         break;
     default:
