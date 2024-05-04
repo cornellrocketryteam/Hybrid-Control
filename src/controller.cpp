@@ -104,7 +104,7 @@ void Controller::read(bool &running) {
                                   &LJMScanBacklog);
             ErrorCheck(err, "LJM_eStreamRead");
 
-            if (connectionType != LJM_ctUSB) { // TODO: change for ethernet
+            if (connectionType != LJM_ctANY) {
                 err = LJM_GetStreamTCPReceiveBufferStatus(handle,
                                                           &receiveBufferBytesSize, &receiveBufferBytesBacklog);
                 ErrorCheck(err, "LJM_GetStreamTCPReceiveBufferStatus");
