@@ -177,7 +177,7 @@ void Controller::parse_typed_command() {
             return;
         }
         int sv = tokens[1].at(0) - '0';
-        if (sv < 2 || sv > 5) { // NOTE: SV 1 has been disabled
+        if (sv < 1 || sv > 5) {
             tui.display_input_error("Invalid SV index \"" + std::to_string(sv) + "\"");
             return;
         }
@@ -242,9 +242,6 @@ void Controller::parse_mode_command() {
             valid_input = true;
             return;
         } else if (command == valve_ascii_mappings[i]) {
-            if (i == 0) { // NOTE: SV 1 has been disabled
-                return;
-            }
             test_stand.is_awaiting_mode = false;
             if (test_stand.is_awaiting_valve) {
                 if (test_stand.awaited_valve == i) {
