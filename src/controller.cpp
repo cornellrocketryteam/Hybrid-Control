@@ -104,12 +104,6 @@ void Controller::read(bool &running) {
                                   &LJMScanBacklog);
             ErrorCheck(err, "LJM_eStreamRead");
 
-            if (connectionType != LJM_ctUSB) { // TODO: change for ethernet
-                err = LJM_GetStreamTCPReceiveBufferStatus(handle,
-                                                          &receiveBufferBytesSize, &receiveBufferBytesBacklog);
-                ErrorCheck(err, "LJM_GetStreamTCPReceiveBufferStatus");
-            }
-
             auto currentTime = std::chrono::steady_clock::now() - startTime;
             auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime).count();
 
