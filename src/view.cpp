@@ -166,9 +166,9 @@ void TUI::update(double *data) {
 
         if (i == 0 | i == 5 | i == 6 | i == 7) {
             val_max = 2000;
-        } else if (i == 1 | i == 2 | i == 3) {
+        } else if (i == 1 | i == 4 | i == 3) {
             val_max = 3000;
-        } else if (i == 4) {
+        } else if (i == 2) {
             val_max = 1500;
         } else {
             val_max = 0;

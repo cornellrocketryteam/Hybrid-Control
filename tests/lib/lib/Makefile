@@ -87,14 +87,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib/CMakeFiles /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib//CMakeFiles/progress.marks
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
+	cd /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib && $(CMAKE_COMMAND) -E cmake_progress_start /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib/CMakeFiles /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib/lib//CMakeFiles/progress.marks
+	cd /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clean
+	cd /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/clean
 .PHONY : clean
 
 # The main clean target
@@ -103,103 +103,18 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
-
-#=============================================================================
-# Target rules for targets named test
-
-# Build rule for target.
-test: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test
-.PHONY : test
-
-# fast build rule for target.
-test/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/build
-.PHONY : test/fast
-
-LJMStreamUtil.o: LJMStreamUtil.cpp.o
-.PHONY : LJMStreamUtil.o
-
-# target to build an object file
-LJMStreamUtil.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/LJMStreamUtil.cpp.o
-.PHONY : LJMStreamUtil.cpp.o
-
-LJMStreamUtil.i: LJMStreamUtil.cpp.i
-.PHONY : LJMStreamUtil.i
-
-# target to preprocess a source file
-LJMStreamUtil.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/LJMStreamUtil.cpp.i
-.PHONY : LJMStreamUtil.cpp.i
-
-LJMStreamUtil.s: LJMStreamUtil.cpp.s
-.PHONY : LJMStreamUtil.s
-
-# target to generate assembly for a file
-LJMStreamUtil.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/LJMStreamUtil.cpp.s
-.PHONY : LJMStreamUtil.cpp.s
-
-LJMUtil.o: LJMUtil.cpp.o
-.PHONY : LJMUtil.o
-
-# target to build an object file
-LJMUtil.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/LJMUtil.cpp.o
-.PHONY : LJMUtil.cpp.o
-
-LJMUtil.i: LJMUtil.cpp.i
-.PHONY : LJMUtil.i
-
-# target to preprocess a source file
-LJMUtil.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/LJMUtil.cpp.i
-.PHONY : LJMUtil.cpp.i
-
-LJMUtil.s: LJMUtil.cpp.s
-.PHONY : LJMUtil.s
-
-# target to generate assembly for a file
-LJMUtil.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/LJMUtil.cpp.s
-.PHONY : LJMUtil.cpp.s
-
-stream_data.o: stream_data.cpp.o
-.PHONY : stream_data.o
-
-# target to build an object file
-stream_data.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/stream_data.cpp.o
-.PHONY : stream_data.cpp.o
-
-stream_data.i: stream_data.cpp.i
-.PHONY : stream_data.i
-
-# target to preprocess a source file
-stream_data.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/stream_data.cpp.i
-.PHONY : stream_data.cpp.i
-
-stream_data.s: stream_data.cpp.s
-.PHONY : stream_data.s
-
-# target to generate assembly for a file
-stream_data.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/stream_data.cpp.s
-.PHONY : stream_data.cpp.s
 
 # Help Target
 help:
@@ -209,16 +124,6 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... test"
-	@echo "... LJMStreamUtil.o"
-	@echo "... LJMStreamUtil.i"
-	@echo "... LJMStreamUtil.s"
-	@echo "... LJMUtil.o"
-	@echo "... LJMUtil.i"
-	@echo "... LJMUtil.s"
-	@echo "... stream_data.o"
-	@echo "... stream_data.i"
-	@echo "... stream_data.s"
 .PHONY : help
 
 
@@ -230,6 +135,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/nissiragland/Documents/CRT/Hybrid-Control/tests/lib && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

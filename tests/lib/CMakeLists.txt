@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.28)
+
 # Set a var for the path to LJM
 set(LJM_LIBRARY "/usr/local/lib/libLabJackM.dylib")
 

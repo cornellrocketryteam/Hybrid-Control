@@ -3,6 +3,7 @@
  **/
 
 #include "LJMStreamUtil.hpp"
+#include "LJMUtil.hpp"
 #include <LabJackM.h>
 #include <fstream>
 #include <stdio.h>
@@ -119,7 +120,7 @@ void Stream(int handle, int numChannels, const char **channelNames,
 
         // printf("iteration: %d - deviceScanBacklog: %d, LJMScanBacklog: %d",
         //        iteration, deviceScanBacklog, LJMScanBacklog);
-        if (connectionType != LJM_ctUSB) {
+        if (connectionType != LJM_ctANY) {
             err = LJM_GetStreamTCPReceiveBufferStatus(handle,
                                                       &receiveBufferBytesSize, &receiveBufferBytesBacklog);
             ErrorCheck(err, "LJM_GetStreamTCPReceiveBufferStatus");

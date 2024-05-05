@@ -6,7 +6,7 @@ find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIRS})
 
 # Add executable and sources
-add_executable(test on_off.cpp)
+add_executable(test stream_data.cpp)
 
 # Add subdirectory for additional libraries (if needed)
 add_subdirectory(lib)
