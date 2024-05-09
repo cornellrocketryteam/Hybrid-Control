@@ -18,8 +18,8 @@
 #include <iomanip>
 
 Controller::Controller(int handle) : test_stand(TestStand(handle)), tui(TUI(&test_stand)), handle(handle) {
-    INIT_SCAN_RATE = 70;
-    SCANS_PER_READ = (int)INIT_SCAN_RATE / 2;
+    INIT_SCAN_RATE = 100;
+    SCANS_PER_READ = 1;
     aDataSize = NUM_CHANNELS * SCANS_PER_READ;
     aData = new double[sizeof(double) * aDataSize];
     valid_input = false;
