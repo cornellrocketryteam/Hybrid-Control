@@ -20,7 +20,7 @@
 Controller::Controller(int handle) : test_stand(TestStand(handle)), tui(TUI(&test_stand)), handle(handle) {
     INIT_SCAN_RATE = 70;
     SCANS_PER_READ = 1;
-    
+
     aDataSize = NUM_CHANNELS * SCANS_PER_READ;
     aData = new double[sizeof(double) * aDataSize];
     valid_input = false;
@@ -32,7 +32,7 @@ Controller::Controller(int handle) : test_stand(TestStand(handle)), tui(TUI(&tes
     }
 
     int file_count = 0;
-    for (const auto& entry : std::filesystem::directory_iterator("../data/")) {
+    for (const auto &entry : std::filesystem::directory_iterator("../data/")) {
         if (std::filesystem::is_regular_file(entry.status())) {
             file_count++;
         }
