@@ -58,6 +58,9 @@ public:
      */
     std::string input;
 
+    // TODO: Temporary fix, this is not elegant
+    int file_count;
+
 private:
     // TODO: Implement
     void convert_data();

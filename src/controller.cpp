@@ -18,12 +18,28 @@
 #include <iomanip>
 
 Controller::Controller(int handle) : test_stand(TestStand(handle)), tui(TUI(&test_stand)), handle(handle) {
-    INIT_SCAN_RATE = 100;
+    INIT_SCAN_RATE = 70;
     SCANS_PER_READ = 1;
+    
     aDataSize = NUM_CHANNELS * SCANS_PER_READ;
     aData = new double[sizeof(double) * aDataSize];
     valid_input = false;
     input = "";
+
+    // Create filename based on the number of previous data files in data/
+    if (!std::filesystem::exists("../data/")) {
+        std::filesystem::create_directories("../data/");
+    }
+
+    int file_count = 0;
+    for (const auto& entry : std::filesystem::directory_iterator("../data/")) {
+        if (std::filesystem::is_regular_file(entry.status())) {
+            file_count++;
+        }
+    }
+    filename = "../data/data_" + std::to_string(file_count) + ".csv";
+
+    tui.file_count = file_count;
 }
 
 // Instruct the view to update and process any input commands
@@ -84,7 +100,7 @@ void Controller::read(bool &running) {
 
         std::ofstream file;
         auto startTime = std::chrono::steady_clock::now();
-        file.open("test_data.csv", std::ios::out | std::ios::app);
+        file.open(filename, std::ios::out | std::ios::app);
 
         err = LJM_GetHandleInfo(handle, NULL, &connectionType, NULL, NULL, NULL, NULL);
         ErrorCheck(err, "LJM_GetHandleInfo");

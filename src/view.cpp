@@ -62,6 +62,8 @@ TUI::TUI(TestStand *test_stand) {
     wattron(input_container_window, COLOR_PAIR(TEXT_COLOR));
     mvwprintw(input_container_window, 1, 2, "Enter a command below");
     mvwprintw(input_container_window, 3, 2, "> ");
+
+    mvwprintw(input_container_window, 1, x_max - 30, "Data file: data_%d.csv", file_count);
     wattroff(input_container_window, COLOR_PAIR(TEXT_COLOR));
 
     refresh();
@@ -225,6 +227,7 @@ void TUI::update(double *data) {
     }
 
     mvwprintw(input_container_window, 3, 2, "> ");
+    mvwprintw(input_container_window, 1, x_max - 30, "Data file: data_%d.csv", file_count);
     wattroff(valves_window, COLOR_PAIR(TEXT_COLOR));
     wattroff(sensors_window, COLOR_PAIR(TEXT_COLOR));
     wattroff(modes_window, COLOR_PAIR(TEXT_COLOR));

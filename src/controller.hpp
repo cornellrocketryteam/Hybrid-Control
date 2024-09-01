@@ -42,6 +42,8 @@ private:
 
     bool data_mark = false;
 
+    std::string filename;
+
     /**
      * Processes a command that is entered through the TUI interface.
      */
