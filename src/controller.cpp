@@ -111,6 +111,11 @@ void Controller::read(bool &running) {
                 file << millis << ", " << input << "\n";
             }
 
+            if (data_mark) {
+                file << millis << ", DATA MARK" << std::endl;
+                data_mark = false;
+            }
+
             currentTime = std::chrono::steady_clock::now() - startTime;
             millis = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime).count();
             file << millis << ", ";
@@ -191,6 +196,10 @@ void Controller::parse_typed_command() {
     } else if (tui.input == "mav off") {
         test_stand.mav_off();
         valid_input = true;
+    } else if (tokens[0] == "data") {
+        data_mark = true;
+        tui.display_message("Data marked");
+        return;
     } else {
         tui.display_input_error("Unknown command \"" + tui.input + "\"");
         return;

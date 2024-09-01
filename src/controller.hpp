@@ -40,6 +40,8 @@ private:
     bool valid_input;
     std::string input;
 
+    bool data_mark = false;
+
     /**
      * Processes a command that is entered through the TUI interface.
      */

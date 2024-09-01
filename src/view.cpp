@@ -312,6 +312,14 @@ bool TUI::get_command() {
     return is_cmd;
 }
 
+void TUI::display_message(std::string msg) {
+    werase(input_container_window);
+    wattron(input_container_window, COLOR_PAIR(TEXT_COLOR));
+    mvwprintw(input_container_window, 1, 2, msg.c_str());
+    wattroff(input_container_window, COLOR_PAIR(TEXT_COLOR));
+    wrefresh(input_container_window);
+}
+
 void TUI::display_input_error(std::string error) {
     werase(input_container_window);
     wattron(input_container_window, COLOR_PAIR(TEXT_RED));

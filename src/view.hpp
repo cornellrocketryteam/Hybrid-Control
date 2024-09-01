@@ -32,6 +32,12 @@ public:
     void clear_input();
 
     /**
+     * Displays an informational message atop the input window.
+     * @param msg The message to display
+     */
+    void display_message(std::string msg);
+
+    /**
      * Displays an error atop the input window in red.
      * @param error The error message to display
      */
