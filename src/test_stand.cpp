@@ -171,16 +171,15 @@ void TestStand::to_mode(Mode mode) {
             set_sv_states("00000");
         }
         break;
-    case Mode::supercharge:
-        supercharged = true;
-        set_sv_states("00010");
-        break;
-    case Mode::postfire_purge_engine:
-        set_sv_states("10000");
+    case Mode::close_vent:
+        set_sv_states("00110");
         break;
     case Mode::fire:
         set_sv_states("00000");
         mav_on();
+        break;
+    case Mode::postfire_purge_engine:
+        set_sv_states("10000");
         break;
     default:
         set_sv_states("00000");

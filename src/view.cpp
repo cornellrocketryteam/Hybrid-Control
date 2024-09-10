@@ -126,22 +126,12 @@ void TUI::update(double *data) {
         mvwprintw(modes_window, 1, 4, "Default");
     }
     for (int i = 1; i < 7; i++) {
-        if (i == 4) {
-            if (test_stand->supercharged) {
-                wattron(modes_window, NCURSES_BITS(1U, 23));
-                mvwprintw(modes_window, i + 2, 4, "Supercharged");
-                wattroff(modes_window, NCURSES_BITS(1U, 23));
-            } else {
-                mvwprintw(modes_window, i + 2, 4, "Supercharge");
-            }
+        if (test_stand->mode == static_cast<Mode>(i)) {
+            wattron(modes_window, A_BOLD);
+            mvwprintw(modes_window, i + 2, 2, "* %s", modes[i]);
+            wattroff(modes_window, A_BOLD);
         } else {
-            if (test_stand->mode == static_cast<Mode>(i)) {
-                wattron(modes_window, A_BOLD);
-                mvwprintw(modes_window, i + 2, 2, "* %s", modes[i]);
-                wattroff(modes_window, A_BOLD);
-            } else {
-                mvwprintw(modes_window, i + 2, 4, "%s", modes[i]);
-            }
+            mvwprintw(modes_window, i + 2, 4, "%s", modes[i]);
         }
     }
 

@@ -28,9 +28,9 @@ enum class Mode : int {
     prefire_purge_tanks,
     prefire_purge_engine,
     fill,
-    supercharge,
-    postfire_purge_engine,
-    fire
+    close_vent,
+    fire,
+    postfire_purge_engine
 };
 
 /**

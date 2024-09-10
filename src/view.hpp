@@ -96,7 +96,7 @@ private:
     int keys_up = -1;
 
     // TODO: Probably move mode names to get directly from config
-    char const *modes[7] = {"Default", "Prefire purge tanks", "Prefire purge engine", "Fill", "Supercharge", "Postfire purge engine", "Fire"};
+    char const *modes[7] = {"Default", "Prefire purge tanks", "Prefire purge engine", "Fill", "Close vent", "Fire", "Postfire purge engine"};
 
     char const *valves[6] = {"SV 1", "SV 2", "SV 3", "SV 4", "SV 5", "MAV"};
 };

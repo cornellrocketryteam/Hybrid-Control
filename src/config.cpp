@@ -1,6 +1,6 @@
 #include "config.hpp"
 
-// TODO: Check compatability with non-macOS computers
+// TODO: Update for new modes
 int mode_ascii_mappings[7] = {52, 53, 54, 43, 55, 56, 57};
 
 int valve_ascii_mappings[6] = {48, 49, 50, 51, 46, 45};

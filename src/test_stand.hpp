@@ -100,11 +100,6 @@ public:
      */
     bool is_awaiting_valve = false;
 
-    /**
-     * Whether or not we have supercharged.
-     */
-    bool supercharged = false;
-
 private:
     /**
      * Sets PWM on the MAV's pin.
