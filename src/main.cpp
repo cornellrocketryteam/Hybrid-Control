@@ -29,7 +29,6 @@ int main(int argc, char *argv[]) {
 #endif
 
     CloseOrDie(handle);
-    // WaitForUserIfWindows();
 
     return 0;
 }

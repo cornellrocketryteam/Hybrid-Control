@@ -62,9 +62,6 @@ public:
     int file_count;
 
 private:
-    // TODO: Implement
-    void convert_data();
-
     /**
      * The model to pull data from.
      */
