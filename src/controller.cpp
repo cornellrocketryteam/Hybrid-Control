@@ -193,7 +193,7 @@ void Controller::parse_typed_command() {
         }
         int sv = tokens[1].at(0) - '0';
         if (sv < 1 || sv > 5) {
-            tui.display_input_error("Invalid SV index \"" + std::to_string(sv) + "\"");
+            tui.display_message("Invalid SV index \"" + std::to_string(sv) + "\"", true);
             return;
         }
 
@@ -204,7 +204,7 @@ void Controller::parse_typed_command() {
             test_stand.sv_off(sv);
             valid_input = true;
         } else {
-            tui.display_input_error("Unknown SV operation \"" + tokens[2] + "\"");
+            tui.display_message("Unknown SV operation \"" + tokens[2] + "\"", true);
         }
     } else if (tui.input == "mav on") {
         test_stand.mav_on();
@@ -217,10 +217,10 @@ void Controller::parse_typed_command() {
         tui.display_message("Data marked");
         return;
     } else {
-        tui.display_input_error("Unknown command \"" + tui.input + "\"");
+        tui.display_message("Unknown command \"" + tui.input + "\"", true);
         return;
     }
-    tui.display_input_error("");
+    tui.display_message("");
 }
 
 void Controller::parse_mode_command() {
@@ -236,7 +236,7 @@ void Controller::parse_mode_command() {
             }
             test_stand.is_awaiting_valve = false;
         }
-        tui.display_input_error("");
+        tui.display_message("");
         return;
     }
     int command = (int)tui.input.at(0);
@@ -249,7 +249,7 @@ void Controller::parse_mode_command() {
             if (test_stand.is_awaiting_mode) {
                 if (test_stand.awaited_mode == mode) {
                     test_stand.is_awaiting_mode = false;
-                    tui.display_input_error("");
+                    tui.display_message("");
                 } else {
                     test_stand.awaited_mode = mode;
                 }
@@ -265,7 +265,7 @@ void Controller::parse_mode_command() {
             if (test_stand.is_awaiting_valve) {
                 if (test_stand.awaited_valve == i) {
                     test_stand.is_awaiting_valve = false;
-                    tui.display_input_error("");
+                    tui.display_message("");
                 } else {
                     test_stand.awaited_valve = i;
                 }
@@ -278,5 +278,5 @@ void Controller::parse_mode_command() {
             return;
         }
     }
-    tui.display_input_error("Unknown command \"" + tui.input + "\"");
+    tui.display_message("Unknown command \"" + tui.input + "\"", true);
 }

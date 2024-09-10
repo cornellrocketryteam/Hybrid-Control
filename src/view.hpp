@@ -32,16 +32,11 @@ public:
     void clear_input();
 
     /**
-     * Displays an informational message atop the input window.
+     * Displays a message atop the input window.
      * @param msg The message to display
+     * @param error Whether or not to display this message in red text
      */
-    void display_message(std::string msg);
-
-    /**
-     * Displays an error atop the input window in red.
-     * @param error The error message to display
-     */
-    void display_input_error(std::string error);
+    void display_message(std::string msg, bool error = false);
 
     /**
      * Displays the mode awaiting confirmation atop the input window.
