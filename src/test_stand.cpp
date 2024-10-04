@@ -15,9 +15,6 @@ void TestStand::sv_toggle(int num) {
 }
 
 void TestStand::sv_on(int num) {
-    if (num == 4) { // NOTE: SV 4 is never being actuated
-        return;
-    }
     sv_states[num - 1] = true;
 
 #ifdef USE_LABJACK
@@ -27,10 +24,12 @@ void TestStand::sv_on(int num) {
     err = LJM_eWriteName(handle, fio_name, 1);
     ErrorCheckWithAddress(err, error_address, "LJM_eWriteNames");
 
-    std::thread timer_thread([this, num]() {
-        this->sv_pwm(num);
-    });
-    timer_thread.detach();
+    if (num != 4) {
+        std::thread timer_thread([this, num]() {
+            this->sv_pwm(num);
+        });
+        timer_thread.detach();
+    }
 #endif
 }
 
