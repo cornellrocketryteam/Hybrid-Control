@@ -29,23 +29,23 @@ void TestStand::sv_on(int num) {
         });
         timer_thread.detach();
     } else {
-        int queueVals;
-        int samplesToWrite = 512;
+        const char *aName = "FIO_STATE";
+        double aValue = 32386;  // 11111101 0000010 - FIO1 being targeted
+        int numFrames = 1;
 
-        double *values = new double[samplesToWrite];
-        double increment = double(1) / samplesToWrite;
-        // Make an arbitrary waveform that increases voltage linearly from 0-2.5V
-        for (int i = 0; i < samplesToWrite; i++) {
-            double sample = 2.5 * increment * i;
-            values[i] = sample;
+        err = LJM_eWriteName(handle, aName, aValue);
+
+        int samplesToWrite = 200;
+        std::vector<double> writeData;
+        
+        for (int i = 0; i < samplesToWrite; ++i) {
+            writeData.push_back(0);
+            writeData.push_back(3);
         }
 
-        err = LJM_WriteAperiodicStreamOut(
-            handle,
-            0,
-            512,
-            values,
-            &queueVals);
+        int queueVals;
+
+        err = LJM_WriteAperiodicStreamOut(handle, 0, writeData.size(), writeData.data(), &queueVals);
     }
 #endif
     sv_states[num - 1] = true;
