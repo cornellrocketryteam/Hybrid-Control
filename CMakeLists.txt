@@ -8,6 +8,8 @@ set(CMAKE_VERBOSE_MAKEFILE TRUE)
 include_directories(${CURSES_INCLUDE_DIR})
 include_directories("/usr/local/include/")
 
+set(ENV{DYLD_LIBRARY_PATH} "/usr/local/lib")
+
 find_package(Curses REQUIRED)
 add_definitions(-DUSE_LABJACK)
 

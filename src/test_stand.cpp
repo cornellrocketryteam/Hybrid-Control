@@ -15,23 +15,41 @@ void TestStand::sv_toggle(int num) {
 }
 
 void TestStand::sv_on(int num) {
-    if (num == 4) { // NOTE: SV 4 is never being actuated
-        return;
-    }
-    sv_states[num - 1] = true;
-
 #ifdef USE_LABJACK
-    char fio_name[5];
-    snprintf(fio_name, 5, "FIO%d", sv_dio[num - 1]);
+    // For SV 4, we do fake PWM
+    if (num != 4) {
+        char fio_name[5];
+        snprintf(fio_name, 5, "FIO%d", sv_dio[num - 1]);
 
-    err = LJM_eWriteName(handle, fio_name, 1);
-    ErrorCheckWithAddress(err, error_address, "LJM_eWriteNames");
+        err = LJM_eWriteName(handle, fio_name, 1);
+        ErrorCheckWithAddress(err, error_address, "LJM_eWriteNames");
 
-    std::thread timer_thread([this, num]() {
-        this->sv_pwm(num);
-    });
-    timer_thread.detach();
+        std::thread timer_thread([this, num]() {
+            this->sv_pwm(num);
+        });
+        timer_thread.detach();
+    } else {
+        int queueVals;
+        int samplesToWrite = 512;
+        
+        double* values = new double[samplesToWrite];
+        double increment = double(1) / samplesToWrite;
+        // Make an arbitrary waveform that increases voltage linearly from 0-2.5V
+        for (int i = 0; i < samplesToWrite; i++) {
+            double sample = 2.5 * increment * i;
+            values[i] = sample;
+        }
+
+        err = LJM_WriteAperiodicStreamOut(
+            handle,
+            0,
+            512,
+            values,
+            &queueVals
+        );
+    }
 #endif
+    sv_states[num - 1] = true;
 }
 
 void TestStand::sv_off(int num) {

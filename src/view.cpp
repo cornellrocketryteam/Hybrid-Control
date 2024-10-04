@@ -140,8 +140,6 @@ void TUI::update(double *data) {
     mvwprintw(sensors_window, 0, (x_max / 2) - 5, " Sensors ");
     wattroff(sensors_window, A_BOLD);
 
-    // TODO: Finish and clean up - WIP
-
     wattron(sensors_window, NCURSES_BITS(1U, 23));
     mvwprintw(sensors_window, 1, 2, "Pressure Transducers");
     wattroff(sensors_window, NCURSES_BITS(1U, 23));

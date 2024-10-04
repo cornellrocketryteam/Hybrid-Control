@@ -15,6 +15,13 @@ int main(int argc, char *argv[]) {
 #ifdef USE_LABJACK
     int err = LJM_Open(LJM_dtT7, LJM_ctANY, "LJM_idANY", &handle);
     ErrorCheck(err, "LJM_Open");
+
+    err = LJM_InitializeAperiodicStreamOut(
+        handle,
+        0,
+        2500,
+        70
+    );
 #endif
 
     Controller c = Controller(handle);
