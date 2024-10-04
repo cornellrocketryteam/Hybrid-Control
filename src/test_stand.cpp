@@ -31,8 +31,8 @@ void TestStand::sv_on(int num) {
     } else {
         int queueVals;
         int samplesToWrite = 512;
-        
-        double* values = new double[samplesToWrite];
+
+        double *values = new double[samplesToWrite];
         double increment = double(1) / samplesToWrite;
         // Make an arbitrary waveform that increases voltage linearly from 0-2.5V
         for (int i = 0; i < samplesToWrite; i++) {
@@ -45,8 +45,7 @@ void TestStand::sv_on(int num) {
             0,
             512,
             values,
-            &queueVals
-        );
+            &queueVals);
     }
 #endif
     sv_states[num - 1] = true;

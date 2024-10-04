@@ -20,8 +20,7 @@ int main(int argc, char *argv[]) {
         handle,
         0,
         2500,
-        70
-    );
+        70);
 #endif
 
     Controller c = Controller(handle);
