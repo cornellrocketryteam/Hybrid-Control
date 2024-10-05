@@ -151,7 +151,7 @@ void TestStand::to_mode(Mode mode) {
     switch (mode) {
     case Mode::prefire_purge_tanks:
         if (!tanks_purging) {
-            set_sv_states("01001");
+            set_sv_states("01010");
         } else {
             set_sv_states("00000");
         }
@@ -171,7 +171,7 @@ void TestStand::to_mode(Mode mode) {
         }
         break;
     case Mode::close_vent:
-        set_sv_states("00110");
+        set_sv_states("00101");
         break;
     case Mode::fire:
         set_sv_states("00000");
