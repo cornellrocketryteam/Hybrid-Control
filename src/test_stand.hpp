@@ -114,6 +114,11 @@ private:
     void sv_pwm(int num);
 
     /**
+     * Sets valve states according to shutoff sequence post firing.
+     */
+    void shutoff();
+
+    /**
      * Helper function to quickly set all the SV states at once.
      * @param A bitmask representing the 5 SV states to set
      */

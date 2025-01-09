@@ -137,6 +137,13 @@ void TestStand::sv_pwm(int num) {
     ErrorCheckWithAddress(err, error_address, "LJM_eWriteNames");
 }
 
+void TestStand::shutoff() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(7880));
+    mav_off();
+    set_sv_states("00000");
+    set_sv_states("10000");
+}
+
 void TestStand::set_sv_states(std::string mask) {
     for (int i = 0; i < mask.size(); i++) {
         if (mask[i] - '0') {
@@ -173,10 +180,15 @@ void TestStand::to_mode(Mode mode) {
     case Mode::close_vent:
         set_sv_states("00101");
         break;
-    case Mode::fire:
+    case Mode::fire: {
         set_sv_states("00000");
         mav_on();
+        std::thread timer_thread([this]() {
+            this->shutoff();
+        });
+        timer_thread.detach();
         break;
+    }
     case Mode::postfire_purge_engine:
         set_sv_states("10000");
         break;
