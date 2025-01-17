@@ -140,7 +140,6 @@ void TestStand::sv_pwm(int num) {
 void TestStand::shutoff() {
     std::this_thread::sleep_for(std::chrono::milliseconds(7880));
     mav_off();
-    set_sv_states("00000");
     set_sv_states("10000");
 }
 
@@ -181,7 +180,7 @@ void TestStand::to_mode(Mode mode) {
         set_sv_states("00101");
         break;
     case Mode::fire: {
-        set_sv_states("00000");
+        set_sv_states("00001");
         mav_on();
         std::thread timer_thread([this]() {
             this->shutoff();
